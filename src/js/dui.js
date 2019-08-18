@@ -6,6 +6,7 @@ var Dui = function(){
     this.DuiPath = getPath();
     this.modules = {};
     this.modulesMap = {};
+    this.defined = {};
 },
 doc = document,
 head = doc.head,
@@ -419,7 +420,7 @@ function execMod(modName,callback,params){
         }
     }
     //添加模块
-    dui[modName] = dui.modulesMap[modName].exports;
+    dui.defined[modName] = dui.modulesMap[modName].exports;
     //执行回调函数
     callback(dui.modulesMap[modName].exports);
     //执行complete队列
