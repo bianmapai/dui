@@ -1,0 +1,16 @@
+//scss函数
+//清除浮动函数
+@mixin utils-clearfix {
+    $selector: &;
+  
+    @at-root {
+      #{$selector}::before,
+      #{$selector}::after {
+        display: table;
+        content: "";
+      }
+      #{$selector}::after {
+        clear: both
+      }
+    }
+  }
