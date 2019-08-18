@@ -30,7 +30,6 @@
           return factory(w);
         };
   } else if (typeof define === "function" && define.amd) {
-    console.log('进来了');
     define("jquery", [], function() {
       return factory(global);
     });
