@@ -1,11 +1,21 @@
 @@include('include/head.html')
+<div id="demo" style="width: 100px;height:100px;background:#dddddd">
+
+</div>
 <script>
-dui.define('demo',['jquery'],function($){
-    
+  dui.define("demo", ["jquery"], function($) {
+    var options = {
+      name:'el-zoom-in-top',
+      show:true,
+    };
+    var aaa = dui.transition(document.querySelector('#demo'),options);
+    aaa.status = false;
+    aaa.config.name = 'aaaaa';
+    console.log(options);
     return {};
-})
-dui.use('demo',function(demo){
+  });
+  dui.use("demo", function(demo) {
     console.log(demo);
-})
+  });
 </script>
 @@include('include/foot.html')
