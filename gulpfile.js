@@ -16,7 +16,7 @@ var rollup = require('gulp-better-rollup');
 
 //sass处理任务
 gulp.task('sass', function () {
-	return gulp.src(['./src/scss/*.scss','./src/scss/**/*.scss','!./src/scss/config/*.scss'])   //这是需要转化的sass文件
+	return gulp.src(['./src/scss/*.scss'])   //这是需要转化的sass文件
 		.pipe(sass())
 		.pipe(autoprefixer({
 			browsers:['last 4 version'],
@@ -114,7 +114,7 @@ gulp.task('watch',function(){
 	gulp.watch(["./src/js/*.js","./src/js/**/*.js",'./src/js/'],['js',"reload"])
 	gulp.watch(["./src/json/*.json","./src/json/**/*.json",'./src/json/'],['coyjson',"reload"])
 	gulp.watch(["./src/example/*.html",'src/example/**/*.html','./example/**/*.html'], ["copy-html","reload"]);
-	gulp.watch(["./src/scss/*.scss","./src/scss/**/*.scss"], ["sass","reload"]);
+	gulp.watch(["./src/scss/*.scss"], ["sass","reload"]);
 	gulp.watch(["./dist/**/*.*","./dist/**/**/*.*","./example/*.html",'./example/**/*.html'], ["reload"]);
 })
 //刷新服务器

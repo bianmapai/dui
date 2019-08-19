@@ -1,0 +1,70 @@
+@@include('include/head.html')
+<style>
+.transition-box {
+    margin-bottom: 10px;
+    width: 200px;
+    height: 100px;
+    border-radius: 4px;
+    background-color: #409EFF;
+    text-align: center;
+    color: #fff;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    margin-right: 20px;
+}
+</style>
+<div class="baui-tab baui-tab-brief baui-shadow" baui-filter="docDemoTabBrief">
+    <div class="baui-tab-wrap">
+        <div class="baui-tab-nav-scoll">
+            <ul class="baui-tab-header">
+                <li class="baui-active">网站设置</li>
+            </ul>
+        </div>
+    </div>
+    <div class="baui-tab-content">
+        <button class="aiui-btn aiui-btn-default" id="do" >执行过渡</button>
+        <div style="display: flex; margin-top: 20px; height: 100px;">
+            <div class="transition-box" id="center">.aiui-zoom-in-center</div>
+            <div class="transition-box" id="top">.aiui-zoom-in-top</div>
+            <div class="transition-box" id="bottom">.aiui-zoom-in-bottom</div>
+        </div>
+    </div>
+</div>
+<script>
+dui.use(['jquery'],function(jquery){
+    var center = new dui.transition(document.querySelector('#center'),{
+        name:'aiui-zoom-in-center',
+    });
+    var top = new dui.transition(document.querySelector('#top'),{
+        name:'aiui-zoom-in-top',
+    });
+    var bottom = new dui.transition(document.querySelector('#bottom'),{
+        name:'aiui-zoom-in-bottom',
+    });
+    $('#do').on('click',function(){
+        if(center.status=='show'){
+            center.hide();
+        }else{
+            center.show();
+        }
+        if(top.status=='show'){
+            top.hide();
+        }else{
+            top.show();
+        }
+        if(bottom.status=='show'){
+            bottom.hide();
+        }else{
+            bottom.show();
+        }
+    })
+})
+</script>
+<!-- <script>
+function aaaa(){
+    aiui.transition('#center','aiui-zoom-in-center');
+    aiui.transition('#top','aiui-zoom-in-top');
+    aiui.transition('#bottom','aiui-zoom-in-bottom');
+}
+</script> -->
+@@include('include/foot.html')

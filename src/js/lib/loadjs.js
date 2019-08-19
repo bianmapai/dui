@@ -38,7 +38,7 @@ config = {
 var class2type = {},
 hasOwn = class2type.hasOwnProperty,
 support = {},
-error = function(msg){
+error = Dui.prototype.error = function(msg){
     window.console && console.error && console.error('Dui Error: ' + msg);
 };
 /**
@@ -46,7 +46,7 @@ error = function(msg){
  * @param {Object} object 循环对象
  * @param {Function} callback 回调函数
  */
-function each(obj, callback) {
+export function each(obj, callback) {
     var length, i = 0;
     if (isArrayLike(obj)) {
         length = obj.length;

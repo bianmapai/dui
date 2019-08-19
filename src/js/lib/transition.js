@@ -1,24 +1,139 @@
 import { dui } from "./loadjs";
-function transition(elem,options){
-    return transition.fn.init(elem,options);
+import { once, setVnode, setData } from "./util";
+import { nextFrame } from "./nextFrame";
+import { addClass, removeClass, setStyle } from "./dom";
+function Class(elem,options){
+    this.init(elem,options);
+    return this;
 }
-transition.prototype = transition.fn =  {
+/**
+ * 过渡进入时发生
+ * @param {Object} vnode nodeData对象
+ */
+export function enter(vnode){
+    var el = vnode.elm;
+    // call leave callback now
+    if (el._leaveCb) {
+        el._leaveCb.cancelled = true
+        el._leaveCb()
+    }
+    var data = vnode.data.transition;
+    if (!data) {
+        return
+    }
+    if (el._enterCb) {
+        return
+    }
+    var startClass = data.name+'-enter';
+    var activeClass = data.name+'-enter-active';
+    var toClass = data.name+'-enter-to';
+
+    // 4个生命周期钩子函数
+    var beforeEnterHook = data.beforeEnter;
+    var enterHook = data.enter;
+    const afterEnterHook = data.afterEnter;
+    const enterCancelledHook = data.enterCancelled;
+    var cb = el._enterCb = once(function(){
+        removeClass(el, toClass)
+        removeClass(el, activeClass)
+        if (cb.cancelled) {
+            removeClass(el, startClass)
+            enterCancelledHook && enterCancelledHook(el);
+        } else {
+            afterEnterHook && afterEnterHook(el)
+        }
+        el._enterCb = null
+    })
+
+    // 如果有回调函数
+    beforeEnterHook && beforeEnterHook(el)
+    addClass(el, startClass)
+    addClass(el, activeClass)
+    nextFrame(function(){
+        setStyle(el,'display','');
+        nextFrame(function(){
+            removeClass(el, startClass);
+            if(!cb.cancelled) {
+                // 添加 v-enter-to
+                addClass(el, toClass)
+                if(enterHook && typeof enterHook==="function"){
+                    enterHook(el,cb);
+                }else{
+                    setTimeout(cb, data.duration)
+                }
+            }
+        })
+    })
+}
+/**
+ * 过渡离开时发生
+ * @param {Object} vnode nodeData对象
+ */
+export function leave(vnode){
+    var el = vnode.elm;
+    // call leave callback now
+    if (el._enterCb) {
+        el._enterCb.cancelled = true
+        el._enterCb()
+    }
+    var data = vnode.data.transition;
+    if (!data) {
+        return
+    }
+    if (el._leaveCb) {
+        return
+    }
+    var startClass = data.name+'-leave';
+    var activeClass = data.name+'-leave-active';
+    var toClass = data.name+'-leave-to';
+
+    // 4个生命周期钩子函数
+    var beforeLeaveHook = data.beforeLeave;
+    var leaveHook = data.leave;
+    const afterLeaveHook = data.afterLeave;
+    const leaveCancelledHook = data.leaveCancelled;
+    var cb = el._leaveCb = once(function(){
+        removeClass(el, toClass)
+        removeClass(el, activeClass)
+        if (cb.cancelled) {
+            removeClass(el, startClass)
+            leaveCancelledHook && leaveCancelledHook(el);
+        } else {
+            afterLeaveHook && afterLeaveHook(el)
+            setStyle(el,'display','none');
+        }
+        el._leaveCb = null
+    })
+
+    // 如果有回调函数
+    beforeLeaveHook && beforeLeaveHook(el)
+    addClass(el, startClass)
+    addClass(el, activeClass)
+    nextFrame(function(){
+        removeClass(el, startClass);
+        if(!cb.cancelled) {
+            // 添加 v-enter-to
+            addClass(el, toClass)
+            if(leaveHook && typeof leaveHook==="function"){
+                leaveHook(el,cb);
+            }else{
+                setTimeout(cb, data.duration)
+            }
+        }
+    })
+}
+
+Class.prototype = Class.fn =  {
     init:function(elem,options){
-        var that = this,
-        /**
-         * 显示方法
-         */
-        showFunction = function(){
-
-        },
-        /**
-         * 隐藏方法
-         */
-        hideFunction = function(){
-
-        };
-        that.config = dui.extend(true,{},{
+        var that = this;
+        that.elem = elem;
+        //设置虚拟node
+        setVnode(elem);
+        //设置数据
+        setData(elem,'transition',{
             name:'face',
+            elem:elem,
+            duration:300,//过渡时间
             beforeEnter:'',//进入前
             enter:'',//当与 CSS 结合使用时
             afterEnter:'',//过渡后回调
@@ -27,39 +142,36 @@ transition.prototype = transition.fn =  {
             leave:'',//当与 CSS 结合使用时
             afterLeave:'',//离开之后回调
             leaveCancelled:'',//取消的时候回调
-            show:false,//默认是否显示
+            show:true,//默认是否显示
         },options);
-        that.status = dui.extend(true,{},that.config).show;
-        //如果当前状态
-        if(that.config.show===false){
-            dui.setStyle(elem,'display','none');
-        }
-        //设置样式
-        
-
-
-
-
-
+        //获取data
+        var data = that.data = elem.vnode.data.transition;
+        //设置状态
+        that.status = data.show === true ? 'show' : 'hide';
         //显示或者隐藏监听
-        dui.watch(that,'status',function(pop,action,newData){
+        dui.watch(data,'show',function(pop,action,newData){
             if(newData===true){
-                showFunction();
+                that.status = 'show';
+                enter(elem.vnode);
             }else{
-                hideFunction();
+                that.status = 'hide';
+                leave(elem.vnode);
             }
         },1,true);
-        //监听名字发生变化
-        dui.watch(that.config,'name',function(pop,action,newData){
-            
-        },1,true);
+        //如果默认为不显示
+        if(data.show===false){
+            dui.setStyle(elem,'display','none');
+        }
         return that;
     },
     show:function(){
-        that.config.show = true;
+        this.data.show = true;
     },
     hide:function(){
-        that.config.show = false;
+        this.data.show = false;
     }
+}
+var transition = function(elem,options){
+    return new Class(elem,options);
 }
 export default transition;

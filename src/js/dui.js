@@ -1,4 +1,4 @@
-import "./lib/requestAnimationFrame";//浏览器兼容
+import "./lib/nextFrame";//浏览器兼容下一帧
 import WatchJS from './lib/watch';
 import { dui,Dui } from "./lib/loadjs";
 import { trim,on,off, once, hasClass, getStyle, setStyle, getScrollWidth, addClass, removeClass } from "./lib/dom";

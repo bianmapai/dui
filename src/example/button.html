@@ -1,0 +1,96 @@
+@@include('include/head.html')
+<style>
+  h3 {
+    margin-bottom: 20px;
+  }
+  h3 + .aiui-row {
+    margin-bottom: 10px;
+  }
+</style>
+<div class="aiui-row">
+    <div class="aiui-col-xs6" style="padding:7.5px;">
+        <div class="aiui-card">
+            <div class="aiui-card-header aiui-">
+                不同主题
+            </div>
+            <div class="aiui-card-body">
+                <button class="dui-button dui-button--default">默认</button>
+                <button class="dui-button dui-button--primary">主要</button>
+                <button class="dui-button dui-button--success">正确</button>
+                <button class="dui-button dui-button--warning">警告</button>
+                <button class="dui-button dui-button--danger">错误</button>
+            </div>
+        </div>
+    </div>
+    <div class="aiui-col-xs6" style="padding:7.5px;">
+        <div class="aiui-card">
+            <div class="aiui-card-header aiui-">
+                不同大小
+            </div>
+            <div class="aiui-card-body">
+                <button class="dui-button dui-button--large" disabled id="info"><i class="aiui-icon aiui-icon-success"></i> 超大按钮</button>
+                <button class="dui-button is-disabled" id="success">默认按钮</button>
+                <button class="dui-button dui-button--small" id="error">小型按钮</button>
+                <button class="dui-button dui-button--mini" id="warning">迷你按钮</button>
+            </div>
+        </div>
+    </div>
+    <div class="aiui-col-xs6" style="padding:7.5px;">
+        <div class="aiui-card">
+            <div class="aiui-card-header aiui-">
+                圆角按钮
+            </div>
+            <div class="aiui-card-body">
+                <button class="dui-button dui-button--large is-round" disabled id="info"><i class="aiui-icon aiui-icon-success"></i> 超大按钮</button>
+                <button class="dui-button is-disabled is-round" id="success">默认按钮</button>
+                <button class="dui-button dui-button--small is-round" id="error">小型按钮</button>
+                <button class="dui-button dui-button--mini is-round" id="warning">迷你按钮</button>
+            </div>
+        </div>
+    </div>
+    <div class="aiui-col-xs6" style="padding:7.5px;">
+        <div class="aiui-card">
+            <div class="aiui-card-header aiui-">
+                朴素按钮
+            </div>
+            <div class="aiui-card-body">
+                <button class="dui-button dui-button--default is-plain">默认</button>
+                <button class="dui-button dui-button--primary is-plain">主要</button>
+                <button class="dui-button dui-button--success is-plain">正确</button>
+                <button class="dui-button dui-button--warning is-plain">警告</button>
+                <button class="dui-button dui-button--danger is-plain">错误</button>
+            </div>
+        </div>
+    </div>
+    <div class="aiui-col-xs6" style="padding:7.5px;">
+        <div class="aiui-card">
+            <div class="aiui-card-header aiui-">
+                按钮组
+            </div>
+            <div class="aiui-card-body">
+                <div class="dui-button-group">
+                    <button class="dui-button dui-button--primary">默认</button>
+                    <button class="dui-button dui-button--primary">主要</button>
+                    <button class="dui-button dui-button--primary">正确</button>
+                    <button class="dui-button dui-button--primary">警告</button>
+                    <button class="dui-button dui-button--primary">错误</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="aiui-col-xs6" style="padding:7.5px;">
+        <div class="aiui-card">
+            <div class="aiui-card-header aiui-">
+                图标圆角
+            </div>
+            <div class="aiui-card-body">
+                <button class="dui-button dui-button-default is-circle"><i class="aiui-icon aiui-icon-info"></i></button>
+                <button class="dui-button dui-button-primary is-circle"><i class="aiui-icon aiui-icon-info"></i></button>
+                <button class="dui-button dui-button-success is-circle"><i class="aiui-icon aiui-icon-success"></i></button>
+                <button class="dui-button dui-button-warning is-circle"><i class="aiui-icon aiui-icon-warning"></i></button>
+                <button class="dui-button dui-button-error is-circle"><i class="aiui-icon aiui-icon-error"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+@@include('include/foot.html')
