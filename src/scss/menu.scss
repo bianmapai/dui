@@ -45,13 +45,13 @@
   padding-left: 0;
   background-color: $--menu-background-color;
   @include utils-clearfix;
-  &.#{$namespace}menu--horizontal {
+  &.#{$namespace}-menu--horizontal {
     border-bottom: solid 1px #e6e6e6;
   }
 
   @include m(horizontal) {
     border-right: none;
-    & > .#{$namespace}menu-item {
+    & > .#{$namespace}-menu-item {
       float: left;
       height: 60px;
       line-height: 60px;
@@ -69,25 +69,25 @@
         background-color: #fff;
       }
     }
-    & > .#{$namespace}submenu {
+    & > .#{$namespace}-submenu {
       float: left;
 
       &:focus,
       &:hover {
         outline: none;
-        .#{$namespace}submenu__title {
+        .#{$namespace}-submenu__title {
           color: $--color-text-primary;
         }
       }
 
       &.is-active {
-        .#{$namespace}submenu__title {
+        .#{$namespace}-submenu__title {
           border-bottom: 2px solid $--color-primary;
           color: $--color-text-primary;
         }
       }
 
-      & .#{$namespace}submenu__title {
+      & .#{$namespace}-submenu__title {
         height: 60px;
         line-height: 60px;
         border-bottom: 2px solid transparent;
@@ -97,16 +97,16 @@
           background-color: #fff;
         }
       }
-      & .#{$namespace}submenu__icon-arrow {
+      & .#{$namespace}-submenu__icon-arrow {
         position: static;
         vertical-align: middle;
         margin-left: 8px;
         margin-top: -3px;
       }
     }
-    & .#{$namespace}menu {
-      & .#{$namespace}menu-item,
-      & .#{$namespace}submenu__title {
+    & .#{$namespace}-menu {
+      & .#{$namespace}-menu-item,
+      & .#{$namespace}-submenu__title {
         background-color: $--color-white;
         float: none;
         height: 36px;
@@ -114,17 +114,17 @@
         padding: 0 10px;
         color: $--color-text-secondary;
       }
-      & .#{$namespace}menu-item.is-active,
-      & .#{$namespace}submenu.is-active > .#{$namespace}submenu__title {
+      & .#{$namespace}-menu-item.is-active,
+      & .#{$namespace}-submenu.is-active > .#{$namespace}-submenu__title {
         color: $--color-text-primary;
       }
     }
-    & .#{$namespace}menu-item:not(.is-disabled):hover,
-    & .#{$namespace}menu-item:not(.is-disabled):focus {
+    & .#{$namespace}-menu-item:not(.is-disabled):hover,
+    & .#{$namespace}-menu-item:not(.is-disabled):focus {
       outline: none;
       color: $--color-text-primary;
     }
-    & > .#{$namespace}menu-item.is-active {
+    & > .#{$namespace}-menu-item.is-active {
       border-bottom: 2px solid $--color-primary;
       color: $--color-text-primary;
     }
@@ -132,15 +132,15 @@
   @include m(collapse) {
     width: 64px;
 
-    > .#{$namespace}menu-item,
-    > .#{$namespace}submenu > .#{$namespace}submenu__title {
+    > .#{$namespace}-menu-item,
+    > .#{$namespace}-submenu > .#{$namespace}-submenu__title {
       [class^="el-icon-"] {
         margin: 0;
         vertical-align: middle;
         width: 24px;
         text-align: center;
       }
-      .#{$namespace}submenu__icon-arrow {
+      .#{$namespace}-submenu__icon-arrow {
         display: none;
       }
       span {
@@ -152,17 +152,17 @@
       }
     }
 
-    > .#{$namespace}menu-item.is-active i {
+    > .#{$namespace}-menu-item.is-active i {
       color: inherit;
     }
 
-    .#{$namespace}menu .#{$namespace}submenu {
+    .#{$namespace}-menu .#{$namespace}-submenu {
       min-width: 200px;
     }
 
-    .#{$namespace}submenu {
+    .#{$namespace}-submenu {
       position: relative;
-      & .#{$namespace}menu {
+      & .#{$namespace}-menu {
         position: absolute;
         margin-left: 5px;
         top: 0;
@@ -174,7 +174,7 @@
       }
 
       &.is-opened {
-        > .#{$namespace}submenu__title .#{$namespace}submenu__icon-arrow {
+        > .#{$namespace}-submenu__title .#{$namespace}-submenu__icon-arrow {
           transform: none;
         }
       }
@@ -227,10 +227,10 @@
       background-color: $--menu-item-hover-fill;
     }
   }
-  & .#{$namespace}menu {
+  & .#{$namespace}-menu {
     border: none;
   }
-  & .#{$namespace}menu-item {
+  & .#{$namespace}-menu-item {
     height: 50px;
     line-height: 50px;
     padding: 0 45px;
@@ -245,18 +245,18 @@
     font-size: 12px;
   }
   @include when(active) {
-    .#{$namespace}submenu__title {
+    .#{$namespace}-submenu__title {
       border-bottom-color: $--color-primary;
     }
   }
   @include when(opened) {
-    > .#{$namespace}submenu__title .#{$namespace}submenu__icon-arrow {
+    > .#{$namespace}-submenu__title .#{$namespace}-submenu__icon-arrow {
       transform: rotateZ(180deg);
     }
   }
   @include when(disabled) {
-    .#{$namespace}submenu__title,
-    .#{$namespace}menu-item {
+    .#{$namespace}-submenu__title,
+    .#{$namespace}-menu-item {
       opacity: 0.25;
       cursor: not-allowed;
       background: none !important;
@@ -283,7 +283,7 @@
   }
 }
 
-.horizontal-collapse-transition .#{$namespace}submenu__title .#{$namespace}submenu__icon-arrow {
+.horizontal-collapse-transition .#{$namespace}-submenu__title .#{$namespace}-submenu__icon-arrow {
   transition: .2s;
   opacity: 0;
 }

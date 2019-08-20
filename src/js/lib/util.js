@@ -31,8 +31,10 @@ export function setVnode(el){
 
         }
     };
-    each(attrs,function(key,item){
-        vnode.attrs[key] = item;
+    each(attrs,function(key,attr){
+        var attrName = attr.name;
+        var value = attr.nodeValue;
+        vnode.attrs[attrName] = value;
     })
     el.vnode = vnode;
     return vnode;
