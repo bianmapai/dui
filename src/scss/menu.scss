@@ -208,7 +208,7 @@
     vertical-align: middle;
   }
   @include when(active) {
-    color: $--color-primary;
+    color: $--menu-item-font-active-color;
     i {
       color: inherit;
     }
@@ -219,7 +219,9 @@
   list-style: none;
   margin: 0;
   padding-left: 0;
-
+  >.#{$namespace}-menu{
+    background: $--menu-fill!important
+  }
   @include e(title) {
     @include menu-item;
 

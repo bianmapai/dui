@@ -41,7 +41,7 @@
     </div>
   </div>
   <div class="dui-card__body demo-block demo-menu">
-    <ul dui-menubar class="dui-menu-vertical-demo dui-menu">
+    <ul dui-menubar class="dui-menu" openonly>
       <li role="menuitem" aria-haspopup="true" class="dui-submenu">
         <div class="dui-submenu__title" style="padding-left: 20px;"><i class="dui-icon-location"></i> <span>导航一</span><i
             class="dui-submenu__icon-arrow dui-icon-arrow-down"></i></div>
@@ -68,10 +68,36 @@
           </li>
         </ul>
       </li>
+      <li role="menuitem" aria-haspopup="true" class="dui-submenu">
+        <div class="dui-submenu__title" style="padding-left: 20px;"><i class="dui-icon-location"></i> <span>导航二</span><i
+            class="dui-submenu__icon-arrow dui-icon-arrow-down"></i></div>
+        <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+          <li class="dui-menu-item-group">
+            <div class="dui-menu-item-group__title" style="padding-left: 40px;">分组一</div>
+            <ul>
+              <li  class="dui-menu-item" style="padding-left: 40px;">选项1</li>
+              <li  class="dui-menu-item" style="padding-left: 40px;">选项2</li>
+            </ul>
+          </li>
+          <li class="dui-menu-item-group">
+            <div class="dui-menu-item-group__title" style="padding-left: 40px;">分组2</div>
+            <ul>
+              <li  class="dui-menu-item" style="padding-left: 40px;">选项3</li>
+            </ul>
+          </li>
+          <li role="menuitem" aria-haspopup="true" class="dui-submenu">
+            <div class="dui-submenu__title" style="padding-left: 40px;">选项4<i
+                class="dui-submenu__icon-arrow dui-icon-arrow-down"></i></div>
+            <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+              <li  class="dui-menu-item" style="padding-left: 60px;">选项1</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
       <li  class="dui-menu-item is-active" style="padding-left: 20px;"><i
-          class="dui-icon-menu"></i> <span>导航二</span></li>
+          class="dui-icon-menu"></i> <span>导航三</span></li>
       <li  class="dui-menu-item is-disabled" style="padding-left: 20px;"><i
-          class="dui-icon-document"></i> <span>导航三</span></li>
+          class="dui-icon-document"></i> <span>导航四</span></li>
       <li  class="dui-menu-item" style="padding-left: 20px;"><i class="dui-icon-setting"></i>
         <span>导航四</span></li>
     </ul>

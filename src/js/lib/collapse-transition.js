@@ -1,9 +1,10 @@
 import transition from "./transition";
 import { addClass, removeClass } from "./dom";
+import { extend } from "./loadjs";
 export function collapseTransition(el,option){
-    option = option || {
+    option = extend(true,{
         show:false
-    };
+    },option);
     return transition(el,{
         name:'collapse',
         beforeEnter:function(el){
@@ -58,6 +59,7 @@ export function collapseTransition(el,option){
             el.style.overflow = el.dataset.oldOverflow;
             el.style.paddingTop = el.dataset.oldPaddingTop;
             el.style.paddingBottom = el.dataset.oldPaddingBottom;
+            option.afterLeave && option.afterLeave(el);
         },
         show: option.show
     })

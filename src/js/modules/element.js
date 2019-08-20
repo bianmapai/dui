@@ -56,10 +56,12 @@ dui.define(['jquery'],function(){
                     $title[0].show = function(){
                         $title[0].transition.show();
                         $title[0].isOpen = true;
+                        $title.parent().addClass('is-opened');
                     };
                     $title[0].hide = function(){
                         $title[0].transition.hide();
                         $title[0].isOpen = false;
+                        $title.parent().removeClass('is-opened');
                     };
                     var titleClick = function(e){
                         e.stopPropagation();
