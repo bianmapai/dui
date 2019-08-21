@@ -148,16 +148,16 @@ Class.prototype = Class.fn =  {
         var data = that.data = elem.vnode.data.transition;
         //设置状态
         that.status = data.show === true ? 'show' : 'hide';
-        //显示或者隐藏监听
-        dui.watch(data,'show',function(pop,action,newData){
-            if(newData===true){
+        Object.defineProperty(data,'show',function(newVal,oldVal){
+            console.log('进来了');
+            if(newVal===true){
                 that.status = 'show';
                 enter(elem.vnode);
             }else{
                 that.status = 'hide';
                 leave(elem.vnode);
             }
-        },1,true);
+        })
         //如果默认为不显示
         if(data.show===false){
             dui.setStyle(elem,'display','none');

@@ -1,5 +1,4 @@
 import "./lib/nextFrame";//浏览器兼容下一帧
-import WatchJS from './lib/watch';
 import { dui,Dui } from "./lib/loadjs";
 import { trim,on,off, once, hasClass, getStyle, setStyle, getScrollWidth, addClass, removeClass } from "./lib/dom";
 import transition from "./lib/transition";
@@ -15,11 +14,6 @@ Dui.prototype.removeClass = removeClass;
 Dui.prototype.getStyle = getStyle;
 Dui.prototype.setStyle = setStyle;
 Dui.prototype.getScrollWidth = getScrollWidth;
-Dui.prototype.watch = WatchJS.watch;
-Dui.prototype.unwatch = WatchJS.unwatch;
-Dui.prototype.callWatchers = WatchJS.callWatchers;
-Dui.prototype.suspend = WatchJS.suspend;
-Dui.prototype.onChange = WatchJS.trackChange;
 Dui.prototype.transition = transition;
 Dui.prototype.collapseTransition = collapseTransition;
 Dui.prototype.setVnode = setVnode;
