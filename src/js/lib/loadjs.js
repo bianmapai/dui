@@ -168,7 +168,7 @@ Dui.prototype.config = function(options){
  * 获取参数的类型
  * @param {Object} obj 
  */
-function type(obj) {
+export function type(obj) {
     if (obj == null) {
         return obj + "";
     }
@@ -198,7 +198,7 @@ function isArrayLike( obj ) {
  * 检查是否是纯对象
  * @param {Object} obj 
  */
-function isPlainObject(obj){
+export function isPlainObject(obj){
     var key;
 
     // Must be an Object.

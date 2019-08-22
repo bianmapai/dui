@@ -2,6 +2,8 @@ import { dui } from "./loadjs";
 import { once, setVnode, setData } from "./util";
 import { nextFrame } from "./nextFrame";
 import { addClass, removeClass, setStyle } from "./dom";
+import watcher from "./watcher";
+// import { watchJs } from "./watch";
 function Class(elem,options){
     this.init(elem,options);
     return this;
@@ -148,14 +150,18 @@ Class.prototype = Class.fn =  {
         var data = that.data = elem.vnode.data.transition;
         //设置状态
         that.status = data.show === true ? 'show' : 'hide';
-        Object.defineProperty(data,'show',function(newVal,oldVal){
-            console.log('进来了');
-            if(newVal===true){
-                that.status = 'show';
-                enter(elem.vnode);
-            }else{
-                that.status = 'hide';
-                leave(elem.vnode);
+        that.watcher = watcher({
+            data:data,
+            watch:{
+                show:function(newVal,oldVal){
+                    if(newVal===true){
+                        that.status = 'show';
+                        enter(elem.vnode);
+                    }else{
+                        that.status = 'hide';
+                        leave(elem.vnode);
+                    }
+                }
             }
         })
         //如果默认为不显示
@@ -165,10 +171,10 @@ Class.prototype = Class.fn =  {
         return that;
     },
     show:function(){
-        this.data.show = true;
+        this.watcher.$data.show = true;
     },
     hide:function(){
-        this.data.show = false;
+        this.watcher.$data.show = false;
     }
 }
 var transition = function(elem,options){

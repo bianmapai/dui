@@ -3,6 +3,24 @@
 
 </div>
 <script>
- 
+var data = {
+    a:1,
+    b:2,
+    c:3,
+    d:{
+        e:1,
+        f:2
+    }
+}
+var vm = dui.watcher({
+    data:data,
+    watch:{
+        'd.e':function(newValue,oldVal){
+            console.log('深度解析进来了');
+        }
+    },
+    deep:true
+})
+data.d.e = 2;
 </script>
 @@include('include/foot.html')

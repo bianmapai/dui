@@ -2,6 +2,7 @@ import "./lib/nextFrame";//浏览器兼容下一帧
 import { dui,Dui } from "./lib/loadjs";
 import { trim,on,off, once, hasClass, getStyle, setStyle, getScrollWidth, addClass, removeClass } from "./lib/dom";
 import transition from "./lib/transition";
+import watcher from "./lib/watcher";
 import { setVnode, setData } from "./lib/util";
 import { collapseTransition } from "./lib/collapse-transition";
 Dui.prototype.on = on;
@@ -17,5 +18,6 @@ Dui.prototype.getScrollWidth = getScrollWidth;
 Dui.prototype.transition = transition;
 Dui.prototype.collapseTransition = collapseTransition;
 Dui.prototype.setVnode = setVnode;
+Dui.prototype.watcher = watcher;
 Dui.prototype.setData = setData;
 export default dui;
