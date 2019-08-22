@@ -5,7 +5,7 @@ import { each, extend } from "./loadjs";
  * @returns {function} fn 返回只执行一次的函数
  */
 export function once (fn){
-    let called = false
+    var called = false;
     return function () {
       if (!called) {
         called = true

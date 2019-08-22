@@ -63,7 +63,7 @@ export function once(el, event, fn) {
         fn.apply(this, arguments);
       }
       off(el, event, listener);
-    };
+    }
     on(el, event, listener);
 };
 /**
@@ -130,7 +130,7 @@ export function removeClass(el, cls) {
  * @param {String} styleName 要获取的属性名
  * @returns {String} 返回该style的值
  */
-export const getStyle = ieVersion < 9 ? function (element, styleName) {
+export var getStyle = ieVersion < 9 ? function (element, styleName) {
     if (!element || !styleName) return null;
     styleName = camelCase(styleName);
     if (styleName === 'float') {

@@ -33,8 +33,8 @@ export function enter(vnode){
     // 4个生命周期钩子函数
     var beforeEnterHook = data.beforeEnter;
     var enterHook = data.enter;
-    const afterEnterHook = data.afterEnter;
-    const enterCancelledHook = data.enterCancelled;
+    var afterEnterHook = data.afterEnter;
+    var enterCancelledHook = data.enterCancelled;
     var cb = el._enterCb = once(function(){
         removeClass(el, toClass)
         removeClass(el, activeClass)
@@ -92,8 +92,8 @@ export function leave(vnode){
     // 4个生命周期钩子函数
     var beforeLeaveHook = data.beforeLeave;
     var leaveHook = data.leave;
-    const afterLeaveHook = data.afterLeave;
-    const leaveCancelledHook = data.leaveCancelled;
+    var afterLeaveHook = data.afterLeave;
+    var leaveCancelledHook = data.leaveCancelled;
     var cb = el._leaveCb = once(function(){
         removeClass(el, toClass)
         removeClass(el, activeClass)
