@@ -1,3 +1,4 @@
+@import "mixins/config.scss";
 @import "mixins/mixins";
 @import "mixins/utils";
 @import "common/var";
@@ -21,7 +22,7 @@
   }
 
   i {
-    color: $--color-text-secondary;
+    color: $--menu-item-font-color;
   }
 
   &:hover,
@@ -134,7 +135,7 @@
 
     > .#{$namespace}-menu-item,
     > .#{$namespace}-submenu > .#{$namespace}-submenu__title {
-      [class^="el-icon-"] {
+      [class^="#{$namespace}-icon-"] {
         margin: 0;
         vertical-align: middle;
         width: 24px;
@@ -200,11 +201,11 @@
 @include b(menu-item) {
   @include menu-item;
 
-  & [class^="el-icon-"] {
+  & [class^="#{$namespace}-icon-"] {
     margin-right: 5px;
     width: 24px;
     text-align: center;
-    font-size: 18px;
+    font-size: 14px;
     vertical-align: middle;
   }
   @include when(active) {
@@ -244,7 +245,7 @@
     right: 20px;
     margin-top: -7px;
     transition: transform .3s;
-    font-size: 12px;
+    font-size: 14px;
   }
   @include when(active) {
     .#{$namespace}-submenu__title {
@@ -264,12 +265,12 @@
       background: none !important;
     }
   }
-  [class^="el-icon-"] {
+  [class^="#{$namespace}-icon-"] {
     vertical-align: middle;
     margin-right: 5px;
     width: 24px;
     text-align: center;
-    font-size: 18px;
+    font-size: 14px;
   }
 }
 

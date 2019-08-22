@@ -1,35 +1,36 @@
 dui.define(['jquery'],function(){
-    var element = function(type,elem){
-        return new element.fn[type](elem);
+    var element = function(type,el,options){
+        return  new element.Items[type](el,options);
     },
-    Selector={
+    Selector = {
+        //navMenu
         navMenus:"[dui-menubar]",
         menus:".dui-menu",
         submenus:".dui-submenu",
         submenusTitles:".dui-submenu__title",
         jump:'.dui-menu-item',
-        
+        //dropDown
+        dropDown:"[dui-dropdown]",
+        dropDownToggle:".dui-dropdown-toggle",
+        dropDownMenu:".dui-dropdown-menu",
     },
     className={
         isOpen:'is-open',
         isActive:'is-active',
     };
-    element.prototype = element.fn = {
-        NavMenu:function(elem){
+    element.Items = element.prototype = {
+        navMenu:function(el,options){
             var that = this;
-            that.elem = elem;
-            dui.setVnode(elem);
-            dui.setData(elem,'NavMenu',{
-                openonly:(typeof $(elem).attr('openonly')==="undefined"?false:true),//是否只打开一个
-            },{});
+            that.elem = el;
+            dui.setVnode(el,options);
+            dui.setData(el,'navMenu',{},options);
             var submenus = $(that.elem).children(Selector.submenus),
             $jump = $(that.elem).find(Selector.jump),
             itemClick = function(e){
                 $(that.elem).find(Selector.jump).removeClass(className.isActive);
                 $(this).addClass(className.isActive);
             }
-            
-            data = elem.vnode.data.NavMenu;
+            data = el.vnode.data.navMenu;
             /**
              * 递归初始化元素的方法
              * @param {Array} list 要初始化的集合
@@ -52,7 +53,9 @@ dui.define(['jquery'],function(){
                         }
                     }();//判断是否显示下级菜单
                     $title[0].isOpen = open;
-                    $title[0].transition = dui.collapseTransition(nextMenu[0])
+                    $title[0].transition = dui.collapseTransition(nextMenu[0],{
+                        show:show
+                    })
                     $title[0].show = function(){
                         $title[0].transition.show();
                         $title[0].isOpen = true;
@@ -91,28 +94,57 @@ dui.define(['jquery'],function(){
             menuRender(submenus,1,data.openonly);
             //设置高亮事件
             $jump.off('click',itemClick).on('click',itemClick);
-            return that;
+            
+        },
+        dropDown:function(el,options){
+            var that = this;that.options = $.extend(true,{},options);
+            dui.setData(el,'dropDown',{},{});
+            var data = el.vnode.data.dropDown;
+            var x = {top:'bottom','bottom':'top'};
+            var ref = $(el).find(Selector.dropDownToggle);
+            var pop = $(el).find(Selector.dropDownMenu);
+            that.popper = dui.popper(ref[0],pop[0])
+            that.popper.onCreate(function(data){
+                that.transition = dui.transition(pop[0],{
+                    name:'dui-zoom-in-'+x[data._options.placement]
+                });
+            })
+            that.popper.onUpdate(function(data){
+                pop[0].vnode.data.transition.name = 'dui-zoom-in-'+x[data.placement];
+            })
+            ref.on('click',function(e){
+                if(pop.css('display')=='none'){
+                    that.transition.show();
+                }else{
+                    that.transition.hide();
+                }
+            })
         }
+        
     }
     element.render = function(type,filter){
         var filter = function(){
             return filter ? ('[dui-filter="' + filter +'"]') : '';
         }(),
         Items = {
-            NavMenu:function(){
-                var menus = $(Selector.navMenus+filter);
-                menus.each(function(i,menu){
-                    menu.MenuObj = element('NavMenu',menu);
+            navMenu:function(){
+                $(Selector.navMenus+filter).each(function(i,el){
+                    element('navMenu',el,{
+                        openonly:(typeof $(el).attr('openonly')==="undefined"?false:true)
+                    });
+                })
+            },
+            dropDown:function(){
+                $(Selector.dropDown+filter).each(function(i,el){
+                    element('dropDown',el,{
+                        
+                    });
                 })
             }
         }
-        if(type){
-            Items[type] ? Items[type]() : dui.error('不支持'+type+'元素渲染');
-        }else{
-            Object.keys(Items).forEach(function(key){
-                Items[key]();
-            })
-        }
+        Items[type] ? Items[type]() : dui.each(Items,function(key,fn){
+            fn();
+        })
     }
     element.render();
     return element;

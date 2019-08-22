@@ -1,5 +1,4 @@
 import { each, extend } from "./loadjs";
-
 /**
  * 设置某个函数只执行一次
  * @param {function} fn 只使用一次的函数
@@ -21,23 +20,27 @@ export function once (fn){
  * @param {Object} Prop 参数属性
  */
 export function setVnode(el){
-    var attrs = el.attributes,
-    vnode = {
-        elm:el,
-        data:{
+    if(!el.vnode){
+        var attrs = el.attributes,
+        vnode = {
+            elm:el,
+            data:{
 
-        },
-        attrs:{
+            },
+            event:{
 
-        }
-    };
-    each(attrs,function(key,attr){
-        var attrName = attr.name;
-        var value = attr.nodeValue;
-        vnode.attrs[attrName] = value;
-    })
-    el.vnode = vnode;
-    return vnode;
+            },
+            attrs:{
+
+            }
+        };
+        each(attrs,function(key,attr){
+            var attrName = attr.name;
+            var value = attr.nodeValue;
+            vnode.attrs[attrName] = value;
+        })
+        el.vnode = vnode;
+    }
 }
 /**
  * 给元素设置dui识别数据
@@ -48,7 +51,32 @@ export function setVnode(el){
  */
 export function setData(el,name,defaultProp,option){
     if(!el.vnode){
-        dui.error('您还没给元素设置Vnode');
+        setVnode(el);
     }
     el.vnode.data[name] = extend(true,defaultProp,option);
+}
+/**
+ * 给网页元素设置方法//统一委托
+ * @param {Element} el 要给那个设置回调方法
+ * @param {String} name 要给那个组件设置
+ * @param {function} fn 回调函数
+ */
+export function bind(el,name,fn){
+    if(!el.vnode){
+        setVnode(el);
+    }
+    el.vnode.event[name] = fn;
+}
+
+/**
+ * 给网页元素取消方法//统一委托
+ * @param {Element} el 要给那个设置回调方法
+ * @param {String} name 要给那个组件设置
+ * @param {function} fn 回调函数
+ */
+export function unbind(el,name,fn){
+    if(!el.vnode){
+        return;
+    }
+    delete el.vnode.event[name];
 }

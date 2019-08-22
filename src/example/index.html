@@ -1,26 +1,17 @@
 @@include('include/head.html')
-<div id="demo" style="width: 100px;height:100px;background:#dddddd">
-
+<div dui-dropDown class="dui-dropdown" style="position: relative;margin-top:500px;">
+    <span class="diu-dropdown-link dui-dropdown-toggle">
+        下拉
+        <i class="dui-dropdown-icon dui-icon-angle-down"></i>
+    </span>
+    <ul class="dui-dropdown-menu dui-popper" style="display: none">
+        <li class="dui-dropdown-menu__item">测试1</li>
+        <li class="dui-dropdown-menu__item">测试2</li>
+        <li class="dui-dropdown-menu__item">测试3</li>
+        <div x-arrow="" class="popper__arrow"></div>
+    </ul>
 </div>
 <script>
-var data = {
-    a:1,
-    b:2,
-    c:3,
-    d:{
-        e:1,
-        f:2
-    }
-}
-var vm = dui.watcher({
-    data:data,
-    watch:{
-        'd.e':function(newValue,oldVal){
-            console.log('深度解析进来了');
-        }
-    },
-    deep:true
-})
-data.d.e = 2;
+
 </script>
 @@include('include/foot.html')
