@@ -90,8 +90,10 @@ gulp.task("build",gulp.series("clear",gulp.parallel('JavaScript', 'sass','font',
 gulp.task("serve",gulp.series("build", ()=>{
     browserSync({
         server: {//开启一个静态文件服务器，默认：3000端口
-            baseDir: "./dist"
+            baseDir: "./dist",
+            index:"example/index.html"
         },
+        ui: false
     }, function(err, bs) {
         console.log(bs.options.getIn(["urls", "local"]));
     });
