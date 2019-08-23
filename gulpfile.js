@@ -1,126 +1,107 @@
-var path = require('path');
-var gulp = require('gulp')
-var sass = require('gulp-sass')//sass解析插件
-var rename = require("gulp-rename");//重命名插件
-var cleanCSS = require('gulp-clean-css');//css压缩插件
-var autoprefixer = require('gulp-autoprefixer');//css兼容浏览器插件
-var runSequence = require('run-sequence');//同步执行插件
-var connect = require("gulp-connect");//小型服务器
-var del = require("del");//删除插件
-var fileinclude  = require('gulp-file-include');//公共头部底部插件
-var uglify=require('gulp-uglify');
-var gutil = require('gulp-util');
-var babel = require('rollup-plugin-babel');
-var sourcemaps = require('gulp-sourcemaps')
-var rollup = require('gulp-better-rollup');
+const gulp = require("gulp");//gulp打包工具
+const rollup = require("gulp-better-rollup");//rollup的gulp插件
+const babel = require("rollup-plugin-babel");//rollup的es6转es5插件
+const resolve = require("rollup-plugin-node-resolve");//获取资源插件
+const commonjs = require("rollup-plugin-commonjs");//commonJs支持插件
+const uglify = require("gulp-uglify");//gulp的压缩插件
+const sourcemaps = require("gulp-sourcemaps");//源码对照插件
+const rename = require("gulp-rename");//重新命名插件
+const del = require("del");//删除插件
+const sass = require("gulp-sass");//sass编译
+const autoprefixer = require('gulp-autoprefixer');//css兼容浏览器插件
+const cleanCSS = require('gulp-clean-css');//css压缩插件
+const fileinclude = require("gulp-file-include");//公共文件头部底部
+const browserSync = require("browser-sync");//服务器
+const reload      = browserSync.reload;//手动刷新
+//dui框架构建方法
+gulp.task("JavaScript", () => {
+    //模块的构建方法
+    gulp.src("src/js/modules/*.js")
+        // .pipe(uglify())
+        .pipe(gulp.dest('dist/js/modules'))
 
-//sass处理任务
-gulp.task('sass', function () {
-	return gulp.src(['./src/scss/*.scss'])   //这是需要转化的sass文件
+    //dui的构建方法
+    return gulp.src("src/js/dui.js")
+        // .pipe(sourcemaps.init())
+        .pipe(rollup({
+            plugins: [
+                resolve(),
+                commonjs(),
+                babel({
+                    runtimeHelpers: true
+                })
+            ]
+        }, {
+            format: 'umd',//打包方式
+            name: 'dui',//包名称
+            sourcemap: false//是否有sourcemarp
+        }))
+        .pipe(uglify())
+        .pipe(rename({suffix: '.min'}))
+        // .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest("dist/js"))
+        .pipe(reload({stream: true}));
+})
+//sass文件编译
+gulp.task("sass",()=>{
+    return gulp.src(['./src/scss/*.scss'])   //这是需要转化的sass文件
 		.pipe(sass())
 		.pipe(autoprefixer({
-			browsers:['last 4 version'],
-			cascade:false
+            overrideBrowserslist: [
+                "Android 4.1",
+                "iOS 7.1",
+                "Chrome > 31",
+                "ff > 31",
+                "ie >= 8"
+            ],
+            grid: true   
         }))
 		.pipe(rename({suffix: '.min'}))
 		.pipe(cleanCSS({compatibility: 'ie8'}))
-		.pipe(gulp.dest('dist/css')) //这是转化后css的文件
+        .pipe(gulp.dest('dist/css')) //这是转化后css的文件
+        .pipe(reload({stream: true}));
 })
-//字体图标处理
-gulp.task('copyfont',function(){
-	return gulp.src(['./src/font/*'])
+//font文件copy
+gulp.task("font",()=>{
+    return gulp.src(['./src/font/*'])
 		.pipe(rename({}))
-		.pipe(gulp.dest('dist/font'))
+        .pipe(gulp.dest('dist/font'))
+        .pipe(reload({stream: true}));
 })
-//图片处理
-gulp.task('copyimg',function(){
-	return gulp.src(['./src/img/*'])
-		.pipe(rename({}))
-		.pipe(gulp.dest('dist/img'))
-})
-//json处理
-gulp.task('copyjson',function(){
-	return gulp.src(['./src/json/*'])
-		.pipe(rename({}))
-		.pipe(gulp.dest('./dist/data'))
-})
-//html处理
-gulp.task('copy-html',function(cb){
-	return gulp.src(['./src/example/*.html','./src/example/*/*.html','!./src/example/include/*.html'])
+//example例子处理
+gulp.task('example',function(cb){
+	return gulp.src(['./src/example/*.html','!./src/example/include/*.html'])
 		.pipe(fileinclude({
 			prefix: '@@',
           	basepath: '@file'
 		}))
-		.pipe(gulp.dest('./dist/example'))
+        .pipe(gulp.dest('./dist/example'))
+        .pipe(reload({stream: true}));
 })
-
-
-//清理dist目录和html目录
-gulp.task('build-clean',function(cb){
-	return del(['./dist','./example'],cb)
+//清空所有文件方法
+gulp.task("clear",async()=>{
+    await del([
+        "./dist"
+    ]);
 })
-
-//build方法
-gulp.task('build', function(cb) {
-	runSequence('build-clean',
-				['sass', 'copyfont','copyimg','copyjson','js'],'copy-html',
-				cb);
-});
-
-//sever服务器
-gulp.task('server',function(){
-	connect.server({
-		root: "./dist/",
-		livereload: true,
-		host:'0.0.0.0',
-		port: 8030
-	})
+//构建方法
+gulp.task("build",gulp.series("clear",gulp.parallel('JavaScript', 'sass','font','example')))
+//服务器
+gulp.task("serve",gulp.series("build", ()=>{
+    browserSync({
+        server: {//开启一个静态文件服务器，默认：3000端口
+            baseDir: "./dist"
+        },
+    }, function(err, bs) {
+        console.log(bs.options.getIn(["urls", "local"]));
+    });
+}))
+//监听文件变化
+gulp.task("watch",async()=>{
+    //js监听
+    gulp.watch(["./src/js/*.js","./src/js/**/*.js"],gulp.series("JavaScript"));
+    gulp.watch(['./src/example/*.html','!./src/example/include/*.html'],gulp.series("example"));
+    gulp.watch(['./src/scss/*.scss'],gulp.series("sass"));
 })
-//js相关操作
-gulp.task("js",function(){
-	//模块构建
-	gulp.src('./src/js/modules/*.js')
-	// .pipe(uglify())
-	.on('error', function (err) {
-		gutil.log(gutil.colors.red('[Error]'), err.toString());
-	})
-	.pipe(gulp.dest('dist/js/modules'));
-
-	//dui构建
-	gulp.src('./src/js/dui.js')
-    .pipe(sourcemaps.init())
-    .pipe(rollup({
-      // There is no `input` option as rollup integrates into the gulp pipeline
-      plugins: [babel()]
-    }, {
-      // Rollups `sourcemap` option is unsupported. Use `gulp-sourcemaps` plugin instead
-	  format: 'umd',
-	  name: 'dui',
-      sourcemap: false
-    }))
-    // inlining the sourcemap into the exported .js file
-	// .pipe(sourcemaps.write('../maps'))
-	// .pipe(uglify())
-	.on('error', function (err) {
-		gutil.log(gutil.colors.red('[Error]'), err.toString());
-	})
-	.pipe(rename({suffix: '.min'}))
-	.pipe(gulp.dest('dist/js'))
-
-})
-
-//添加监视任务
-gulp.task('watch',function(){
-	gulp.watch(["./src/js/*.js","./src/js/**/*.js",'./src/js/'],['js',"reload"])
-	gulp.watch(["./src/json/*.json","./src/json/**/*.json",'./src/json/'],['coyjson',"reload"])
-	gulp.watch(["./src/example/*.html",'src/example/**/*.html','./example/**/*.html'], ["copy-html","reload"]);
-	gulp.watch(["./src/scss/*.scss"], ["sass","reload"]);
-	gulp.watch(["./dist/**/*.*","./dist/**/**/*.*","./example/*.html",'./example/**/*.html'], ["reload"]);
-})
-//刷新服务器
-gulp.task('reload',function(){
-	gulp.src(["./dist/example/*.html",'./dist/example/**/*.html'])
-		.pipe(connect.reload());
-})
-//开发者预览
-gulp.task('dev',['server','watch'],function(){})
+//开发模式
+gulp.task("dev",gulp.series("watch","serve"));
