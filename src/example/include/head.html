@@ -12,10 +12,36 @@
 <body>
 <div id="dui-app" class="dui-layout dui-layout-admin">
     <div class="dui-header">
-        <ul class="dui-menu dui-menu--horizontal">
-            <li class="dui-menu-item is-active">处理中心</li>
-            <li class="dui-menu-item">处理中心</li>
-            <li class="dui-menu-item">处理中心</li>
+        <ul class="dui-menu dui-menu--horizontal dui-header-left">
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu iconfont-icon-shrink-right"></i>
+            </li>
+            <li class="dui-menu-item">首页</li>
+            <li class="dui-menu-item">系统</li>
+            <li class="dui-menu-item">用户</li>
+        </ul>
+        <ul class="dui-menu dui-menu--horizontal dui-header-right">
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu iconfont-icon-earth"></i>
+            </li>
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu iconfont-icon-screen-full"></i>
+            </li>
+            <li class="dui-menu-item dui-dropdown" dui-dropDown>
+                <span class="diu-dropdown-link dui-dropdown-toggle">
+                    <img >
+                    <span>admin</span>
+                    <i class="dui-icon-dropdown-arrow iconfont-icon-dropdown-arrow"></i>
+                </span>
+                <ul class="dui-dropdown-menu dui-popper" style="display: none">
+                    <li class="dui-dropdown-menu__item">修改密码</li>
+                    <li class="dui-dropdown-menu__item">退出</li>
+                    <div x-arrow="" class="popper__arrow"></div>
+                </ul>
+            </li>
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu iconfont-icon-more-vertical"></i>
+            </li>
         </ul>
     </div>
     <div class="dui-aside">
@@ -31,13 +57,17 @@
                         <i class="dui-submenu__icon-arrow dui-icon-angle-down"></i>
                     </div>
                     <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>主页1</span>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="index.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>主页1</span>
+                            </a>
                         </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>主页2</span>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="index1.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>主页2</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
@@ -48,17 +78,17 @@
                         <i class="dui-submenu__icon-arrow dui-icon-angle-down"></i>
                     </div>
                     <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>图标</span>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="icon.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>图标</span>
+                            </a>
                         </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>按钮</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>文字链接</span>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="button.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>按钮</span>
+                            </a>
                         </li>
                     </ul>
                 </li>

@@ -16,13 +16,10 @@
   transition: border-color .3s, background-color .3s, color .3s;
   box-sizing: border-box;
   white-space: nowrap;
-
+  display: block;
+  text-decoration: none;
   * {
     vertical-align: middle;
-  }
-
-  i {
-    color: $--menu-item-font-color;
   }
 
   &:hover,
@@ -52,6 +49,7 @@
 
   @include m(horizontal) {
     border-right: none;
+    background: none;
     & > .#{$namespace}-menu-item {
       float: left;
       height: 60px;
@@ -126,7 +124,6 @@
       color: $--color-text-primary;
     }
     & > .#{$namespace}-menu-item.is-active {
-      border-bottom: 2px solid $--color-primary;
       color: $--color-text-primary;
     }
   }

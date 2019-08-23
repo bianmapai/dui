@@ -2,6 +2,34 @@
 @import "./common/var.scss";
 @import "mixins/mixins";
 @import "mixins/utils";
+@font-face {
+    font-family: 'iconfont';  /* project id 1367779 */
+    src: url('//at.alicdn.com/t/font_1367779_zq2crhba87r.eot');
+    src: url('//at.alicdn.com/t/font_1367779_zq2crhba87r.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_1367779_zq2crhba87r.woff2') format('woff2'),
+    url('//at.alicdn.com/t/font_1367779_zq2crhba87r.woff') format('woff'),
+    url('//at.alicdn.com/t/font_1367779_zq2crhba87r.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_1367779_zq2crhba87r.svg#iconfont') format('svg');
+}
+[class^="iconfont-icon-"], [class*=" iconfont-icon-"] {
+    font-family: 'iconfont' !important;
+}
+.iconfont-icon-shrink-right:before{
+    content: "\e644"
+}
+.iconfont-icon-more-vertical:before{
+    content: "\e63e"
+}
+.iconfont-icon-dropdown-arrow:before{
+    content: "\e610"
+}
+.iconfont-icon-screen-full:before{
+    content: "\e655"
+}
+.iconfont-icon-earth:before{
+    content: "\e607"
+}
+
 //后台布局
 //通用
 body{
@@ -21,6 +49,40 @@ body{
     z-index: 1030;
     box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
     height:$--admin-header-height;
+    & .#{$namespace}-header-left{
+        left: 0;
+        top: 0;
+        padding-left:10px; 
+        position: absolute!important;
+        margin-right: auto!important;
+        border: none !important;
+    }
+    & .#{$namespace}-header-right{
+        right: 0;
+        top: 0;
+        position: absolute!important;
+        border: none !important;
+        & .#{$namespace}-icon-dropdown-arrow{
+            position: absolute;
+            top: 20px;
+            margin-left: 5px;
+            margin-right: 0px;
+        }
+    }
+    & .#{$namespace}-menu-item{
+        height: 50px;
+        line-height: 50px;
+        border-bottom:none;
+        padding: 0  15px;
+        & [class^="dui-icon-"], [class*=" dui-icon-"]{
+            vertical-align: initial;
+            width: auto;
+            font-size: 12px;
+        }
+        & *{
+            vertical-align: initial;
+        }
+    }
 }
 @include b(aside){
     position: fixed;
@@ -45,6 +107,10 @@ body{
                 width: 64px;
             }
         }
+        & .#{$namespace}-submenu__title{
+            height: 50px;
+            line-height: 50px;
+        }
     }
 }
 
@@ -59,6 +125,22 @@ body{
     overflow: hidden;
     overflow-y: auto;
     box-sizing: border-box;
+    background-color: #f1f4f5;
+    & .#{$namespace}-breadcrumb{
+        height: 50px;
+        line-height:50px;
+        background:#fff;
+        padding:0 15px;
+        background-color: #fff;
+        box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+        .#{$namespace}-breadcrumb__item:last-child .#{$namespace}-breadcrumb__separator {
+            display: none;
+        }
+    }
+}
+
+@include b(body){
+    padding: 15px;
 }
 
 @include b(logo){

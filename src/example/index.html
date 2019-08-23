@@ -1,25 +1,39 @@
 @@include('include/head.html')
-<div dui-dropDown class="dui-dropdown" style="position: relative;margin-top:300px;">
-    <span class="diu-dropdown-link dui-dropdown-toggle">
-        下拉
-        <i class="dui-dropdown-icon dui-icon-angle-down"></i>
+<div class="dui-breadcrumb">
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner"><a href="/">首页</a></span>
+        <span class="dui-breadcrumb__separator">/</span>
     </span>
-    <ul class="dui-dropdown-menu dui-popper" style="display: none">
-        <li class="dui-dropdown-menu__item">测试1</li>
-        <li class="dui-dropdown-menu__item">测试2</li>
-        <li class="dui-dropdown-menu__item">测试3</li>
-        <div x-arrow="" class="popper__arrow"></div>
-    </ul>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">主页</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">主页1</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
 </div>
-<div style="width:300px;height:300px;background:red">
-测试
+<div class="dui-body">
+    <div class="dui-card box-card is-never-shadow">
+        <div class="dui-card__header">
+            <div class="clearfix">
+                <span>主页</span>
+            </div>
+        </div>
+        <div class="dui-card__body">
+            <div class="text item">
+                列表内容 1
+            </div>
+            <div class="text item">
+                列表内容 2
+            </div>
+            <div class="text item">
+                列表内容 3
+            </div>
+            <div class="text item">
+                列表内容 4
+            </div>
+        </div>
+    </div>
 </div>
-<div style="width:300px;height:300px;background:red">
-    测试
-</div>
-<div style="width:300px;height:300px;background:red">
-测试1
-</div>
-<script>
-</script>
 @@include('include/foot.html')
