@@ -91,7 +91,7 @@ gulp.task("serve",gulp.series("build", ()=>{
     browserSync({
         server: {//开启一个静态文件服务器，默认：3000端口
             baseDir: "./dist",
-            index:"example/index.html"
+            // index:"example/index.html"
         },
         ui: false
     }, function(err, bs) {
@@ -102,7 +102,7 @@ gulp.task("serve",gulp.series("build", ()=>{
 gulp.task("watch",async()=>{
     //js监听
     gulp.watch(["./src/js/*.js","./src/js/**/*.js"],gulp.series("JavaScript"));
-    gulp.watch(['./src/example/*.html','!./src/example/include/*.html'],gulp.series("example"));
+    gulp.watch(['./src/example/*.html','./src/example/include/*.html'],gulp.series("example"));
     gulp.watch(['./src/scss/*.scss'],gulp.series("sass"));
 })
 //开发模式
