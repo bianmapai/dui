@@ -148,7 +148,8 @@ Dui.defaults = {
     modules:{
         'jquery':'modules/jquery',
         'popup':'modules/popup',
-        'element':'modules/element'
+        'element':'modules/element',
+        'form':'modules/form',
     },
     //存储回调函数
     callBack:{},

@@ -1,3 +1,12 @@
+body,html{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
 @import "./icon.scss";//图标
 @import "./gride.scss";//布局样式
 @import "./card.scss";//卡片样式
@@ -6,3 +15,7 @@
 @import "./dropdown.scss";//下拉菜单样式
 @import "./popper.scss";//弹出层样式
 @import "./breadcrumb.scss";//面包屑导航
+@import "./form.scss";//form表单样式
+@import "./switch.scss";//开关样式
+@import "./checkbox.scss";//多选按钮
+@import "./radio.scss";//单选按钮

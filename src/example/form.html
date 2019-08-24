@@ -1,0 +1,109 @@
+@@include('include/head.html')
+<div class="dui-breadcrumb">
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner"><a href="/">首页</a></span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">主页</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">主页1</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+</div>
+<style>
+.dui-form-item__label{
+    width: 80px;
+}
+.dui-form-item__content{
+    margin-left: 80px;
+}
+</style>
+<div class="dui-body">
+    <div class="dui-card box-card is-never-shadow">
+        <div class="dui-card__header">
+            <div class="clearfix">
+                <span>表单集合</span>
+            </div>
+        </div>
+        <div class="dui-card__body">
+            <form class="dui-form" dui-form method="POST">
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">活动名称</label>
+                    <div class="dui-form-item__content">
+                        
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">活动地区</label>
+                    <div class="dui-form-item__content">
+                        
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">立即配送</label>
+                    <div class="dui-form-item__content">
+                        <input type="checkbox" dui-switch name="peisong" value="true" active-value="true" inactive-value="false" active-text="开" inactive-text="关">
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">活动性质</label>
+                    <div class="dui-form-item__content">
+                        <input type="checkbox" dui-checkbox label="全选" items="type[]" indeterminate="true">
+                        <div class="dui-checkbox-group">
+                            <input type="checkbox" dui-checkbox name="type[]" value="1" label="美食/餐厅线上活动" checked="checked">
+                            <input type="checkbox" dui-checkbox name="type[]" value="2" label="地推活动">
+                            <input type="checkbox" dui-checkbox name="type[]" value="3" label="线下主题活动">
+                            <input type="checkbox" dui-checkbox name="type[]" value="4" label="单纯品牌曝光">
+                        </div>
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">性别</label>
+                    <div class="dui-form-item__content">
+                        <div class="dui-radio-group">
+                            <input type="radio" dui-radio name="sex" value="0" label="保密" checked="checked" >
+                            <input type="radio" dui-radio name="sex" value="1" label="男" checked="checked" >
+                            <input type="radio" dui-radio name="sex" value="2" label="女" checked="checked" disabled="disabled">
+                        </div>
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">活动形式</label>
+                    <div class="dui-form-item__content">
+                        
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <div class="dui-form-item__content">
+                        <button type="submit" class="dui-button dui-button--primary">
+                            立即创建
+                        </button>
+                        <button class="dui-button dui-button--default">
+                            取消
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+dui.use(['form'],function(form){
+    dui.bind(document.querySelector('[name="peisong"]'),'switch','change',function(data){
+        console.log(data);
+    })
+    $('[dui-checkbox]').change(function(e){
+        console.log('进来了');
+    })
+    $('[dui-checkbox]').each(function(i,el){
+        dui.bind(el,'checkbox','change',function(data){
+            console.log(data);
+        })
+    })
+    
+})
+</script>
+@@include('include/foot.html')

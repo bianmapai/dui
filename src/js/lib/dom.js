@@ -21,36 +21,42 @@ export function trim(string) {
  * @param {String} type 时间类型
  * @param {function} fn 回调函数
  */
-export function on(el,type,fn){
-    if(el.addEventListener){
-        el.addEventListener(type, fn, false);
-    }else{
-        el.attachEvent("on" + type, function(){
-            fn.id = arguments.callee;
-            var e = window.event;
-            e.preventDefault = function(){
-                this.returnValue = true;
-            };
-            e.stopPropagation = function(){
-                this.cancelBubble = true;
-            };
-            fn.call(el,e);
-        });
-    }
-}
+export const on = (function() {
+  if (document.addEventListener) {
+    return function(element, event, handler) {
+      if (element && event && handler) {
+        element.addEventListener(event, handler, false);
+      }
+    };
+  } else {
+    return function(element, event, handler) {
+      if (element && event && handler) {
+        element.attachEvent('on' + event, handler);
+      }
+    };
+  }
+})();
 /**
  * 给dom移除事件
  * @param {Element} el 要操作的dom节点
  * @param {String} type 事件类型
  * @param {function} fn 回调函数
  */
-export function off(el,type,fn) {
-    if(el.removeEventListener){
-        el.removeEventListener(type, fn, false);
-    }else{
-        el.detachEvent("on" + type, fn.id||fn);
-    }
-}
+export const off = (function() {
+  if (document.removeEventListener) {
+    return function(element, event, handler) {
+      if (element && event) {
+        element.removeEventListener(event, handler, false);
+      }
+    };
+  } else {
+    return function(element, event, handler) {
+      if (element && event) {
+        element.detachEvent('on' + event, handler);
+      }
+    };
+  }
+})();
 /**
  * 给dom执行一次事件
  * @param {Element} el 操作的dom节点
