@@ -22,8 +22,7 @@ dui.define(['jquery'],function(){
         navMenu:function(el,options){
             var that = this;
             that.elem = el;
-            dui.setVnode(el,options);
-            dui.setData(el,'navMenu',{},options);
+            dui.setData(el,'navMenu',options);
             var submenus = $(that.elem).children(Selector.submenus),
             $jump = $(that.elem).find(Selector.jump),
             itemClick = function(e){

@@ -8,6 +8,7 @@ body,html{
     -webkit-tap-highlight-color: transparent;
 }
 @import "./icon.scss";//图标
+@import "./scrollbar.scss";//滚动条
 @import "./gride.scss";//布局样式
 @import "./card.scss";//卡片样式
 @import "./button.scss";//按钮样式
@@ -19,3 +20,5 @@ body,html{
 @import "./switch.scss";//开关样式
 @import "./checkbox.scss";//多选按钮
 @import "./radio.scss";//单选按钮
+@import "./input.scss";//输入框
+@import "./select-dropdown.scss";//下拉框选项

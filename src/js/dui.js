@@ -6,6 +6,7 @@ import watcher from "./lib/watcher";
 import { setVnode, setData, bind ,unbind, setProps, convertProp } from "./lib/util";
 import { collapseTransition } from "./lib/collapse-transition";
 import Popper from "./lib/popper";
+import addScroll from "./lib/addScrollBar";//给元素添加自己的滚动条
 Dui.prototype.on = on;
 Dui.prototype.off = off;
 Dui.prototype.trim = trim;
@@ -26,4 +27,5 @@ Dui.prototype.bind = bind;
 Dui.prototype.unbind = unbind;
 Dui.prototype.watcher = watcher;
 Dui.prototype.popper = Popper;
+Dui.prototype.addScroll = addScroll;
 export default dui;

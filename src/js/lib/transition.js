@@ -1,4 +1,4 @@
-import { dui } from "./loadjs";
+import { dui, extend } from "./loadjs";
 import { once, setVnode, setData } from "./util";
 import { nextFrame } from "./nextFrame";
 import { addClass, removeClass, setStyle } from "./dom";
@@ -129,10 +129,7 @@ Class.prototype = Class.fn =  {
     init:function(elem,options){
         var that = this;
         that.elem = elem;
-        //设置虚拟node
-        setVnode(elem);
-        //设置数据
-        setData(elem,'transition',{
+        options = extend(true,{
             name:'face',
             elem:elem,
             duration:300,//过渡时间
@@ -146,6 +143,8 @@ Class.prototype = Class.fn =  {
             leaveCancelled:'',//取消的时候回调
             show:true,//默认是否显示
         },options);
+        //设置数据
+        setData(elem,'transition',options);
         //获取data
         var data = that.data = elem.vnode.data.transition;
         //设置状态
