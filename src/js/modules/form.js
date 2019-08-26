@@ -417,14 +417,15 @@ dui.define(['jquery'],function($){
             optDom.css('min-width',that.$clickDom.outerWidth());
             var ref = that.$clickDom[0],pop = optDom[0];
             var x = {top:'bottom','bottom':'top'};
-            that.poppper = dui.popper(ref,pop);
-            that.poppper.onCreate(function(data){
+            that.popper = dui.popper(ref,pop);
+            that.popper.onUpdate(function(data){
+                that.transition.data.name = 'dui-zoom-in-'+x[data.placement];
+                optDom.css('min-width',that.$clickDom.outerWidth());
+            })
+            that.popper.onCreate(function(data){
                 that.transition = dui.transition(pop,{
                     name:'dui-zoom-in-'+x[data._options.placement]
                 });
-            })
-            that.poppper.onUpdate(function(data){
-                that.transition.data.name = 'dui-zoom-in-'+x[data.placement];
             })
             that.$clickDom.on('click',function(e){
                 if(that.isShow){
@@ -435,6 +436,7 @@ dui.define(['jquery'],function($){
             })
             var show = function(e){
                 $('body').append(pop);
+                that.popper.update();
                 that.isShow = true;
                 that.transition.show();
             }
@@ -443,7 +445,7 @@ dui.define(['jquery'],function($){
                 that.transition.hide();
             }
             $(window).on('resize',function(e){
-                
+
             })
         }
     };

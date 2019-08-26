@@ -190,7 +190,6 @@ Popper.prototype.update = function () {
     data.boundaries = this._getBoundaries(data, this._options.boundariesPadding, this._options.boundariesElement);
 
     data = this.runModifiers(data, this._options.modifiers);
-
     if (typeof this.state.updateCallback === 'function') {
         this.state.updateCallback(data);
     }
