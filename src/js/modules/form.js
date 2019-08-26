@@ -7,6 +7,7 @@ dui.define(['jquery'],function($){
         switch:'input[type="checkbox"][dui-switch]',
         checkbox:'input[type="checkbox"][dui-checkbox]',
         radio:'input[type="radio"][dui-radio]',
+        select:'select[dui-select]'
     },
     ClassName={
         switch:'dui-switch',
@@ -17,6 +18,8 @@ dui.define(['jquery'],function($){
         radio:'dui-radio',
         radioInput:'dui-radio__input',
         radioGroup:'dui-radio-group',
+        select:'dui-select',
+
     };
     form.fn = form.prototype={
         //初始化form
@@ -324,7 +327,78 @@ dui.define(['jquery'],function($){
                 }
             })
         },
+        select:function(el,options){
+            var that = this,
+            props = {
+                name:String,//表单提交名
+                multiple:{
+                    type:[Boolean,String],
+                    default:false
+                },//多选
+                disabled:{
+                    type:[Boolean,String],
+                    default:false
+                },//是否禁用
+                clearable:Boolean,//是否有清除按钮
+                placeholder:String,//没有选中的显示值
+                filterable:false,//是否允许搜索
+                original:Boolean,//是否原始
+            };
+            that.origina = el;
+            dui.setData(el,'checkbox',{},options);
+            dui.setProps(el,'checkbox',props);
+            var config = that.config = $.extend(true,{},el.vnode.props.checkbox);
+            var hasRender = $(el).next('.'+ClassName.select);
+            var ClickHtml = ['<div class="'+ClassName.select+'">',
+                // 是否有多选
+                (config.multiple ? '<div class="dui-select__tags"><span></span></div>':''),
+                '<div class="dui-input">',
+                    '<input class="dui-input__inner dui-input--suffix"'+(!config.filter ? ' readonly="readonly"':'')+' placeholder="'+config.placeholder+'">',
+                    // 显示箭头按钮
+                    '<span class="dui-input__suffix">',
+                        '<span class="dui-input__suffix-inner">',
+                            '<i class="dui-select__caret dui-input__icon dui-icon-angle-up"></i>',
+                        '</span>',
+                    '</span>',
+                    // 显示清除按钮
+                    (config.clearable ? ['<span class="dui-input__suffix">',
+                    '<span class="dui-input__suffix-inner">',
+                        '<i class="dui-select__caret dui-input__icon el-icon-arrow-up"></i>',
+                    '</span>',
+                '</span>'].join(''):''),
+                '</div>',
+            '</div>'].join('');
+            that.$clickDom = $(ClickHtml);
+            hasRender[0] && hasRender.remove();
+            $(el).css('display','none').after(that.$clickDom);
+            // 把option或者optgroup解析成data
+            var  getOptData = function(elem){
+                var res = [];
+                var childrens = $(elem).children();
+                childrens.each(function(i,opt){
+                    var item = {};
+                    if(opt.tagName.toLowerCase()==='optgroup'){
+                        item.label = $(opt).attr('label');
+                        item.type = 'group';
+                        if(opt.children.length>0){
+                            item.childrens =  getOptData(opt);
+                        }
+                    }else if(opt.tagName.toLowerCase()==='option'){
+                        item.type = 'item';
+                        item.label = $(opt).text();
+                        item.value = $(opt).val();
+                        item.selected = typeof $(opt).attr('selected') !=="undefined" ? true : false;
+                        item.disabled = typeof $(opt).attr('disabled') !=="undefined" ? true : false;
+                    }
+                    res.push(item);
+                })
+                return res;
+            };
+            var optData = that.optData = getOptData(el);
+            console.log(optData);
 
+
+        }
     };
     form.render = function(el,type,filter,options){
         var filter = filter ? '[dui-filter="'+filter+'"]' : '',
@@ -342,6 +416,11 @@ dui.define(['jquery'],function($){
             radio:function(){
                 $(el).find(Selector.radio).each(function(i,rdo){
                     new form.fn.radio(rdo,options);
+                })
+            },
+            select:function(){
+                $(el).find(Selector.select).each(function(i,slt){
+                    new form.fn.select(slt,options);
                 })
             }
         };

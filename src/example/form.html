@@ -41,7 +41,18 @@
                 <div class="dui-form-item">
                     <label class="dui-form-item__label">活动地区</label>
                     <div class="dui-form-item__content">
-                        
+                        <select dui-select placeholder="请选择一项">
+                            <optgroup label="北京">
+                                <option value="1">石景山</option>
+                                <option value="2">昌平</option>
+                                <option value="3">中关村</option>
+                            </optgroup>
+                            <optgroup label="重庆">
+                                <option value="4">歌乐山</option>
+                                <option value="5">江北</option>
+                                <option value="6">沙坪坝</option>
+                            </optgroup>
+                        </select>
                     </div>
                 </div>
                 <div class="dui-form-item">
@@ -53,7 +64,6 @@
                 <div class="dui-form-item">
                     <label class="dui-form-item__label">活动性质</label>
                     <div class="dui-form-item__content">
-                        <input type="checkbox" dui-checkbox label="全选" items="type[]" indeterminate="true">
                         <div class="dui-checkbox-group">
                             <input type="checkbox" dui-checkbox name="type[]" value="1" label="美食/餐厅线上活动" checked="checked">
                             <input type="checkbox" dui-checkbox name="type[]" value="2" label="地推活动">
@@ -105,6 +115,7 @@ dui.use(['form'],function(form){
             console.log(data);
         })
     })
+
     
 })
 </script>

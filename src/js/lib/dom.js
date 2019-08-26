@@ -195,7 +195,7 @@ export function setStyle(element, styleName, value) {
 /**
  * 当前浏览器的滚动条宽度
  */
-export function getScrollWidth(){
+export function scrollBarWidth(){
   var outer = document.createElement('div');
     outer.className = 'aiui-scrollbar-wrap';
     outer.style.visibility = 'hidden';
@@ -210,6 +210,6 @@ export function getScrollWidth(){
     outer.appendChild(inner);
     var widthWithScroll = inner.offsetWidth;
     outer.parentNode.removeChild(outer);
-    var scrollBarWidth = widthNoScroll - widthWithScroll;
-    return  scrollBarWidth;
+    var width = widthNoScroll - widthWithScroll;
+    return  width;
 }
