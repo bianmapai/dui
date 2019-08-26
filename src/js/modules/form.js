@@ -394,10 +394,57 @@ dui.define(['jquery'],function($){
                 })
                 return res;
             };
+            var getOptHtml = function(data){
+                var returnHtml = '';
+                $.each(data,function(i,item){
+                    if(item.type=='group'){
+                        returnHtml +='<ul class="dui-select-group__wrap"><li class="dui-select-group__title">'+item.label+'</li><li>'+function(){
+                            if(item.childrens){
+                                return '<ul class="dui-select-group">'+getOptHtml(item.childrens)+'</ul>'
+                            }
+                        }()+'</li></ul>';
+                    }else if(item.type=='item'){
+                        returnHtml += '<li class="dui-select-dropdown__item'+(item.disabled?' is-disabled':'')+(item.selected?' selected':'')+'" dui-value="'+item.value+'"><span>'+item.label+'</span></li>';
+                    }
+                })
+                return returnHtml;
+            }
             var optData = that.optData = getOptData(el);
-            console.log(optData);
-
-
+            var optHtml = that.optHtml = '<div class="dui-select-dropdown dui-popper" style="display:none"><ul class="dui-select-dropdown__list">'+getOptHtml(optData)+'</ul><div x-arrow="" class="popper__arrow"></div></div>';
+            var optDom  = that.optDom  = $(optHtml);
+            that.$clickDom.append(optDom);
+            // 设置属性
+            optDom.css('min-width',that.$clickDom.outerWidth());
+            var ref = that.$clickDom[0],pop = optDom[0];
+            var x = {top:'bottom','bottom':'top'};
+            that.poppper = dui.popper(ref,pop);
+            that.poppper.onCreate(function(data){
+                that.transition = dui.transition(pop,{
+                    name:'dui-zoom-in-'+x[data._options.placement]
+                });
+            })
+            that.poppper.onUpdate(function(data){
+                that.transition.data.name = 'dui-zoom-in-'+x[data.placement];
+            })
+            that.$clickDom.on('click',function(e){
+                if(that.isShow){
+                    hide();
+                }else{
+                    show();
+                }
+            })
+            var show = function(e){
+                $('body').append(pop);
+                that.isShow = true;
+                that.transition.show();
+            }
+            var hide = function(e){
+                that.isShow = false;
+                that.transition.hide();
+            }
+            $(window).on('resize',function(e){
+                
+            })
         }
     };
     form.render = function(el,type,filter,options){
