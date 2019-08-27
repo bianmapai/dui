@@ -1,6 +1,7 @@
 import PopperJS from "./popper";
 import { extend, type } from "./loadjs";
 import { getMaxZIndex } from "./util";
+import { on } from "./dom";
 var stop = e => e.stopPropagation();
 var Class = function(reference, popper, options){
     var that = this,
@@ -18,11 +19,10 @@ var Class = function(reference, popper, options){
     }
     //设置修改方法
     if (typeof updateCallback === 'function') {
-        
         that.popperJS.onUpdate(updateCallback);
     }
     that.popperJS._popper.style.zIndex = (getMaxZIndex()+1);
-    that.popperElm.addEventListener('click', stop);
+    on(that.popperElm,'click',stop);
 };
 Class.prototype.updatePopper = function(){
     const popperJS = this.popperJS;
