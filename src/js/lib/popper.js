@@ -1224,6 +1224,4 @@ if (!Object.assign) {
         }
     });
 }
-export default function(reference, popper, options){
-    return new Popper(reference, popper, options);
-};
+export default Popper;

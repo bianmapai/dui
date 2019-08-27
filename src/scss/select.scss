@@ -2,6 +2,10 @@
 @import "mixins/utils";
 @import "common/var";
 @import "mixins/config";
+@import "select-dropdown";
+@import "option-group";
+@import "option";
+
 [#{$namespace}-select]{
     display: none;
 }

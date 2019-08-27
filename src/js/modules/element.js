@@ -102,14 +102,15 @@ dui.define(['jquery'],function(){
             var x = {top:'bottom','bottom':'top'};
             var ref = $(el).find(Selector.dropDownToggle);
             var pop = $(el).find(Selector.dropDownMenu);
-            that.popper = dui.popper(ref[0],pop[0])
-            that.popper.onCreate(function(data){
-                that.transition = dui.transition(pop[0],{
-                    name:'dui-zoom-in-'+x[data._options.placement]
-                });
-            })
-            that.popper.onUpdate(function(data){
-                pop[0].vnode.data.transition.name = 'dui-zoom-in-'+x[data.placement];
+            that.popper = dui.addPopper(ref[0],pop[0],{
+                onCreate:function(data){
+                    that.transition = dui.transition(pop[0],{
+                        name:'dui-zoom-in-'+x[data._options.placement]
+                    });
+                },
+                onUpdate:function(data){
+                    that.transition.data.name = 'dui-zoom-in-'+x[data.placement];
+                }
             })
             ref.on('click',function(e){
                 if(pop.css('display')=='none'){
@@ -119,7 +120,6 @@ dui.define(['jquery'],function(){
                 }
             })
         }
-        
     }
     element.render = function(type,filter){
         var filter = function(){

@@ -1,12 +1,13 @@
-import "./lib/nextFrame";//浏览器兼容下一帧
 import { dui,Dui } from "./lib/loadjs";
 import { trim,on,off, once, hasClass, getStyle, setStyle, scrollBarWidth, addClass, removeClass } from "./lib/dom";
 import transition from "./lib/transition";
 import watcher from "./lib/watcher";
-import { setVnode, setData, bind ,unbind, setProps, convertProp } from "./lib/util";
+import { setVnode, setData, bind ,unbind, setProps, convertProp, getMaxZIndex } from "./lib/util";
 import { collapseTransition } from "./lib/collapse-transition";
 import Popper from "./lib/popper";
-import addScroll from "./lib/addScrollBar";//给元素添加自己的滚动条
+import addScrollBar from "./lib/addScrollBar";//给元素添加自己的滚动条
+import { addResizeListener,removeResizeListener } from "./lib/resize-event";
+import addPopper from "./lib/addPopper";
 Dui.prototype.on = on;
 Dui.prototype.off = off;
 Dui.prototype.trim = trim;
@@ -27,5 +28,9 @@ Dui.prototype.bind = bind;
 Dui.prototype.unbind = unbind;
 Dui.prototype.watcher = watcher;
 Dui.prototype.popper = Popper;
-Dui.prototype.addScroll = addScroll;
+Dui.prototype.addResizeListener = addResizeListener;
+Dui.prototype.removeResizeListener = removeResizeListener;
+Dui.prototype.addScrollBar = addScrollBar;
+Dui.prototype.getMaxZIndex = getMaxZIndex;
+Dui.prototype.addPopper = addPopper;
 export default dui;

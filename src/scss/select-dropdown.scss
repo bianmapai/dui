@@ -1,6 +1,5 @@
 @import "mixins/mixins";
 @import "common/var";
-@import "./popper";
 @import "./mixins/config.scss";
 
 @include b(select-dropdown) {

@@ -1,6 +1,17 @@
 import { each, extend, type } from "./loadjs";
-import ResizeObserver from 'resize-observer-polyfill';
-const isServer = typeof window === 'undefined';
+import { getStyle } from "./dom";
+/**
+ * 下一帧执行的方法
+ */
+export var nextFrame = window.requestAnimationFrame ? window.requestAnimationFrame : function(callback, element) {
+    var currTime = new Date().getTime();
+    var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+    window.setTimeout(function() {
+        callback(currTime + timeToCall);
+    }, timeToCall);
+    lastTime = currTime + timeToCall;
+    return id;
+}
 /**
  * 设置某个函数只执行一次
  * @param {function} fn 只使用一次的函数
@@ -218,36 +229,16 @@ export function convertProp(value,convertType){
     }
     return value;
 }
-
-//监听元素大小发生变化
-/* istanbul ignore next */
-const resizeHandler = function(entries) {
-  for (let entry of entries) {
-    const listeners = entry.target.__resizeListeners__ || [];
-    if (listeners.length) {
-      listeners.forEach(fn => {
-        fn();
-      });
-    }
-  }
-};
-
-/* istanbul ignore next */
-export const addResizeListener = function(element, fn) {
-  if (isServer) return;
-  if (!element.__resizeListeners__) {
-    element.__resizeListeners__ = [];
-    element.__ro__ = new ResizeObserver(resizeHandler);
-    element.__ro__.observe(element);
-  }
-  element.__resizeListeners__.push(fn);
-};
-
-/* istanbul ignore next */
-export const removeResizeListener = function(element, fn) {
-  if (!element || !element.__resizeListeners__) return;
-  element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
-  if (!element.__resizeListeners__.length) {
-    element.__ro__.disconnect();
-  }
-};
+/**
+ * 获取当前页面最大的z-index
+ */
+export function getMaxZIndex(){
+	var all = document.querySelectorAll('*');
+	var maxZ = 0;
+	each(all,function(index,item){
+		if(parseInt(getStyle(item,'z-index'))>maxZ){
+			maxZ = parseInt(getStyle(item,'z-index'));
+		}
+	})
+	return maxZ;
+}

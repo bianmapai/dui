@@ -1,6 +1,7 @@
-import { setData, addResizeListener } from "./util";
+import { setData, } from "./util";
 import { scrollBarWidth, addClass, on, off } from "./dom";
 import { extend, each } from "./loadjs";
+import { addResizeListener } from "./resize-event";
 var ClassName = {
     scroll:'dui-scrollbar',
 },
@@ -68,7 +69,8 @@ scrollbar.prototype.init = function(){
     that.barX = new bar(that,{vertical:false,size:that.sizeWidth,move:that.moveX});
     that.barY = new bar(that,{vertical:true,size:that.sizeHeight,move:that.moveY});
     // 把元素放置在滚动里面
-    that.original.parentNode.insertBefore(that.scroll,that.original);
+    that.original.parentNode ? that.original.parentNode.insertBefore(that.scroll,that.original):
+    document.body.append(that.scroll);
     that.wrap.append(that.original);
     that.update();
     // 设置事件
