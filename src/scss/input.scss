@@ -200,7 +200,7 @@
     }
 
     .#{$namespace}-input__icon {
-      cursor: not-allowed;
+      cursor: not-allowed !important;
     }
   }
 

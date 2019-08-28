@@ -242,7 +242,7 @@
     right: 20px;
     margin-top: -7px;
     transition: transform .3s;
-    font-size: 14px;
+    font-size: 12px;
   }
   @include when(active) {
     .#{$namespace}-submenu__title {

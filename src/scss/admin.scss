@@ -2,34 +2,6 @@
 @import "./common/var.scss";
 @import "mixins/mixins";
 @import "mixins/utils";
-@font-face {
-    font-family: 'iconfont';  /* project id 1367779 */
-    src: url('//at.alicdn.com/t/font_1367779_zq2crhba87r.eot');
-    src: url('//at.alicdn.com/t/font_1367779_zq2crhba87r.eot?#iefix') format('embedded-opentype'),
-    url('//at.alicdn.com/t/font_1367779_zq2crhba87r.woff2') format('woff2'),
-    url('//at.alicdn.com/t/font_1367779_zq2crhba87r.woff') format('woff'),
-    url('//at.alicdn.com/t/font_1367779_zq2crhba87r.ttf') format('truetype'),
-    url('//at.alicdn.com/t/font_1367779_zq2crhba87r.svg#iconfont') format('svg');
-}
-[class^="iconfont-icon-"], [class*=" iconfont-icon-"] {
-    font-family: 'iconfont' !important;
-}
-.iconfont-icon-shrink-right:before{
-    content: "\e644"
-}
-.iconfont-icon-more-vertical:before{
-    content: "\e63e"
-}
-.iconfont-icon-dropdown-arrow:before{
-    content: "\e610"
-}
-.iconfont-icon-screen-full:before{
-    content: "\e655"
-}
-.iconfont-icon-earth:before{
-    content: "\e607"
-}
-
 //后台布局
 //通用
 body{

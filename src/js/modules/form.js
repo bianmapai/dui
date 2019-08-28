@@ -340,6 +340,20 @@ dui.define(['jquery'],function($){
             })
             return returnHtml;
         },
+        getAlltag = function(){
+            var tags = {};
+            $(el).find('option').each(function(i,opt){
+                var title = $(opt).text(),val = $(opt).val()
+                //添加元素到tagdom
+                var thisTag = $('<span class="dui-tag dui-tag--info dui-tag--small dui-tag--light">'+
+                                    '<span class="dui-select__tags-text">'+title+'</span>'+
+                                    '<i class="dui-tag__close dui-icon-close"></i>'+
+                                '</span>')[0];
+                thisTag.value = val;
+                tags[val] = thisTag;
+            })
+            return tags
+        },
         show = function(){
             $('body').append(pop);
             // 设置input的focuse状态
@@ -365,6 +379,7 @@ dui.define(['jquery'],function($){
         },
         value   = that.value   = config.multiple ? [] : '';
         optData = that.optData = getOptData(el),
+        tags    = that.tags    = getAlltag(),
         optHtml = that.optHtml = [
             '<div class="dui-select-dropdown dui-popper" style="display:none">',
                 '<ul class="dui-select-dropdown__list">'+getOptHtml(optData)+'</ul>',
@@ -374,20 +389,16 @@ dui.define(['jquery'],function($){
         clickHtml = ['<div class="'+ClassName.select+'">',
             // 是否有多选
             (config.multiple ? '<div class="dui-select__tags"><span></span></div>':''),
-            '<div class="dui-input">',
-                '<input class="dui-input__inner dui-input--suffix"'+(!config.filter ? ' readonly="readonly"':'')+' placeholder="'+config.placeholder+'">',
+            '<div class="dui-input dui-input--suffix'+(config.disabled ? ' is-disabled':'')+'">',
+                '<input class="dui-input__inner dui-input--suffix"'+(!config.filter ? ' readonly="readonly"':'')+' placeholder="'+config.placeholder+'"'+(config.disabled ? 'disabled="disabled"':'')+'>',
                 // 显示箭头按钮
                 '<span class="dui-input__suffix">',
                     '<span class="dui-input__suffix-inner">',
-                        '<i class="dui-select__caret dui-input__icon dui-icon-angle-up"></i>',
+                        '<i class="dui-select__caret dui-input__icon dui-icon-arrow-up"></i>',
+                        //清除按钮
+                        (config.clearable ? '<i class="dui-select__caret dui-input__icon '+ClassName.selectClearable+'" style="display:none"></i>':''),
                     '</span>',
                 '</span>',
-                // 显示清除按钮
-                (config.clearable ? ['<span class="dui-input__suffix" style="display:none">',
-                '<span class="dui-input__suffix-inner">',
-                    '<i class="dui-select__caret dui-input__icon el-icon-arrow-up"></i>',
-                '</span>',
-            '</span>'].join(''):''),
             '</div>',
         '</div>'].join(''),
         // 原始的元素 select
@@ -403,7 +414,7 @@ dui.define(['jquery'],function($){
         // popper显示元素
         optDom     =  elements.optDom = $(optHtml),
         // 选项元素
-        opts       =  elements.opts   = optDom.find('.dui-select-dropdown__item');
+        opts       =  elements.opts   = optDom.find('.'+ClassName.selectOption);
         // 给选项添加滚动条
         that.scrollbar = dui.addScrollBar(optDom.find('.dui-select-dropdown__list')[0],{
             wrapClass:'dui-select-dropdown__wrap'
@@ -433,8 +444,9 @@ dui.define(['jquery'],function($){
         if(config.multiple){
             //多选
             original.find('option[selected]').each(function(i,slt){
-                if($.inArray(value,val)==-1){
-                    value.push($(slt).val());
+                var val = $(slt).val();
+                if($.inArray(val,value)==-1){
+                    value.push(val);
                 }
             })
         }else{
@@ -444,6 +456,7 @@ dui.define(['jquery'],function($){
             })
         }
         that.setValue();
+        if(config.disabled) return;
         // 设置事件
         dui.on(clickDom[0],'click',function(e){
             e.stopPropagation();
@@ -457,18 +470,46 @@ dui.define(['jquery'],function($){
         opts.on('click',function(e){
             var othis = $(this),val = othis.attr('dui-value');
             if(config.multiple){
-                if($.inArray(that.value,val)==-1){
-                    that.value.push(val);
+                if(othis.hasClass('selected')){
+                    that.value.splice($.inArray(val,value),1)
+                }else{
+                    if($.inArray(val,value)==-1){
+                        that.value.push(val);
+                    } 
                 }
             }else{
                 that.value = val;
                 // 关闭选项显示页面
                 hide();
             }
+            console.log(that.value);
             that.setValue();
         })
-        // 设置清除事件
-
+        // 设置tag的关闭事件
+        $.each(tags,function(v,tag){
+            dui.on(tag.children[1],'click',function(e){
+                e.stopPropagation();
+                that.value.splice($.inArray(v,that.value),1)
+                that.setValue();
+            })
+        })
+        // 设置显示清除按钮和点击事件
+        if(config.clearable){
+            clickDom.hover(function(){
+                if(that.value){
+                    clickDom.find('.dui-icon-arrow-up').css('display','none');
+                    clickDom.find('.'+ClassName.selectClearable).css('display','');
+                }
+            },function(e){
+                clickDom.find('.dui-icon-arrow-up').css('display','');
+                clickDom.find('.'+ClassName.selectClearable).css('display','none');
+            });
+            clickDom.find('.'+ClassName.selectClearable).on('click',function(e){
+                e.stopPropagation();
+                that.value = config.multiple?[]:'';
+                that.setValue();
+            })
+        }
         // 给docment设置点击的时候关闭
         dui.on(document,'click',function(e){
             e.preventDefault();
@@ -492,7 +533,8 @@ dui.define(['jquery'],function($){
         radioInput:'dui-radio__input',
         radioGroup:'dui-radio-group',
         select:'dui-select',
-
+        selectOption:'dui-select-dropdown__item',
+        selectClearable:'dui-icon-circle-close',
     };
     form.Item = form.prototype={
         //初始化form
@@ -528,46 +570,6 @@ dui.define(['jquery'],function($){
         radio:Radio,
         select:Select
     };
-    Select.prototype.setValue = function(data){
-        var that = this,config=that.config,elements=that.elements,
-        opts = elements.optDom.find('.dui-select-dropdown__item');
-        if(data) that.value = data;
-        if(that.value.length==0){
-            // 没有设置值
-            elements.inputInner.val(''),elements.original.val(null);
-            config.multiple &&  elements.inputInner.attr('placeholder',config.placeholder);
-        }else{
-            // 有值
-            elements.original.val(that.value);
-        }
-        // 设置显示样式
-        opts.removeClass('selected').each(function(i,opt){
-            var val = $(opt).attr('dui-value'),
-            title = $(opt).text();
-            if(config.multiple){
-                //多选
-                if($.inArray(val,that.value)!=-1){
-                    $(opt).addClass('selected');
-                }
-            }else{
-                //单选
-                if(val==that.value){
-                    $(opt).addClass('selected');
-                    elements.inputInner.val(title);
-                }
-            }
-        })
-        // 设置回调函数
-        if(that.state.inited){
-            var events = elements.original[0].vnode.event;
-            elements.original.change && elements.original.change();
-            events.select && events.select.change 
-            && typeof events.select.change === "function" 
-            && events.select.change.call(elements.original,that.value);
-        }else{
-            that.state.inited = true;
-        }
-    }
     form.render = function(el,type,filter,options){
         var filter = filter ? '[dui-filter="'+filter+'"]' : '',
         Item = {
@@ -609,6 +611,62 @@ dui.define(['jquery'],function($){
             return list;
         }else{
             return list[0];
+        }
+    }
+    Select.prototype.setValue = function(data){
+        var that = this,config=that.config,elements=that.elements,
+        opts = elements.optDom.find('.'+ClassName.selectOption),
+        tagdom = elements.clickDom.find('.dui-select__tags>span');
+        if(data) that.value = data;
+        if(that.value.length==0){
+            // 没有设置值
+            elements.inputInner.val(''),elements.original.val(null);
+            config.multiple &&  elements.inputInner.attr('placeholder',config.placeholder);
+        }else{
+            // 有值
+            elements.original.val(that.value);
+            if(config.multiple){
+                elements.inputInner.attr('placeholder','');
+            }
+        }
+        // 清空tag样式
+        tagdom.html('');
+        // 清除选中样式
+        opts.removeClass('selected');
+        // 设置样式
+        if(config.multiple){
+            //多选
+            $.each(that.value,function(i,v){
+                var selOpt = elements.optDom.find('.'+ClassName.selectOption+'[dui-value="'+v+'"]');
+                selOpt.addClass('selected');
+                //设置tag
+                tagdom.append(that.tags[v]);
+            })
+            var tagHeight = parseFloat(tagdom.parent().outerHeight()),
+            inputInnerHeight = parseFloat(elements.inputInner.outerHeight());
+            // 设置文本框的高度
+            if(tagHeight>inputInnerHeight || inputInnerHeight>36){
+                elements.inputInner.css('height',parseFloat(tagHeight)+6);
+            }else{
+                elements.inputInner.css('height','');
+            }
+        }else{
+            //单选
+            var selOpt = elements.optDom.find('.'+ClassName.selectOption+'[dui-value="'+that.value+'"]');
+            selOpt.addClass('selected');
+            elements.inputInner.val(selOpt.text());
+        }
+        // 跟新一下popper
+        that.popper.updatePopper();
+        // 设置回调函数
+        if(that.state.inited){
+            var events = elements.original[0].vnode.event;
+            elements.original.change && elements.original.change();
+            events.select && events.select.change 
+            && typeof events.select.change === "function" 
+            && events.select.change.call(elements.original,that.value);
+        }else{
+            that.state.inited = true;
         }
     }
     form.init();

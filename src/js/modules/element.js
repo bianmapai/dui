@@ -66,7 +66,7 @@ dui.define(['jquery'],function(){
                         $title.parent().removeClass('is-opened');
                     };
                     var titleClick = function(e){
-                        e.stopPropagation();
+                        e.preventDefault();
                         var that = this,open = that.isOpen,
                         Others = $(that).parent().siblings().find(Selector.submenusTitles);
                         if(open){

@@ -116,6 +116,7 @@
       display: flex;
       align-items: center;
       flex-wrap: wrap;
+      padding-right: 32px;
     }
   
     .#{$namespace}-tag__close {
@@ -144,4 +145,4 @@
         }
       }
     }
-  }
+}
