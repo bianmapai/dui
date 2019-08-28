@@ -112,13 +112,42 @@ dui.define(['jquery'],function(){
                     that.transition.data.name = 'dui-zoom-in-'+x[data.placement];
                 }
             })
-            ref.on('click',function(e){
-                if(pop.css('display')=='none'){
-                    that.transition.show();
+            that.visible = pop.css('display')=='none' ? true : false;
+            that.toggle  = ref.attr('toggle')=='hover' ? 'hover' : 'click';
+            that.showTimeout = 0;
+            that.hideTimeout = 150;
+            that.timerout=0;
+            var show = function(){
+                clearTimeout(that.timerout);
+                if(pop.css('display')!=='none'){
+                    return;
                 }else{
-                    that.transition.hide();
+                    that.timerout = setTimeout(function(){
+                        that.popper.updatePopper();
+                        that.transition.show();
+                    },(that.toggle==='hover'?that.showTimeout:0))
                 }
-            })
+            };
+            var hide = function(){
+                clearTimeout(that.timerout);
+                that.timerout = setTimeout(function(){
+                    that.transition.hide();
+                },(that.toggle==='hover'?that.hideTimeout:0))
+            };
+            if(that.toggle==='hover'){
+                ref.hover(show,hide);
+                pop.hover(show,hide);
+            }else{
+                ref.on('click',function(e){
+                    if(that.visible){
+                        that.visible =false;
+                        show();
+                    }else{
+                        that.visible =true;
+                        hide();
+                    }
+                })
+            }
         }
     }
     element.render = function(type,filter){

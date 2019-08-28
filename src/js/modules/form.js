@@ -381,7 +381,7 @@ dui.define(['jquery'],function($){
         optData = that.optData = getOptData(el),
         tags    = that.tags    = getAlltag(),
         optHtml = that.optHtml = [
-            '<div class="dui-select-dropdown dui-popper" style="display:none">',
+            '<div class="dui-select-dropdown dui-popper'+(config.multiple ? ' is-multiple':'')+'" style="display:none">',
                 '<ul class="dui-select-dropdown__list">'+getOptHtml(optData)+'</ul>',
                 '<div x-arrow="" class="popper__arrow"></div>',
             '</div>'
@@ -482,7 +482,6 @@ dui.define(['jquery'],function($){
                 // 关闭选项显示页面
                 hide();
             }
-            console.log(that.value);
             that.setValue();
         })
         // 设置tag的关闭事件
@@ -506,13 +505,12 @@ dui.define(['jquery'],function($){
             });
             clickDom.find('.'+ClassName.selectClearable).on('click',function(e){
                 e.stopPropagation();
-                that.value = config.multiple?[]:'';
+                value = that.value = config.multiple?[]:'';
                 that.setValue();
             })
         }
         // 给docment设置点击的时候关闭
         dui.on(document,'click',function(e){
-            e.preventDefault();
             hide();
         })
     },

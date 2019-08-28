@@ -23,6 +23,9 @@ var Class = function(reference, popper, options){
     }
     that.popperJS._popper.style.zIndex = (getMaxZIndex()+1);
     on(that.popperElm,'click',stop);
+    on(window,'resize',function(){
+        that.updatePopper();
+    })
 };
 Class.prototype.updatePopper = function(){
     const popperJS = this.popperJS;
