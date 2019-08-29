@@ -293,7 +293,7 @@ dui.define(['jquery'],function($){
             },//是否禁用
             clearable:Boolean,//是否有清除按钮
             placeholder:String,//没有选中的显示值
-            filterable:false,//是否允许搜索
+            filterable:Boolean,//是否允许搜索
             original:Boolean,//是否原始
         };
         that.state = {
@@ -390,7 +390,7 @@ dui.define(['jquery'],function($){
             // 是否有多选
             (config.multiple ? '<div class="dui-select__tags"><span></span></div>':''),
             '<div class="dui-input dui-input--suffix'+(config.disabled ? ' is-disabled':'')+'">',
-                '<input class="dui-input__inner dui-input--suffix"'+(!config.filter ? ' readonly="readonly"':'')+' placeholder="'+config.placeholder+'"'+(config.disabled ? 'disabled="disabled"':'')+'>',
+                '<input class="dui-input__inner dui-input--suffix"'+(!config.filterable ? ' readonly="readonly"':'')+' placeholder="'+config.placeholder+'"'+(config.disabled ? 'disabled="disabled"':'')+'>',
                 // 显示箭头按钮
                 '<span class="dui-input__suffix">',
                     '<span class="dui-input__suffix-inner">',
@@ -403,6 +403,10 @@ dui.define(['jquery'],function($){
         '</div>'].join(''),
         // 原始的元素 select
         original    =  elements.original = $(el),
+        // 没有option显示
+        emptyDom   =  elements.emptyDom = $(['<p class="dui-select-dropdown__empty">'+
+            '无匹配数据'+
+        '</p>'].join('')),
         // 点击元素
         clickDom   =  elements.clickDom = $(clickHtml),
         // 输入框外部元素
@@ -509,6 +513,48 @@ dui.define(['jquery'],function($){
                 that.setValue();
             })
         }
+        // 搜索
+        if(config.filterable){
+            inputInner.on('input',function(e){
+               var value = this.value,keyCode = e.keyCode;
+               if(keyCode === 9 || keyCode === 13 
+                    || keyCode === 37 || keyCode === 38 
+                    || keyCode === 39 || keyCode === 40
+                ){
+                    return false;
+                }
+                // 判断是否存在选项
+                opts.each(function(i,opt){
+                    var othis = $(opt),
+                    text = othis.text(),
+                    isNot = text.indexOf(value) === -1;
+                    // 设置样式
+                    othis[isNot ? 'addClass':'removeClass'](ClassName.hide);
+
+                })
+                // 如果有group的情况下
+                $(optDom).find('.dui-select-group__wrap').each(function(i,group){
+                    var othis = $(group);
+                    //判断选项和隐藏选项是否一样多是则隐藏自己，否则就显示
+                    if(othis.find('.'+ClassName.selectOption+'.'+ClassName.hide).length==othis.find('.'+ClassName.selectOption).length){
+                        othis.addClass(ClassName.hide);
+                    }else{
+                        othis.removeClass(ClassName.hide);
+                    }
+                })
+                // 判断没有选项个数和总体个数
+                // 搜索后的隐藏个数
+                var hideNum = optDom.find('.'+ClassName.selectOption+'.'+ClassName.hide).length;
+                // 如果隐藏个数等于总个数
+                if(hideNum==opts.length){
+                    $(that.scrollbar.scroll).addClass('is-empty');
+                    $(that.scrollbar.scroll).after(emptyDom);
+                }else{
+                    $(that.scrollbar.scroll).removeClass('is-empty');
+                    emptyDom.remove();
+                }
+            })
+        }
         // 给docment设置点击的时候关闭
         dui.on(document,'click',function(e){
             hide();
@@ -533,6 +579,7 @@ dui.define(['jquery'],function($){
         select:'dui-select',
         selectOption:'dui-select-dropdown__item',
         selectClearable:'dui-icon-circle-close',
+        hide:'dui-hide',
     };
     form.Item = form.prototype={
         //初始化form
