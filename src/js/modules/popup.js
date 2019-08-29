@@ -292,6 +292,7 @@ dui.define('popup',['jquery'],function($){
     });
     that.transition = dui.transition(dom[0],{
       name:'popup-fade',
+      duration:300,
       beforeEnter:function(){
         config.modal && modal.show();
       },
