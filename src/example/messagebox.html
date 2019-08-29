@@ -28,7 +28,7 @@ box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);">
                 不同主题
             </div>
             <div class="dui-card__body">
-                <button class="dui-button dui-button--default" id="info" data-option="{type:'info'}">消息</button>
+                <button class="dui-button dui-button--default" id="info" data-option="{type:info}">消息</button>
                 <button class="dui-button dui-button--success" id="success" data-option="{type:'success'}">成功</button>
                 <button class="dui-button dui-button--warning" id="warning" data-option="{type:'warning'}">警告</button>
                 <button class="dui-button dui-button--danger"  id="error" data-option="{type:'error'}">错误</button>
@@ -70,7 +70,14 @@ box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);">
 dui.use(['popup','jquery'],function(popup,$){
     $('button.dui-button').on('click',function(e){
         var options = new Function('return '+ $(this).data('option'))() || {};
-        popup.message($(this).text(),options);
+        popup.msgbox({
+            title:'提示',
+            message:'测试一下',
+            btn0:function(e){
+                console.log(this);
+            },
+            modalClose:true
+        });
     })
 })
 </script>

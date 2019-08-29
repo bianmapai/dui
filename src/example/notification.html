@@ -1,0 +1,88 @@
+@@include('include/head.html')
+<style>
+  h3 {
+    margin-bottom: 20px;
+  }
+  h3 + .dui-row {
+    margin-bottom: 10px;
+  }
+</style>
+<div class="dui-breadcrumb" style="height: 50px;line-height:50px;background:#fff;padding:0 15px;background-color: #fff;
+box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);">
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner is-link">首页</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">弹出层</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+        <span class="dui-breadcrumb__item"><span class="dui-breadcrumb__inner">通知</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+</div>
+<div class="dui-row">
+    <div class="dui-col-xs12" style="padding:7.5px;">
+        <div class="dui-card box-card is-never-shadow">
+            <div class="dui-card__header aiui-">
+                基本用法
+            </div>
+            <div class="dui-card__body">
+                <button class="dui-button dui-button--default" data-option="{type:'info',message:'这是一条消息'}">可自动关闭</button>
+                <button class="dui-button dui-button--default" data-option="{type:'success',message:'这是一条成功消息',duration:0}">不可自动关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dui-row">
+    <div class="dui-col-xs12" style="padding:7.5px;">
+        <div class="dui-card box-card is-never-shadow">
+            <div class="dui-card__header aiui-">
+                不同主题
+            </div>
+            <div class="dui-card__body">
+                <button class="dui-button dui-button--default" data-option="{type:'info',message:'这是一条消息'}">消息</button>
+                <button class="dui-button dui-button--success" data-option="{type:'success',message:'这是一条成功消息'}">成功</button>
+                <button class="dui-button dui-button--warning" data-option="{type:'warning',message:'这是一条警告消息'}">警告</button>
+                <button class="dui-button dui-button--danger"  data-option="{type:'error',message:'这是一条错误消息'}">错误</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dui-row">
+    <div class="dui-col-xs12" style="padding:7.5px;">
+        <div class="dui-card box-card is-never-shadow">
+            <div class="dui-card__header">
+                自定义弹出位置
+            </div>
+            <div class="dui-card__body">
+                <button class="dui-button dui-button--default" data-option="{type:'info',message:'这是一条消息',position:'top-right'}">右上角</button>
+                <button class="dui-button dui-button--success" data-option="{type:'success',message:'这是一条成功消息',position:'bottom-right'}">右下角</button>
+                <button class="dui-button dui-button--warning" data-option="{type:'warning',message:'这是一条警告消息',position:'bottom-left'}">左下角</button>
+                <button class="dui-button dui-button--danger"  data-option="{type:'error',message:'这是一条错误消息',position:'top-left'}">左上角</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dui-row">
+    <div class="dui-col-xs12" style="padding:7.5px;">
+        <div class="dui-card box-card is-never-shadow">
+            <div class="dui-card__header">
+                隐藏关闭按钮
+            </div>
+            <div class="dui-card__body">
+                <button class="dui-button dui-button--default" data-option="{type:'info',message:'这是一条消息',position:'top-right',showClose:false}">隐藏关闭按钮</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+dui.use(['popup','jquery'],function(popup,$){
+    $('button.dui-button').on('click',function(e){
+        var str = $(this).data('option');
+        var options = new Function('return '+ str)() || {};
+        popup.notify($(this).text(),options);
+    })
+})
+</script>
+@@include('include/foot.html')
