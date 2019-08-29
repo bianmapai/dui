@@ -2,7 +2,7 @@ dui.define('popup',['jquery'],function($){
   var popup = function(type,options){
     var ins = new Items[type](options);
     ins.type = type;
-    allPopup[ins.id] = ins;
+    allPopup.push(ins);
     return ins;
   },
   resetTop = function(type){
@@ -92,8 +92,6 @@ dui.define('popup',['jquery'],function($){
       name:'dui-message-fade',
       afterLeave:function(data){
         dom.remove();
-        delete allPopup[id];
-        resetTop('message');
       }
     })
     // 设置top
@@ -111,13 +109,21 @@ dui.define('popup',['jquery'],function($){
     startTimer();
   },
   seed = 1,//每一个popup的唯一编号，自增
-  allPopup = {},
+  allPopup = [],
   Items = {
     message:message,
 
   }
   //关闭方法
   message.prototype.close=function(){
+    var  that = this;
+    console.log(that.id);
+    $.each(allPopup,function(i,item){
+      if(item && item.id==that.id){
+        allPopup.splice(i,1);
+      }
+    })
+    resetTop('message');
     this.transition.hide();
   }
   popup.message = function(msg,options){
