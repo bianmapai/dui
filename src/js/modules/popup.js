@@ -228,9 +228,12 @@ dui.define('popup',['jquery'],function($){
       content:'',
       offset:'auto',
       type:'',
+      htmlAppend:'',//完成渲染后的会回调
+      done:'',//页面渲染完毕，可以显示的时候
       width:'50%',
       height:'auto',
       top:'',
+      showFooter:true,//是否显示脚
       modal:true,
       modalClose:false,//点击modal是否关闭
       customClass:'',
@@ -264,7 +267,7 @@ dui.define('popup',['jquery'],function($){
           config.showClose ? '<button type="button" class="dui-popup__headerbtn"><i class="dui-popup__close dui-icon-close"></i></button>':'',
         '</div>',
         '<div class="dui-popup__content"><span>'+config.content+'</span></div>',
-        '<div class="dui-popup__btns"'+((config.btnAngin!='right')?'style=" text-align:'+config.btnAngin+';"':'')+'>'+btns+'</div>',
+        config.showFooter?'<div class="dui-popup__btns"'+((config.btnAngin!='right')?'style=" text-align:'+config.btnAngin+';"':'')+'>'+btns+'</div>':'',
       '</div>',
       config.modal?'<div class="dui-modal"></div>':''
     ].join(''),
@@ -415,24 +418,21 @@ dui.define('popup',['jquery'],function($){
         var buttonHeight = footer.outerHeight();
         var thisPadding = parseFloat(content.css('padding-top'))+parseFloat(content.css('padding-bottom'));
         var bodyHeight = height-hearderHeight-buttonHeight-thisPadding;
-        if(!that.scrollbar){
-          // 添加滚动条
-          that.scrollbar = dui.addScrollBar(content.find('>span')[0],{
-            wrapClass:warp_class
-          })
-        }
-        content.css('height',bodyHeight);
-        content.find('.'+warp_class).css('max-height',bodyHeight);
-        if(that.scrollbar){
-          that.scrollbar.update();
-        }
+        content.css({
+          'max-height':bodyHeight,
+          'overflow-y':'scroll'
+        });
       }
       var offset = getOffset();
+      offset.top = offset.top<0 ? 20 : (offset.top);
       $(dom[0]).css('top',offset.top);
       $(dom[0]).css('left',offset.left);
     }
     // 重置宽高和position
     setResize();
+    if(config.htmlAppend && typeof config.htmlAppend==="function"){
+      config.htmlAppend.call(that,config);
+    }
     // 设置元素不可见
     dom.css('display','none');
     // 设置关闭按钮事件
@@ -500,8 +500,16 @@ dui.define('popup',['jquery'],function($){
         that.close();
       })
     }
-    // 显示元素
-    that.transition.show();
+    if(config.done && typeof config.done==="function"){
+      var res = config.done.call(that,config);
+      if(res){
+        // 显示元素
+        that.transition.show();
+      }
+    }else{
+      // 显示元素
+      that.transition.show();
+    }
   },
   seed = 1,//每一个popup的唯一编号，自增
   allPopup = [],

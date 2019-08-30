@@ -27,9 +27,17 @@ var Class = function(reference, popper, options){
         that.updatePopper();
     })
 };
-Class.prototype.updatePopper = function(){
-    const popperJS = this.popperJS;
+Class.prototype.updatePopper = function(fn){
+    const popperJS = this.popperJS,
+    that = this;
     if (popperJS) {
+        if(fn){
+            popperJS.onUpdate(function(data){
+                console.log('进来了');
+                fn.call(that,data);
+                popperJS.onUpdate(that.updateCallback);
+            })
+        }
         popperJS.update();
         if (popperJS._popper) {
           popperJS._popper.style.zIndex = (getMaxZIndex()+1);

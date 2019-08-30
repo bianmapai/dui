@@ -29,7 +29,7 @@ box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);">
             </div>
             <div class="dui-card__body">
                 <button class="dui-button dui-button--default dialog" id="customWithHeight">自定义高度和宽度</button>
-                <button class="dui-button dui-button--success dialog">成功</button>
+                <button class="dui-button dui-button--success dialog" id="customWithForm">和表单结合</button>
                 <button class="dui-button dui-button--warning dialog">警告</button>
                 <button class="dui-button dui-button--danger  dialog">错误</button>
             </div>
@@ -64,15 +64,108 @@ box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);">
         </div>
     </div>
 </div>
+<script id="formHtml" type="text/html">
+    <style>
+        .dui-form-item__label{
+            width: 80px;
+        }
+        .dui-form-item__content{
+            margin-left: 80px;
+        }
+    </style>
+    <form class="dui-form" dui-form method="POST">
+        <div class="dui-form-item">
+            <label class="dui-form-item__label">活动名称</label>
+            <div class="dui-form-item__content">
+                <div class="dui-input">
+                    <input type="text" class="dui-input__inner">
+                </div>
+            </div>
+        </div>
+        <div class="dui-form-item">
+            <label class="dui-form-item__label">活动地区</label>
+            <div class="dui-form-item__content">
+                <select dui-select placeholder="请选择一项" filterable="true" clearable="true" multiple="multiple">
+                    <optgroup label="北京">
+                        <option value="1">石景山</option>
+                        <option value="2">昌平</option>
+                        <option value="3">中关村</option>
+                    </optgroup>
+                    <optgroup label="重庆">
+                        <option value="4">歌乐山</option>
+                        <option value="5">江北</option>
+                        <option value="6">沙坪坝</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+        <div class="dui-form-item">
+            <label class="dui-form-item__label">立即配送</label>
+            <div class="dui-form-item__content">
+                <input type="checkbox" dui-switch name="peisong" value="true" active-value="true" inactive-value="false" active-text="开" inactive-text="关">
+            </div>
+        </div>
+        <div class="dui-form-item">
+            <label class="dui-form-item__label">活动性质</label>
+            <div class="dui-form-item__content">
+                <div class="dui-checkbox-group">
+                    <input type="checkbox" dui-checkbox name="type[]" value="1" label="美食/餐厅线上活动" checked="checked">
+                    <input type="checkbox" dui-checkbox name="type[]" value="2" label="地推活动">
+                    <input type="checkbox" dui-checkbox name="type[]" value="3" label="线下主题活动">
+                    <input type="checkbox" dui-checkbox name="type[]" value="4" label="单纯品牌曝光">
+                </div>
+            </div>
+        </div>
+        <div class="dui-form-item">
+            <label class="dui-form-item__label">性别</label>
+            <div class="dui-form-item__content">
+                <div class="dui-radio-group">
+                    <input type="radio" dui-radio name="sex" value="0" label="保密" checked="checked" buttoned="true">
+                    <input type="radio" dui-radio name="sex" value="1" label="男" buttoned="true">
+                    <input type="radio" dui-radio name="sex" value="2" label="女" buttoned="true">
+                </div>
+            </div>
+        </div>
+        <div class="dui-form-item">
+            <label class="dui-form-item__label">活动形式</label>
+            <div class="dui-form-item__content">
+                
+            </div>
+        </div>
+        <div class="dui-form-item">
+            <div class="dui-form-item__content">
+                <button type="submit" class="dui-button dui-button--primary">
+                    立即创建
+                </button>
+                <button class="dui-button dui-button--default">
+                    取消
+                </button>
+            </div>
+        </div>
+    </form>
+</script>
 <script>
-dui.use(['popup','jquery'],function(popup,$){
+dui.use(['popup','jquery','form'],function(popup,$,form){
     $('#customWithHeight').on('click',function(e){
         popup.dialog({
             title:'提示',
             content:'这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>',
-            width:500,
-            height:400
+            width:800,
+            height:500,
         })
+    })
+    $('#customWithForm').on('click',function(){
+        popup.dialog({
+            title:'提示',
+            content:$('#formHtml').html(),
+            width:800,
+            showFooter:false,
+            // height:300,
+            // htmlAppend:function(cnf){
+                
+            // }
+        })
+        form.init();
     })
 })
 </script>

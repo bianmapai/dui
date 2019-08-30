@@ -360,6 +360,8 @@ dui.define(['jquery'],function($){
             elements.input.addClass('is-focuse');
             // 给选项角标添加样式
             caret.addClass('is-reverse');
+            // 设置弹出框的宽度
+            optDom.css('min-width',clickDom.outerWidth());
             // 手动修改一下
             that.popper.updatePopper();
             // 设置当前的显示状态
@@ -427,8 +429,8 @@ dui.define(['jquery'],function($){
         hasRender[0] && hasRender.remove();
         $(el).css('display','none').after(clickDom);
         // 添加选项元素
-        optDom.css('min-width',clickDom.outerWidth());
         clickDom.append(optDom)
+        optDom.css('min-width',inputInner.outerWidth());
         // 设置popper
         var ref = clickDom[0],pop = optDom[0];
         var x = {top:'bottom','bottom':'top'};
@@ -499,7 +501,7 @@ dui.define(['jquery'],function($){
         // 设置显示清除按钮和点击事件
         if(config.clearable){
             clickDom.hover(function(){
-                if(that.value){
+                if(that.value.length>0){
                     clickDom.find('.dui-icon-arrow-up').css('display','none');
                     clickDom.find('.'+ClassName.selectClearable).css('display','');
                 }
