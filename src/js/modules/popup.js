@@ -221,24 +221,27 @@ dui.define('popup',['jquery'],function($){
     }
   },
   dialog = function(options){
-    var that = this,id = that.id = 'popup-'+seed++,
-    config = that.config = $.extend(true,{
+    var that = this,
+    warp_class='dui-popup__wrap',id = that.id = 'popup-'+seed++,
+    config = that.config = $.extend(false,{
       title:'',
       content:'',
       offset:'auto',
       type:'',
       width:'50%',
+      height:'auto',
       top:'',
       modal:true,
       modalClose:false,//点击modal是否关闭
       customClass:'',
       showClose:true,
+      moveOut:false,
       center:false,
       close:'',//关闭的回调函数
       closed:'',//关闭动画完成后回调
       btns:['确定','取消'],//按钮
       btnAngin:'right',//btn显示的
-    },options),
+    },options);
     btns = that.btns = function(){
       var res = [],thisBtn = $.extend(true,{},config).btns,
       btns = config.btnAngin=='right' ? thisBtn.reverse() : thisBtn;
@@ -256,22 +259,26 @@ dui.define('popup',['jquery'],function($){
       '<div class="dui-popup'+(config.customClass?' '+config.customClass:'')+'">',
         '<div class="dui-popup__header">',
           '<div class="dui-popup__title">',
-            '<span>'+config.title+'</span>',
+            '<span style="display:block">'+config.title+'</span>',
           '</div>',
           config.showClose ? '<button type="button" class="dui-popup__headerbtn"><i class="dui-popup__close dui-icon-close"></i></button>':'',
         '</div>',
-        '<div class="dui-popup__content">'+config.content+'</div>',
+        '<div class="dui-popup__content"><span>'+config.content+'</span></div>',
         '<div class="dui-popup__btns"'+((config.btnAngin!='right')?'style=" text-align:'+config.btnAngin+';"':'')+'>'+btns+'</div>',
       '</div>',
       config.modal?'<div class="dui-modal"></div>':''
     ].join(''),
-    dom = that.dom = $(template);
+    _doc = $(document),
+    win  = $(window),
+    dom = that.dom = $(template),
+    header = that.header = dom.find('.dui-popup__header'),
+    content = that.content = dom.find('.dui-popup__content'),
+    footer = that.footer = dom.find('.dui-popup__btns'),
+    closeBtn = that.closeBtn = header.find('.dui-popup__headerbtn'),
+    clickbtns = footer.find('button');
     // 给元素设置z-index
     $(dom[0]).css('z-index',dui.getMaxZIndex()+2);//dialog元素
     config.modal && $(dom[1]).css('z-index',dui.getMaxZIndex()+1);//modal元素
-    // 设置元素不可见
-    $(dom[0]).css('display','none');//dialog元素
-    config.modal && $(dom[1]).css('display','none');//modal元素
     // 元素设置过渡
     var modal = that.modalTransition = dui.transition(dom[1],{
       name:'v',
@@ -321,6 +328,20 @@ dui.define('popup',['jquery'],function($){
         return (Number(config.width.split('px')[0]));
       }else{
         return ($('body').width()*50/100)
+      }
+    },
+    // 换算高
+    getHeight = function(){
+      if(typeof config.height === "number"){
+        return config.height;
+      }else if(config.height.indexOf('%')!==-1){
+        var warray = config.height.split('%'),
+        num = Number(warray[0]);
+        return ($('body').height()*num/100);
+      }else if(config.height.indexOf('px')!==-1){
+        return (Number(config.height.split('px')[0]));
+      }else{
+        return 'auto';
       }
     },
     // 换算offset
@@ -385,17 +406,78 @@ dui.define('popup',['jquery'],function($){
     setResize = function(){
       var width = getWidth();
       $(dom[0]).css('width',width);
+      var height = getHeight();
+      if(height!=='auto'){
+        $(dom[0]).css('height',height);
+        //设置body的高度
+        //获取headerHeight
+        var hearderHeight = header.outerHeight();
+        var buttonHeight = footer.outerHeight();
+        var thisPadding = parseFloat(content.css('padding-top'))+parseFloat(content.css('padding-bottom'));
+        var bodyHeight = height-hearderHeight-buttonHeight-thisPadding;
+        if(!that.scrollbar){
+          // 添加滚动条
+          that.scrollbar = dui.addScrollBar(content.find('>span')[0],{
+            wrapClass:warp_class
+          })
+        }
+        content.css('height',bodyHeight);
+        content.find('.'+warp_class).css('max-height',bodyHeight);
+        if(that.scrollbar){
+          that.scrollbar.update();
+        }
+      }
       var offset = getOffset();
       $(dom[0]).css('top',offset.top);
       $(dom[0]).css('left',offset.left);
     }
+    // 重置宽高和position
     setResize();
+    // 设置元素不可见
+    dom.css('display','none');
     // 设置关闭按钮事件
-    dom.find('.dui-popup__headerbtn').on('click',function(e){
+    closeBtn.on('click',function(e){
       that.close();
     })
-    // 按钮的回调
-    dom.find('.dui-popup__btns>button').each(function(i,item){
+    // 设置拖拽事件
+    var move = {},
+    docmousemove = function(e){
+      if(move.moveStart){
+        e.preventDefault();
+        var X = e.clientX - move.start.left
+          , Y = e.clientY - move.start.top
+          , fixed = $(dom[0]).css('position') === 'fixed';
+          move.stX = fixed ? 0 : win.scrollLeft();
+          move.stY = fixed ? 0 : win.scrollTop();
+          //控制元素不被拖出窗口外
+          if (!that.config.moveOut) {
+            var setRig = win.width() - $(dom[0]).outerWidth() + move.stX
+              , setBot = win.height() - $(dom[0]).outerHeight() + move.stY;
+            X < move.stX && (X = move.stX);
+            X > setRig && (X = setRig);
+            Y < move.stY && (Y = move.stY);
+            Y > setBot && (Y = setBot);
+          }
+          $(dom[0]).css({
+            left: X
+            , top: Y
+          });
+      }
+    },
+    docmouseup = function(e){
+      delete move.moveStart;
+    };
+    header.on('mousedown',function(e){
+      e.preventDefault();
+      move.moveStart =true;
+      move.start = {
+        left:(e.clientX - parseFloat($(dom[0]).css('left'))),
+        top:(e.clientY - parseFloat($(dom[0]).css('top')))
+      }
+    })
+    _doc.on('mousemove',docmousemove).on('mouseup',docmouseup)
+    // 设置点击按钮事件
+    clickbtns.each(function(i,item){
       $(item).on('click',function(e){
         if(config.btnAngin=='right'){
           if(typeof config['btn'+((config.btns.length-1)-i)]==="function"){
@@ -407,6 +489,10 @@ dui.define('popup',['jquery'],function($){
           }
         }
       })
+    })
+    // 设置wind大小发生变化事件
+    $(window).on('resize',function(e){
+      setResize();
     })
     // modal点击关闭事件
     if(config.modal && config.modalClose){
@@ -491,6 +577,43 @@ dui.define('popup',['jquery'],function($){
       content:content,
     })
     return popup('dialog',options);
+  }
+  popup.confirm = function(message,options){
+    options = options || {};
+    var type = 'question',title=options.title||'信息',
+    thisOpt = {
+      title:title,
+      type:type,
+      message:message
+    };
+    $.each(arguments,function(i,val){
+      if(i>1){
+        //设置回调函数
+        thisOpt['btn'+(i-2)] = val;
+      }
+    })
+    options = $.extend(true,options,thisOpt)
+    return popup.msgbox(options);
+  }
+  popup.alert = function(message,options){
+    options = options || {};
+    var type = 'info',title=options.title||'信息',
+    callBack = arguments[2],
+    thisOpt = {
+      title:title,
+      type:type,
+      message:message,
+      btns:['确定'],
+      btn0:function(el){
+        thisPop.close();
+        if(callBack && typeof callBack==="function"){
+          callBack.call(this,el);
+        }
+      }
+    };
+    options = $.extend(true,options,thisOpt);
+    var thisPop = popup.msgbox(options);
+    return thisPop;
   }
   popup.close = function(id){
 

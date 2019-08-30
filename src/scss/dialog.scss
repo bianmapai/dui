@@ -19,6 +19,7 @@
     position: relative;
     padding: $--msgbox-padding-primary;
     padding-bottom: 10px;
+    cursor: move;
   }
 
   @include e(title) {
@@ -54,6 +55,7 @@
 
   @include e(content) {
     position: relative;
+    overflow: hidden;
     padding: 10px $--msgbox-padding-primary;
     color: $--messagebox-content-color;
     font-size: $--messagebox-content-font-size;
