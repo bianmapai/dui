@@ -1,4 +1,4 @@
-dui.define(['jquery'],function(){
+dui.define('element',['jquery'],function(){
     var element = function(type,el,options){
         return  new element.Items[type](el,options);
     },

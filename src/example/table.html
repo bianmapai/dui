@@ -1,0 +1,62 @@
+@@include('include/head.html')
+<div class="dui-breadcrumb">
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner"><a href="/">首页</a></span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">表单</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">表单集合</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+</div>
+<div class="dui-body">
+    <div class="dui-card box-card is-never-shadow">
+        <div class="dui-card__header">
+            <div class="clearfix">
+                <span>数据表格</span>
+            </div>
+        </div>
+        <div class="dui-card__body">
+            <table dui-table id="ceshi"></table>
+        </div>
+    </div>
+</div>
+<script>
+dui.use(['table'],function(table){
+    console.log('进来了');
+    table.render({
+        el:'#ceshi',
+        height:'full-215',
+        page:{
+            show:false
+        },
+        data:{
+            url:'/json/table.json',
+            type:'get',
+            dataType:'json'
+        },
+        columns:[[
+            {
+                field:'id',//字段名称对应数据库中的字段
+                title:'',//列显示标题
+                type:'checkbox',//类型，normal，checkbox，numbers,space中的任意值,如果type为checkbox则隐藏标题
+                fixed:true,//浮动列
+            }
+            ,{field:'username', width:80, title: '用户名'}
+            ,{field:'sex', width:80, title: '性别', sort: true}
+            ,{field:'city', width:80, title: '城市'}
+            ,{field:'sign', title: '签名', width: '30%', minWidth: 100} //部定义当前单元格的最小宽度
+            ,{field:'experience', title: '积分', sort: true}
+            ,{field:'score', title: '评分', sort: true}
+            ,{field:'classify', title: '职业'}
+            ,{field:'wealth', width:137, title: '财富', sort: true}
+            ,{field:'',fixed:'right', width:150, title: '操作'}
+        ]]
+    });
+})
+</script>
+@@include('include/foot.html')

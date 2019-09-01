@@ -147,9 +147,11 @@ Dui.prototype.extend = extend;
 Dui.defaults = {
     modules:{
         'jquery':'modules/jquery',
+        'template':'modules/template',
         'popup':'modules/popup',
         'element':'modules/element',
         'form':'modules/form',
+        'table':'modules/table'
     },
     //存储回调函数
     callBack:{},

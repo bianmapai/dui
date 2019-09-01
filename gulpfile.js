@@ -68,6 +68,13 @@ gulp.task("font",()=>{
         .pipe(gulp.dest('dist/font'))
         .pipe(reload({stream: true}));
 })
+//json文件copy
+gulp.task("json",()=>{
+    return gulp.src(['./src/json/*'])
+		.pipe(rename({}))
+        .pipe(gulp.dest('dist/json'))
+        .pipe(reload({stream: true}));
+})
 //example例子处理
 gulp.task('example',function(cb){
 	return gulp.src(['./src/example/*.html','!./src/example/include/*.html'])
@@ -85,7 +92,7 @@ gulp.task("clear",async()=>{
     ]);
 })
 //构建方法
-gulp.task("build",gulp.series("clear",gulp.parallel('JavaScript', 'sass','font','example')))
+gulp.task("build",gulp.series("clear",gulp.parallel('JavaScript', 'sass','font','example','json')))
 //服务器
 gulp.task("serve",gulp.series("build", ()=>{
     browserSync({
@@ -104,6 +111,7 @@ gulp.task("watch",async()=>{
     gulp.watch(["./src/js/*.js","./src/js/**/*.js"],gulp.series("JavaScript"));
     gulp.watch(['./src/example/*.html','./src/example/include/*.html'],gulp.series("example"));
     gulp.watch(['./src/scss/*.scss'],gulp.series("sass"));
+    gulp.watch(['./src/json/*.json'],gulp.series("json"));
 })
 //开发模式
 gulp.task("dev",gulp.series("watch","serve"));

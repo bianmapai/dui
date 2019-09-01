@@ -1,4 +1,4 @@
-dui.define(['jquery'],function($){
+dui.define('form',['jquery'],function($){
     var form = function(el,type,option){
         return new form.Item[type](el,option);
     },
@@ -128,7 +128,7 @@ dui.define(['jquery'],function($){
         form = $(el).parents(Selector.form),filter=Selector.checkbox+'[name="'+config.items+'"]',
         checkClass="is-checked",
         hasRenderSelector = '.'+ClassName.checkbox+(config.buttoned?'-button':'')+'__inner',
-        hasRender = $(el).prev('.'+ClassName.checkbox);
+        hasRender = $(el).prev(hasRenderSelector);
         config.indeterminate && $(el).removeAttr('name');
         //判断是否已经渲染过,已经渲染过就删除掉
         hasRender[0] && hasRender.parents('.'+ClassName.checkbox).after(el) && hasRender.parents('.'+ClassName.checkbox).remove();
@@ -253,7 +253,7 @@ dui.define(['jquery'],function($){
         '</div>'].join(''),
         $dom = that.$showDom = $(template),
         hasRenderSelector = '.'+ClassName.radio+(config.buttoned?'-button':'')+'__inner',
-        hasRender = $(el).prev('.'+ClassName.radio);
+        hasRender = $(el).prev(hasRenderSelector);
         hasRender[0] && hasRender.parents('.'+ClassName.radio).after(el) && hasRender.parents('.'+ClassName.radio).remove();
         $(el).after($dom) && $dom.find(hasRenderSelector).after(el);
         //设置事件
