@@ -1,15 +1,314 @@
-@import "./common/var.scss";
-@import "./mixins/mixins.scss";
-@import "./mixins/config.scss";
+@import "mixins/mixins";
+@import "common/var";
+
 @include b(table) {
-    position: relative;
-    overflow: hidden;
-    box-sizing: border-box;
-    flex: 1;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  background-color: $--color-white;
+  font-size: 14px;
+  color: $--table-font-color;
+
+  // 数据为空
+  @include e(empty-block) {
+    min-height: 60px;
+    text-align: center;
     width: 100%;
-    max-width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @include e(empty-text) {
+    // min-height doesn't work in IE10 and IE11 https://github.com/philipwalton/flexbugs#3-min-height-on-a-flex-container-wont-apply-to-its-flex-items
+    // set empty text line height up to contrainer min-height as workaround.
+    line-height: 60px;
+    width: 50%;
+    color: $--color-text-secondary;
+  }
+
+  @include e(placeholder) {
+    display: inline-block;
+    width: 20px;
+  }
+
+  thead {
+    color: $--table-header-font-color;
+    font-weight: 500;
+    th {
+        background: $--background-color-base;
+    }
+  }
+
+  th, td {
+    padding: 12px 0;
+    min-width: 0;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    position: relative;
+    text-align: left;
+
+    @include when(center) {
+      text-align: center;
+    }
+
+    @include when(right) {
+      text-align: right;
+    }
+
+    &.gutter {
+      width: 15px;
+      border-right-width: 0;
+      border-bottom-width: 0;
+      padding: 0;
+    }
+  }
+
+  tr {
     background-color: $--color-white;
-    font-size: 14px;
-    color: $--table-font-color;
-    
+  }
+
+  th, td {
+    border-bottom: $--table-border;
+  }
+
+  th.is-sortable {
+    cursor: pointer;
+  }
+
+  th {
+    white-space: nowrap;
+    overflow: hidden;
+    user-select: none;
+    background-color: $--table-header-background-color;
+
+    > div {
+      display: inline-block;
+      padding-left: 10px;
+      padding-right: 10px;
+      line-height: 40px;
+      box-sizing: border-box;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    > .cell {
+      position: relative;
+      word-wrap: normal;
+      text-overflow: ellipsis;
+      display: inline-block;
+      vertical-align: middle;
+      box-sizing: border-box;
+      &.highlight {
+        color: $--color-primary;
+      }
+    }
+  }
+
+  td {
+    div {
+      box-sizing: border-box;
+    }
+
+    &.gutter {
+      width: 0;
+    }
+  }
+
+  .cell {
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
+    line-height: 23px;
+    height: 23px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  // 拥有多级表头
+  @include m((border)) {
+    border: $--table-border;
+
+    @include share-rule(border-pseudo) {
+      content: '';
+      position: absolute;
+      background-color: $--table-border-color;
+      z-index: 1;
+    }
+
+    // 表格右部伪 border
+    &::after {
+      @include extend-rule(border-pseudo);
+      top: 0;
+      right: 0;
+      width: 1px;
+      height: 100%;
+    }
+  }
+
+  // 表格底部伪 border，总是有的
+  &::before {
+    @include extend-rule(border-pseudo);
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+  }
+
+  // table--border
+  @include m(border) {
+    border-right: none;
+    border-bottom: none;
+
+    &.#{$namespace}-loading-parent--relative {
+      border-color: transparent;
+    }
+
+    th, td {
+      border-right: $--table-border;
+
+      &:first-child .cell {
+        padding-left: 10px;
+      }
+    }
+
+    th.gutter:last-of-type {
+      border-bottom: $--table-border;
+      border-bottom-width: 1px;
+    }
+
+    & th {
+      border-bottom: $--table-border;
+    }
+  }
+
+  @include e((fixed, fixed-right)) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    box-shadow: $--table-fixed-box-shadow;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background-color: $--border-color-lighter;
+      z-index: 4;
+    }
+  }
+
+  @include e(fixed-right-patch) {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    background-color: $--color-white;
+    border-bottom: $--table-border;
+  }
+
+  @include e(fixed-right) {
+    top: 0;
+    left: auto;
+    right: 0;
+
+    .#{$namespace}-table__fixed-header-wrapper,
+    .#{$namespace}-table__fixed-body-wrapper,
+    .#{$namespace}-table__fixed-footer-wrapper {
+      left: auto;
+      right: 0;
+    }
+  }
+
+  @include e((header, body, footer)) {
+    table-layout: fixed;
+    border-collapse: separate;
+  }
+
+  @include e((header-wrapper, footer-wrapper)) {
+    overflow: hidden;
+    & tbody td {
+      background-color: $--table-row-hover-background-color;
+      color: $--table-font-color;
+    }
+  }
+
+  @include e(body-wrapper) {
+    position: relative;
+    overflow: auto;
+
+    @include when(scrolling-none) {
+      ~ .#{$namespace}-table__fixed,
+      ~ .#{$namespace}-table__fixed-right {
+        box-shadow: none;
+      }
+    }
+
+    @include when(scrolling-left) {
+      ~ .#{$namespace}-table__fixed {
+        box-shadow: none;
+      }
+    }
+
+    @include when(scrolling-right) {
+      ~ .#{$namespace}-table__fixed-right {
+        box-shadow: none;
+      }
+    }
+  }
+
+  .caret-wrapper {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-left: 3px;
+    cursor: pointer!important;
+    vertical-align: middle;
+    position: relative;
+  }
+  .sort-caret{
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: dashed;
+    border-color: transparent;
+    position: absolute;
+    left: 5px;
+    border-width: 5px;
+  }
+  .ascending{
+    top: 3px;
+    border-top: none;
+    border-bottom-style: solid;
+    border-bottom-color: #b2b2b2;
+  }
+  .descending{
+    bottom: 5px;
+    border-bottom: none;
+    border-top-style: solid;
+    border-top-color: #b2b2b2;
+  }
+
+  @include e(column-filter-trigger) {
+    display: inline-block;
+    line-height: 34px;
+    cursor: pointer;
+
+    & i {
+      color: $--color-info;
+      font-size: 12px;
+      transform: scale(.75);
+    }
+  }
 }

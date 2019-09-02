@@ -228,12 +228,18 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         el.after(reElem);
         // 设置表格大小样式
         that.fullSize();
-        // 如果是多表头
-
+        // 同步header高度
+        duiHeader.find('th').each(function(i,item){
+            var key = $(item).data('key');
+            duiFixedL.find('th[data-key="'+key+'"]').css('height',$(item).outerHeight());
+            duiFixedR.find('th[data-key="'+key+'"]').css('height',$(item).outerHeight());
+        })
         // 渲染form
         that.renderForm();
         // 获取数据
         that.pullData();
+        // 设置事件
+        that.setEvent();
     }
     /**
      * 初始化列
@@ -314,14 +320,12 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         }
         if(!height) return;
         bodyHeight = parseFloat(height) - (that.duiHeader.outerHeight() || 48);
-        //减去分页栏的高度
-        if(options.page.show){
-            bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
-        }
+        // //减去分页栏的高度
+        // if(options.page.show){
+        //     bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
+        // }
         // 设置bodyWrap高度
         that.duiBodyer.css('height',bodyHeight);
-        that.duiFixedLWrap.css('height',bodyHeight);
-        that.duiFixedRWrap.css('height',bodyHeight);
     }
     /**
      * 设置初始化列宽
@@ -483,6 +487,8 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                 'right':(scrollWidth+1),
             });
         }
+        // 设置浮动的高度
+        that.duiFixed.find(FIXED_WRAP).css('height',that.duiBodyer.prop('clientHeight'));
     }
     /**
      * 循环列
@@ -680,7 +686,28 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             that.setScrollPatch();
             
         };
+        // 设置body
         setBody();
+    }
+    /**
+     * 设置事件
+     */
+    Class.prototype.setEvent = function(){
+        var that = this,options = that.config;
+        
+
+
+        _WIN.on('resize',function(e){
+            that.resize();
+        })
+    }
+    /**
+     * 重新制定表格大小
+     */
+    Class.prototype.resize = function(){
+        this.fullSize();
+        this.setColumnsWidth();
+        this.setScrollPatch();
     }
     /**
      * 渲染方法
