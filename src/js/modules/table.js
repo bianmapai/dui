@@ -88,7 +88,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                 '<div class="dui-table__fixed-header-wrapper">',
                     TMPL_HEAD({fixed:'right'}),
                 '</div>',
-                '<div class="dui-table__fixed-body-wrapper" style="height:{{bodyHeight}}px;">',
+                '<div class="dui-table__fixed-body-wrapper" style="height:{{bodyHeight}} px;">',
                 '</div>',
             '</div>',
             '{{if page.show}}',
@@ -101,9 +101,9 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             '<style>',
                 '{{each columns  item1 i1}}',
                     '{{each item1 item2 i2}}',
-                        '{{if item2.width}}',
+                        '{{if item2.initWidth}}',
                             '.dui-table-{{index}}-{{item2.key}}{',
-                                'width:{{item2.width}}px;',
+                                'width:{{item2.initWidth}}px;',
                             '}',
                         '{{/if}}',
                     '{{/each}}',
@@ -150,7 +150,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             highlight:true,//当前行高亮
             loading:'',//是否有加载条
             title:'',//导出时的标题
-            minColumnWidth:40,//全局设置的列最小宽度
+            minColumnWidth:60,//全局设置的列最小宽度
             data:'',//数据或者ajax请求对象
             done:'',//渲染完毕的回调
             text:'',//一些操作提示语言
@@ -210,8 +210,6 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         index = that.index = config.index = tableIndex++;;
         // 初始化columns
         that.initColumns();
-        // 设置列宽
-        that.setColumnsWidth();
         // 插入显示元素
         var str = template.render(TMPL_MAIN(),config),
         reElem = that.reElem = $(str),
@@ -221,7 +219,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         duiFixedL     = that.duiFixedL     = reElem.find(FIXED_LEFT),
         duiFixedLWrap = that.duiFixedLWrap = duiFixedL.find(FIXED_WRAP),
         duiFixedR     = that.duiFixedR     = reElem.find(FIXED_RIGHT),
-        duiFixedRWrap = that.duiFixedRWrap = duiFixedR.find(FIXED_RIGHT),
+        duiFixedRWrap = that.duiFixedRWrap = duiFixedR.find(FIXED_WRAP),
         duiPage       = that.duiPage       = reElem.find(PAGE),
         duiGutter     = that.duiGutter     = $('<th class="gutter"></th>'),
         duiPatch      = that.duiPatch      = reElem.find(PATCH);
@@ -279,6 +277,8 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                 initColWidthWithType(col);
             })
         })
+        // 初始化列宽度
+        that.initColumnsWidth();
     }
     /**
      * 获取table的总宽度
@@ -314,7 +314,6 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         }
         if(!height) return;
         bodyHeight = parseFloat(height) - (that.duiHeader.outerHeight() || 48);
-        // console.log(height,that.duiHeader.outerHeight(),bodyHeight);
         //减去分页栏的高度
         if(options.page.show){
             bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
@@ -325,28 +324,28 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         that.duiFixedRWrap.css('height',bodyHeight);
     }
     /**
-     * 设置列宽方法
+     * 设置初始化列宽
      */
-    Class.prototype.setColumnsWidth = function(back){
-        var that = this
-        ,options = that.config
-        ,hasRender = options.el.next(ELEM)[0] ? true : false
+    Class.prototype.initColumnsWidth=function(){
+        // 初始化的时候是没有横向滚动条
+        var that = this,options=that.config
         ,colNums = 0 //列个数
         ,autoColNums = 0 //自动列宽的列个数
         ,autoWidth = 0 //自动列分配的宽度
         ,countWidth = 0 //所有列总宽度和
-        ,clientWidth = that.getClientWidth(),
-        totalWidth = 0;//获取table元素的宽度
+        ,clientWidth = that.getClientWidth()
+        ,totalWidth = 0;//叠加所有列最小宽度
         that.eachColumns(function(i,col){
-            // 如果是隐藏则不给与宽度
-            var width = 0
-            , minWidth = col.minWidth || options.minColumnWidth;
-            width = col.width || minWidth;
-            if (/\d+%$/.test(width)) { //列宽为百分比
-                width = Math.floor((parseFloat(width) / 100) * clientWidth);
-                width < minWidth && (width = minWidth);
-            }
-            totalWidth += width;
+            col.hide || function(){
+                var width = 0
+                , minWidth = col.minWidth || options.minColumnWidth;
+                width = col.width || minWidth;
+                if (/\d+%$/.test(width)) { //列宽为百分比
+                    width = Math.floor((parseFloat(width) / 100) * clientWidth);
+                    width < minWidth && (width = minWidth);
+                }
+                totalWidth += width;
+            }()
             col.hide || colNums++
         })
         if(totalWidth>clientWidth){
@@ -354,73 +353,136 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         }else{
             options.initScroll = 'is-scrolling-none';
         }
-        // 如果有边框，则减去边框的宽度,如果有滚动条则减去滚动条的宽度
+        // 初始化的时候是不需要减去滚动条
         clientWidth = clientWidth-function(){
             return options.border ? colNums+1 : 0;
-        }()-(dui.getScrollWidth()+1);
-        // 自动分配列宽
+        }();
+        // 获取自动分配列的宽度
         var getAutoWidth = function(back){
-            //遍历所有列
-            $.each(options.columns, function (i1, row) {
-                $.each(row, function (i2, col) {
-                    var width = 0
-                    , minWidth = col.minWidth || options.minColumnWidth; //最小宽度
-                    if (!col) {
-                        row.splice(i2, 1);
-                        return;
+            that.eachColumns(function(i,col){
+                var width = 0
+                , minWidth = col.minWidth || options.minColumnWidth; //最小宽度
+                if (col.colGroup || col.hide) return;
+                if (!back) {
+                    width = col.width || 0;
+                    if (/\d+%$/.test(width)) { //列宽为百分比
+                        width = Math.floor((parseFloat(width) / 100) * clientWidth);
+                        width < minWidth && (width = minWidth);
+                    } else if (!width) { //列宽未填写
+                        col.width = width = 0;
+                        autoColNums++;
                     }
-                    if (col.colGroup || col.hide) return;
-
-                    if (!back) {
-                        width = col.width || 0;
-                        if (/\d+%$/.test(width)) { //列宽为百分比
-                            width = Math.floor((parseFloat(width) / 100) * clientWidth);
-                            width < minWidth && (width = minWidth);
-                        } else if (!width) { //列宽未填写
-                            col.width = width = 0;
-                            autoColNums++;
-                        }
-                    } else if (autoWidth && autoWidth < minWidth) {
-                        autoColNums--;
-                        width = minWidth;
-                    }
-
-                    if (col.hide) width = 0;
-                    countWidth = countWidth + width;
-                });
-            });
-            //如果未填充满，则将剩余宽度平分
-            (clientWidth > countWidth && autoColNums) && (
-                autoWidth = (clientWidth - countWidth) / autoColNums
-            );
+                } else if (autoWidth && autoWidth < minWidth) {
+                    autoColNums--;
+                    width = minWidth;
+                }
+                if (col.hide) width = 0;
+                countWidth = countWidth + width;
+                //如果未填充满，则将剩余宽度平分
+                (clientWidth > countWidth && autoColNums) && (
+                    autoWidth = (clientWidth - countWidth) / autoColNums
+                );
+            },true);
         }
         getAutoWidth();
-        getAutoWidth(true); //重新检测分配的宽度是否低于最小列宽
-        //自动分配列个数
-        that.autoColNums = autoColNums;
-        //设置列宽
+        getAutoWidth(true);
+        // 记录自动分配列的个数
+        options.autoColNums = autoColNums;
+        // 设置列宽
         that.eachColumns(function(index,col){
             var minWidth = col.minWidth || options.minColumnWidth;
             if(col.colGroup || col.hide) return;
-            //给位分配宽的列平均分配宽
-            if(col.width === 0) {
-                if(hasRender){
-                    that.setCssRule(col.key, function (item) {
-                        item.style.width = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth) + 'px';
-                    });
-                }else{
-                    col.width = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth);
-                }
+            if(col.width === 0){
+                col.initWidth = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth);
+                // 设置当前列为自动分配宽度列
+                col.autoColumn = true;
             }else if(/\d+%$/.test(col.width)){
-                if(hasRender){
-                    that.setCssRule(col.key, function(item){
-                        item.style.width = Math.floor((parseFloat(col.width) / 100) * clientWidth) + 'px';
-                    });
-                }else{
-                    col.width = Math.floor((parseFloat(col.width) / 100) * clientWidth);
-                }
+                col.initWidth = Math.floor((parseFloat(col.width) / 100) * clientWidth);
+            }else{
+                col.initWidth = col.width;
             }
         },true);
+    }
+    /**
+     * 设置列宽，根据是否有滚动条调整
+     */
+    Class.prototype.setColumnsWidth = function(){
+        var that = this,options=that.config,
+        clientWidth = that.getClientWidth(),
+        colNums = 0,//列个数
+        countWidth = 0,//已经有宽度的列总宽度 
+        scrollWidth = (that.duiBodyer[0].offsetWidth-that.duiBodyer[0].clientWidth);
+        // 获取根据最小宽度得到的总宽度
+        that.eachColumns(function(i,col){
+            col.hide || colNums++
+        })
+        // 修正滚动条
+        clientWidth = clientWidth-function(){
+            return options.border ? colNums+1 : 0;
+        }()-(scrollWidth>0?(dui.getScrollWidth()+2):0);
+        // 获取剩余宽度
+        var getAutoAllWidth = function(){
+            that.eachColumns(function(i,col){
+                var width = 0
+                , minWidth = col.minWidth || options.minColumnWidth; //最小宽度
+                if (col.colGroup || col.hide) return;
+                width = col.width || 0;
+                if (/\d+%$/.test(width)) { //列宽为百分比
+                    width = Math.floor((parseFloat(width) / 100) * clientWidth);
+                    width < minWidth && (width = minWidth);
+                }
+                countWidth += width;
+            })
+            return (clientWidth-countWidth);
+        }(),autoWidth = (getAutoAllWidth/options.autoColNums);
+        // 设置样式
+        that.eachColumns(function(i,col){
+            var minWidth = col.minWidth || options.minColumnWidth;
+            if(col.colGroup || col.hide) return;
+            // 给自动分配列宽的列分配宽度
+            if(col.autoColumn){
+                that.getCssRule(col.key,function(rule){
+                    rule.style.width = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth) + 'px';
+                })
+            }
+            // 给宽度为百分比的宽设置宽度
+            else if(/\d+%$/.test(col.width)){
+                that.getCssRule(col.key,function(rule){
+                    rule.style.width = Math.floor((parseFloat(col.width) / 100) * clientWidth) + 'px';
+                })
+            }
+        })
+        // 判断是否有纵向滚动条
+        if(that.duiBodyer[0].offsetHeight==that.duiBodyer[0].clientHeight){
+            that.duiBodyer.removeClass('is-scrolling-right').removeClass('is-scrolling-left').addClass('is-scrolling-none');
+        }else{
+            that.duiBodyer.removeClass('is-scrolling-right').removeClass('is-scrolling-none').addClass('is-scrolling-left');
+        }
+    }
+    /**
+     * 设置滚动条补丁
+     */
+    Class.prototype.setScrollPatch = function(){
+        var that = this,options = that.config,
+        duiMainTable = that.duiBodyer.children('table');
+        scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
+        scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
+        
+
+
+        // 如果有右侧滚动条
+        if(scrollWidth>0){
+            // 设置补丁
+            that.duiGutter.css('width',scrollWidth);
+            that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
+            // 如果是多级表头
+            if(options.columns.length>1){
+                that.gutter.attr('rowspan',options.columns.length);
+            }
+            that.duiFixedR.css({
+                'right':(scrollWidth+1),
+            });
+        }
     }
     /**
      * 循环列
@@ -471,6 +533,22 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             return res;
         };
         eachArrs();
+    }
+    /**
+     * 设置table的列宽规则
+     * @param {String} key 规则键
+     * @param {Function} callback 回调方法
+     */
+    Class.prototype.getCssRule = function(key,callback){
+        var that = this
+        ,style = that.reElem.find('style')[0]
+        ,sheet = style.sheet || style.styleSheet || {}
+        ,rules = sheet.cssRules || sheet.rules;
+        $.each(rules,function(i,item){
+            if(item.selectorText === ('.dui-table-'+that.index+'-'+ key)){
+                return callback(item), true;
+            }
+        })
     }
     /**
      * 渲染form
@@ -598,6 +676,8 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             that.renderForm();
             // 重新设置列宽
             that.setColumnsWidth();
+            // 设置补丁
+            that.setScrollPatch();
             
         };
         setBody();
