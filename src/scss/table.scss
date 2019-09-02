@@ -197,6 +197,7 @@
     overflow-x: hidden;
     overflow-y: hidden;
     box-shadow: $--table-fixed-box-shadow;
+    z-index: 5;
 
     &::before {
       content: '';

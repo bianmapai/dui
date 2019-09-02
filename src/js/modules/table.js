@@ -477,15 +477,21 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         // 如果有右侧滚动条
         if(scrollWidth>0){
             // 设置补丁
-            that.duiGutter.css('width',scrollWidth);
+            that.duiGutter.css('width',(scrollWidth+1));
+            that.duiGutter.css('display','');
             that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
             // 如果是多级表头
             if(options.columns.length>1){
                 that.gutter.attr('rowspan',options.columns.length);
             }
             that.duiFixedR.css({
-                'right':(scrollWidth+1),
+                'right':(scrollWidth-1),//减1是为了遮住滚动条的边框
             });
+        }else{
+            that.duiFixedR.css({
+                'right':'',
+            });
+            that.duiGutter.css('display','none');
         }
         // 设置浮动的高度
         that.duiFixed.find(FIXED_WRAP).css('height',that.duiBodyer.prop('clientHeight'));
