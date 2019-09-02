@@ -292,13 +292,13 @@
     top: 3px;
     border-top: none;
     border-bottom-style: solid;
-    border-bottom-color: #b2b2b2;
+    border-bottom-color: #c0c4cc;
   }
   .descending{
     bottom: 5px;
     border-bottom: none;
     border-top-style: solid;
-    border-top-color: #b2b2b2;
+    border-top-color: #c0c4cc;
   }
 
   @include e(column-filter-trigger) {
