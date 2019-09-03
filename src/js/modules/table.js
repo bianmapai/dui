@@ -78,6 +78,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             '<div class="dui-table__body-wrapper{{if initScroll}} {{initScroll}}{{/if}}" style="height:{{bodyHeight}}px;">',
                 // 显示内容，暂不设置
             '</div>',
+            '{{if fixedLCoumnsNum>0}}',
             '<div class="dui-table__fixed dui-table__fixed-left">',
                 '<div class="dui-table__fixed-header-wrapper">',
                     TMPL_HEAD({fixed:'left'}),
@@ -85,6 +86,8 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                 '<div class="dui-table__fixed-body-wrapper" style="height:{{bodyHeight}}px;">',
                 '</div>',
             '</div>',
+            '{{/if}}',
+            '{{if fixedRCoumnsNum>0}}',
             '<div class="dui-table__fixed dui-table__fixed-right">',
                 '<div class="dui-table__fixed-header-wrapper">',
                     TMPL_HEAD({fixed:'right'}),
@@ -92,6 +95,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                 '<div class="dui-table__fixed-body-wrapper" style="height:{{bodyHeight}} px;">',
                 '</div>',
             '</div>',
+            '{{/if}}',
             '{{if page.show}}',
             '<div class="diu-table__page">',
             '</div>',
@@ -361,7 +365,9 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         ,autoWidth = 0 //自动列分配的宽度
         ,countWidth = 0 //所有列总宽度和
         ,clientWidth = that.getClientWidth()
-        ,totalWidth = 0;//叠加所有列最小宽度
+        ,fixedLCoumnsNum = options.fixedLCoumnsNum = 0,//左侧浮动列个数
+        fixedRCoumnsNum = options.fixedRCoumnsNum = 0,//右侧浮动列个数
+        totalWidth = 0;//叠加所有列最小宽度
         that.eachColumns(function(i,col){
             col.hide || function(){
                 var width = 0
@@ -427,6 +433,11 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                 col.initWidth = Math.floor((parseFloat(col.width) / 100) * clientWidth);
             }else{
                 col.initWidth = col.width;
+            }
+            if(col.fixed && col.fixed!=='right'){
+                options.fixedLCoumnsNum++;
+            }else if(col.fixed && col.fixed==='right'){
+                options.fixedRCoumnsNum++;
             }
         },true);
     }
@@ -694,7 +705,9 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                     tr_right =tds_right.length>0 ? $('<tr >'+template.render(tds_right.join(''),row)+'</tr>'):'',
                     tr = tds.length>0 ? $('<tr >'+template.render(tds.join(''),row)+'</tr>'):'';
                 // 设置数据
-                tr_left[0].data = tr_right[0].data = tr[0].data = row;
+                tr_left[0] ? tr_left[0].data = row:'';
+                tr_right[0]? tr_right[0].data = row:'';
+                tr[0] ? tr[0].data = row:'';
                 // 放置元素
                 bodyTable.append(tr),bodyLeftTable.append(tr_left),bodyRightTable.append(tr_right);
             })
