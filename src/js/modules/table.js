@@ -758,10 +758,8 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         var that = this,othis = that.duiBodyer
         ,scrollLeft = othis.scrollLeft()
         ,scrollTop = othis.scrollTop();
-
         that.duiHeader.scrollLeft(scrollLeft);
         that.duiFixed.find(FIXED_WRAP).scrollTop(scrollTop);
-        console.log(that.duiFixed.find(FIXED_WRAP),scrollTop);
     }
     /**
      * 渲染方法
