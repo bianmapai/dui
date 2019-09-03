@@ -8,6 +8,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
     ELEM = '.dui-table',HEADER='.dui-table__header-wrapper',BODYER='.dui-table__body-wrapper',
     FIXED = '.dui-table__fixed',FIXED_LEFT='.dui-table__fixed-left',FIXED_RIGHT='.dui-table__fixed-right',
     PAGE = '.diu-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
+    TABLEBODY='.dui-table__body',ROWHOVER='.dui-table__body tr',
     // 列模板
     TMPL_HEAD=function(options){
         options = options || {};
@@ -36,7 +37,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                         '{{if item2.field}} data-field="{{item2.field}}"{{/if}}',
                         ' data-key="{{item2.key}}" colspan="{{item2.colspan}}" rowspan="{{item2.rowspan}}"',
                         ' class="{{if item2.sort && item2.colspan==1}}is-sortable{{/if}}">',
-                            '<div class="cell dui-table-{{if item2.colGroup}}group{{else}}{{index}}-{{item2.key}}{{/if}}{{if item2.type!=="normal"}}{{if item2.align}} align="{{item2.align}}"{{/if}} dui-table_cell-{{item2.type}}{{/if}}">',
+                            '<div class="cell dui-table-{{if item2.colGroup}}group{{else}}{{index}}-{{item2.key}}{{/if}}{{if item2.type!=="normal"}} dui-table__cell-{{item2.type}}{{/if}}{{if item2.align}} align="{{item2.align}}"{{/if}}">',
                                 '{{if item2.type=="checkbox"}}',
                                     '<input type="checkbox" dui-checkbox indeterminate="true"{{if checkAll}} checked="checked"{{/if}} id="dui-table-{{index}}-checkbox">',
                                 '{{else}}',
@@ -70,7 +71,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         // table过滤
         ' dui-filter="dui-table-{{index}}-form"',
         // 设置table的宽高
-        ' style="width:{{clientWidth}}px;{{if height}}height:{{height}}px{{/if}}">',
+        ' style="{{if height}}height:{{height}}px{{/if}}">',
             '<div class="dui-table__header-wrapper">',
                 TMPL_HEAD(),
             '</div>',
@@ -221,7 +222,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         duiFixedR     = that.duiFixedR     = reElem.find(FIXED_RIGHT),
         duiFixedRWrap = that.duiFixedRWrap = duiFixedR.find(FIXED_WRAP),
         duiPage       = that.duiPage       = reElem.find(PAGE),
-        duiGutter     = that.duiGutter     = $('<th class="gutter"></th>'),
+        duiGutter     = that.duiGutter     = $('<th class="gutter"><div class="cell"></div></th>'),
         duiPatch      = that.duiPatch      = reElem.find(PATCH);
         // 如果已经渲染过了则移除
         hasRender[0] && hasRender.remove();
@@ -414,7 +415,9 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         var that = this,options=that.config,
         clientWidth = that.getClientWidth(),
         colNums = 0,//列个数
-        countWidth = 0,//已经有宽度的列总宽度 
+        countWidth = 0,//已经有宽度的列总宽度
+        fixedLeftWidth = 0,//左侧浮动大小
+        fixedRightWidth = 0,//右侧浮动大小
         scrollWidth = (that.duiBodyer[0].offsetWidth-that.duiBodyer[0].clientWidth);
         // 获取根据最小宽度得到的总宽度
         that.eachColumns(function(i,col){
@@ -441,7 +444,8 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         }(),autoWidth = (getAutoAllWidth/options.autoColNums);
         // 设置样式
         that.eachColumns(function(i,col){
-            var minWidth = col.minWidth || options.minColumnWidth;
+            var minWidth = col.minWidth || options.minColumnWidth,
+            thisWidth = 1;
             if(col.colGroup || col.hide) return;
             // 给自动分配列宽的列分配宽度
             if(col.autoColumn){
@@ -462,6 +466,19 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         }else{
             that.duiBodyer.removeClass('is-scrolling-right').removeClass('is-scrolling-none').addClass('is-scrolling-left');
         }
+        // 设置fixed宽度
+        that.duiFixedL.css({
+            width:that.duiFixedLWrap.width(),
+            height:that.reElem.height(),
+        });
+        that.duiFixedR.css({
+            width:that.duiFixedRWrap.width(),
+            height:that.reElem.height(),
+        });
+        that.duiFixed.find(FIXED_WRAP).css({
+            top:that.duiHeader.height()
+        })
+
     }
     /**
      * 设置滚动条补丁
@@ -471,14 +488,11 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         duiMainTable = that.duiBodyer.children('table');
         scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
         scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
-        
-
-
         // 如果有右侧滚动条
         if(scrollWidth>0){
             // 设置补丁
-            that.duiGutter.css('width',(scrollWidth+1));
-            that.duiGutter.css('display','');
+            that.duiGutter.css("width",scrollWidth);
+            that.duiGutter.css('display','block');
             that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
             // 如果是多级表头
             if(options.columns.length>1){
@@ -487,14 +501,23 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             that.duiFixedR.css({
                 'right':(scrollWidth-1),//减1是为了遮住滚动条的边框
             });
+            that.duiPatch.css({
+                width:scrollWidth,
+                height:that.duiHeader.height()
+            })
         }else{
             that.duiFixedR.css({
                 'right':'',
             });
             that.duiGutter.css('display','none');
         }
+        // 如果
         // 设置浮动的高度
-        that.duiFixed.find(FIXED_WRAP).css('height',that.duiBodyer.prop('clientHeight'));
+        if(scrollHeight>0){
+            that.duiFixed.find(FIXED_WRAP).css('height',(that.duiBodyer.prop('clientHeight')-scrollHeight));
+        }else{
+            that.duiFixed.find(FIXED_WRAP).css('height',that.duiBodyer.prop('clientHeight'));
+        }
     }
     /**
      * 循环列
@@ -639,7 +662,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             bodyRightTable = $(bodytemplate),
             tdTmpl = [
                 '<td dui-field="{{field}}" dui-key="{{key}}"{{if style}} style="{{style}}"{{/if}}>',
-                    '<div class="cell dui-table-{{stylekey}}"{{if align}} align="{{align}}"{{/if}}>',
+                    '<div class="cell dui-table-{{stylekey}}{{if type!=="normal"}} dui-table__cell-{{type}}{{/if}}"{{if align}} align="{{align}}"{{/if}}>',
                     // 如果是模板
                     '{{if template}}{{@ template}}',
                     '{{else}}',
@@ -701,11 +724,24 @@ dui.define('table',['jquery','template','form'],function($,template,form){
     Class.prototype.setEvent = function(){
         var that = this,options = that.config;
         
-
-
+        // 同步滚动条
+        that.duiBodyer.on('scroll', function(){
+            that.synScroll();
+        });
+        // table大小发生变化事件
         _WIN.on('resize',function(e){
             that.resize();
         })
+        // 行事件
+        that.reElem.on('mouseenter',ROWHOVER,function(){
+            var othis = $(this),
+            index = othis.index();
+            that.reElem.find(TABLEBODY).find('tr:eq('+index+')').addClass('hover-row');
+        }).on('mouseleave',ROWHOVER,function(){
+            var othis = $(this),
+            index = othis.index();
+            that.reElem.find(TABLEBODY).find('tr:eq('+index+')').removeClass('hover-row');
+        });
     }
     /**
      * 重新制定表格大小
@@ -714,6 +750,18 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         this.fullSize();
         this.setColumnsWidth();
         this.setScrollPatch();
+    }
+    /**
+     * 同步滚动条
+     */
+    Class.prototype.synScroll = function(){
+        var that = this,othis = that.duiBodyer
+        ,scrollLeft = othis.scrollLeft()
+        ,scrollTop = othis.scrollTop();
+
+        that.duiHeader.scrollLeft(scrollLeft);
+        that.duiFixed.find(FIXED_WRAP).scrollTop(scrollTop);
+        console.log(that.duiFixed.find(FIXED_WRAP),scrollTop);
     }
     /**
      * 渲染方法
