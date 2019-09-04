@@ -8,6 +8,7 @@ import Popper from "./lib/popper";
 import addScrollBar from "./lib/addScrollBar";//给元素添加自己的滚动条
 import { addResizeListener,removeResizeListener } from "./lib/resize-event";
 import addPopper from "./lib/addPopper";
+import sort from "./lib/sort";//排序
 Dui.prototype.on = on;
 Dui.prototype.off = off;
 Dui.prototype.trim = trim;
@@ -33,4 +34,5 @@ Dui.prototype.removeResizeListener = removeResizeListener;
 Dui.prototype.addScrollBar = addScrollBar;
 Dui.prototype.getMaxZIndex = getMaxZIndex;
 Dui.prototype.addPopper = addPopper;
+Dui.prototype.sort = sort;
 export default dui;

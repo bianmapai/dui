@@ -511,12 +511,52 @@ dui.define('popup',['jquery'],function($){
       that.transition.show();
     }
   },
+  loading= function(options){
+    var that = this,id = that.id = 'popup-'+seed++,
+    config = that.config = $.extend(true,{
+      target:'',
+      fullscreen:true,
+      lock:false,
+      text:'',
+      spinner:'',
+      background:'',
+      customClass:''
+    },options),
+    template = [
+      '<div class="dui-loading-mask" '+(config.background ? (' style="background-color:'+config.background+'"'):'')+'>',
+        '<div class="dui-loading-spinner">',
+          config.spinner?'<i class="'+config.spinner+'"></i>':'<svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>',
+          config.text? '<p class="dui-loading-text">'+config.text+'</p>':'',
+        '</div>',
+      '</div>',
+    ].join('');
+    // 如果没有target则直接返回
+    if(!config.target) return;
+    var target = that.target = $(config.target);
+    // 需要插入的元素
+    var showDom = that.showDom = $(template);
+    // 设置元素为none
+    showDom.css('display','none');
+    // 设置过渡
+    var transition = that.transition = dui.transition(showDom[0],{
+      name:'dui-loading-fade',
+      afterLeave:function(el){
+        // 给target添加class
+        target.removeClass('dui-loading-parent--relative');
+        // 如果是lock
+        target.removeClass('dui-laoding-parent--hidden');
+        // 移除显示元素
+        showDom.remove();
+      }
+    })
+  },
   seed = 1,//每一个popup的唯一编号，自增
   allPopup = [],
   Items = {
     message:message,
     notify:notification,
     dialog:dialog,
+    loading:loading,
   }
   //关闭方法
   message.prototype.close=function(){
@@ -559,6 +599,32 @@ dui.define('popup',['jquery'],function($){
     if(typeof that.config.close ==="function"){
       that.config.close.call()
     }
+  }
+  // 显示方法
+  loading.prototype.show = function(){
+    var that = this,config=that.config;
+    // 给target添加class
+    that.target.addClass('dui-loading-parent--relative');
+    // 如果是lock
+    config.lock && that.target.addClass('dui-laoding-parent--hidden');
+    // 添加元素
+    that.target.append(that.showDom);
+    // 显示元素
+    that.transition.show();
+  }
+  // 关闭方法
+  loading.prototype.close = function(){
+    var  that = this;
+    $.each(allPopup,function(i,item){
+      if(item && item.id==that.id){
+        allPopup.splice(i,1);
+      }
+    })
+    that.transition.hide();
+  }
+  popup.loading = function(options){
+    options = $.extend(true,{},options);
+    return popup('loading',options);
   }
   popup.message = function(msg,options){
     options = $.extend(true,options,{message:msg});

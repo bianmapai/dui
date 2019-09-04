@@ -1,4 +1,4 @@
-dui.define('table',['jquery','template','form'],function($,template,form){
+dui.define('table',['jquery','template','form','popup'],function($,template,form,popup){
     /**
      * 初始化入口
      */
@@ -9,6 +9,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
     FIXED = '.dui-table__fixed',FIXED_LEFT='.dui-table__fixed-left',FIXED_RIGHT='.dui-table__fixed-right',
     PAGE = '.diu-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
     TABLEBODY='.dui-table__body',ROWHOVER='.dui-table__body tr',FIXED_HEAD='.dui-table__fixed-header-wrapper',
+    TABLEHEADER = '.dui-table__header',HEADER_TH = TABLEHEADER+' th',
     // 列模板
     TMPL_HEAD=function(options){
         options = options || {};
@@ -45,7 +46,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                                 '{{/if}}',
                                 // 排序
                                 '{{if item2.sort && item2.colspan==1 && item2.type!=="checkbox" && item2.type!=="numbers"}}',
-                                '<span class="caret-wrapper">',
+                                '<span class="caret-wrapper{{if initSort && initSort.field==item2.field && initSort.sort=="desc"}} descending{{/if}}{{if initSort && initSort.field==item2.field && initSort.sort && initSort.sort!=="desc"}} ascending{{/if}}">',
                                     '<i class="sort-caret ascending"></i>',
                                     '<i class="sort-caret descending"></i>',
                                 '</span>',
@@ -162,7 +163,7 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             request:'',//请求参数配置
             response:'',//响应参数配置
         },options);
-        config.where = config.where || {};
+        that.where = config.where || {};
         config.el  = $(config.el);
         // 如果没有原始元素
         if(!config.el[0]) return that;
@@ -188,8 +189,10 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         // 配置请求参数
         config.request = $.extend({
             pageName: 'page'
-            ,limitName: 'size'
-        },options.request)
+            ,limitName: 'size',
+            sortName:'sort',
+            whereName:'where'
+        },options.request);
         // 配置响应数据格式
         config.response = $.extend({
             statusName: 'code'
@@ -200,6 +203,8 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         },options.response);
         // 设置当前页面
         that.currPage = parseInt(config.page.curr) || 1;
+        // 设置初始化排序列
+        config.initSort && (that.sort = $.extend(true,{},config.initSort));
         // 初始化
         that.init();
     }
@@ -227,7 +232,8 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         duiFixedRWrap = that.duiFixedRWrap = duiFixedR.find(FIXED_WRAP),
         duiPage       = that.duiPage       = reElem.find(PAGE),
         duiGutter     = that.duiGutter     = $('<th class="gutter"><div class="cell"></div></th>'),
-        duiPatch      = that.duiPatch      = reElem.find(PATCH);
+        duiPatch      = that.duiPatch      = reElem.find(PATCH),
+        duiLoading    = that.duiLoading    = popup.loading({target:reElem[0]});
         // 如果已经渲染过了则移除
         hasRender[0] && hasRender.remove();
         el.after(reElem);
@@ -601,14 +607,15 @@ dui.define('table',['jquery','template','form'],function($,template,form){
     /**
      * 获取数据
      */
-    Class.prototype.pullData = function(curr,params={}){
+    Class.prototype.pullData = function(curr){
         var that = this,options=that.config,
         request = options.request,
         response = options.response,
-        ajaxOpt = options.data;
+        ajaxOpt = options.data,
+        params = that.buildRequest();
         that.startTime = new Date().getTime()
         //如果需要显示加载条
-        // options.loading &&
+        options.loading && that.duiLoading.show();
         // 如果是数组
         if(ajaxOpt.url){
             // 说明是请求远程数据
@@ -618,7 +625,6 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                 params[request.pageName] = curr;
                 params[request.limitName] = options.page.limit;
             }
-            params = $.extend(true,{where:options.where},params);
             // 以json提交
             if(ajaxOpt.contentType && ajaxOpt.contentType.indexOf("application/json") == 0){ //提交 json 格式
                 params = JSON.stringify(params);
@@ -640,11 +646,21 @@ dui.define('table',['jquery','template','form'],function($,template,form){
                 },
                 error:function(){
                     that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.loadError}));
+                    // 关闭加载框
+                    that.duiLoading.close();
                 }
             })
 
         }else if(options.data && options.data.constructor === Array){
-
+            var res = {},limit= options.page.limit
+            ,startLimit = curr*limit - limit,
+            data = JSON.parse(JSON.stringify(options.data))||[];
+            if(params.sort && params.sort.field){
+                data = dui.sort(data,params.sort.field,params.sort.sort?params.sort.sort:'asc')
+            }
+            res[response.dataName] = data.concat().splice(startLimit, limit);
+            res[response.countName] = data.length;
+            that.renderData(res, curr, data.length);
         }else{
             that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.notDataOrUrl}));
         }
@@ -727,15 +743,49 @@ dui.define('table',['jquery','template','form'],function($,template,form){
             that.setScrollPatch();
             
         };
-        // 设置body
-        setBody();
+        if(data.length==0){
+            that.renderForm();
+            that.duiFixedLWrap.html('');
+            that.duiFixedRWrap.html('');
+            that.duiBodyer.html('');
+            that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.empty}));
+            return;
+        }else{
+            // 设置body
+            setBody();
+        }
+        // 关闭加载条
+        that.duiLoading.close();
+        
     }
     /**
      * 设置事件
      */
     Class.prototype.setEvent = function(){
         var that = this,options = that.config;
-        
+        // 排序事件
+        that.reElem.on('click',HEADER_TH+'.is-sortable',function(){
+            var othis = $(this),field = othis.data('field'),
+            sortDom = othis.find('.caret-wrapper'),
+            ather = that.reElem.find(HEADER_TH).find('.caret-wrapper');
+            if(that.sort && that.sort.field==field){
+                if(that.sort.sort=='desc'){
+                    that.sort.sort = 'asc';
+                    ather.attr('class','caret-wrapper')
+                    sortDom.attr('class','caret-wrapper ascending');
+                }else{
+                    that.sort.sort = 'desc';
+                    ather.attr('class','caret-wrapper')
+                    sortDom.attr('class','caret-wrapper descending');
+                }
+            }else{
+                that.sort.field = field;
+                that.sort.sort = 'asc';
+                ather.attr('class','caret-wrapper')
+                sortDom.attr('class','caret-wrapper ascending');
+            }
+            that.pullData(that.currPage);
+        })
         // 同步滚动条
         that.duiBodyer.on('scroll', function(){
             that.synScroll();
@@ -790,6 +840,12 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         }
     }
     /**
+     * 同步选择框
+     */
+    Class.prototype.synChecked = function(){
+
+    }
+    /**
      * 同步滚动条
      */
     Class.prototype.synScroll = function(){
@@ -800,6 +856,20 @@ dui.define('table',['jquery','template','form'],function($,template,form){
         that.duiFixed.find(FIXED_WRAP).scrollTop(scrollTop);
         // 渲染shown
         that.renderFixedShadow();
+    }
+    /**
+     * 组装请求参数
+     */
+    Class.prototype.buildRequest = function(){
+        var that = this,config = that.config,
+        request = config.request,
+        where = that.where,sort = that.sort,
+        params = {};
+        // 如果有sort
+        sort && (params[request.sortName] = sort);
+        // 如果有where
+        where && (params[request.whereName] = where);
+        return params;
     }
     /**
      * 渲染方法
