@@ -770,13 +770,17 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             ather = that.reElem.find(HEADER_TH).find('.caret-wrapper');
             if(that.sort && that.sort.field==field){
                 if(that.sort.sort=='desc'){
-                    that.sort.sort = 'asc';
-                    ather.attr('class','caret-wrapper')
-                    sortDom.attr('class','caret-wrapper ascending');
-                }else{
+                    ather.attr('class','caret-wrapper');
+                    sortDom.attr('class','caret-wrapper');
+                    that.sort = {};
+                }else if(that.sort.sort=='asc'){
                     that.sort.sort = 'desc';
                     ather.attr('class','caret-wrapper')
                     sortDom.attr('class','caret-wrapper descending');
+                }else{
+                    that.sort.sort = 'asc';
+                    ather.attr('class','caret-wrapper')
+                    sortDom.attr('class','caret-wrapper ascending');
                 }
             }else{
                 that.sort.field = field;
@@ -785,7 +789,33 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
                 sortDom.attr('class','caret-wrapper ascending');
             }
             that.pullData(that.currPage);
+        }).on('click',HEADER_TH+'.is-sortable .caret-wrapper',function(e){
+            e.stopPropagation();
+            var othis = $(e.target),field = othis.parents('th').data('field'),
+            sortDom = $(this),ather = that.reElem.find(HEADER_TH).find('.caret-wrapper');
+            if(othis.hasClass('ascending')){
+                //如果是升序
+                if(that.sort && that.sort.field==field && sortDom.hasClass('ascending')) return;
+                ather.attr('class','caret-wrapper')
+                sortDom.attr('class','caret-wrapper ascending')
+                that.sort.field=field;
+                that.sort.sort = 'asc';
+            }else if(othis.hasClass('descending')){
+                //如果是降序
+                if(that.sort && that.sort.field==field && sortDom.hasClass('descending')) return;
+                ather.attr('class','caret-wrapper')
+                sortDom.attr('class','caret-wrapper descending')
+                that.sort.field=field;
+                that.sort.sort = 'asc';
+            }
+            that.pullData(that.currPage);
         })
+        // 复选框选择事件
+        that.reElem.on('click','.dui-checkbox',function(e){
+            console.log('进来了');
+        })
+
+
         // 同步滚动条
         that.duiBodyer.on('scroll', function(){
             that.synScroll();

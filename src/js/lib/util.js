@@ -86,7 +86,6 @@ export function bind(el,name,type,fn){
     }
     el.vnode.event[name][type] = fn;
 }
-
 /**
  * 给网页元素取消方法//统一委托
  * @param {Element} el 要给那个设置回调方法

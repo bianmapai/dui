@@ -160,36 +160,15 @@ dui.define('form',['jquery'],function($){
                 if($dom.find('.'+ClassName.checkboxInput).hasClass('is-indeterminate')){
                     $dom.find('.'+ClassName.checkboxInput).removeClass('is-indeterminate').addClass(checkClass)
                     $dom.addClass(checkClass);
-                    //选中其他
-                    //表示选中
-                    form.find(filter).prop('checked',true);
-                    (form.find(filter).parents('.'+ClassName.checkbox)[0] ?  form.find(filter).parents('.'+ClassName.checkbox) : form.find(filter).parents('.'+ClassName.checkbox+'-button'))
-                    .addClass(checkClass)
-                    .find(ClassName.checkboxInput)
-                    .addClass(checkClass);
                 }else{
                     if($dom.hasClass(checkClass)){
                         $dom.removeClass(checkClass);
                         !config.buttoned && $dom.find('.'+ClassName.checkboxInput).removeClass(checkClass);
-                        //表示不选中
-                        form.find(filter).prop('checked',false);
-                        
-                        (form.find(filter).parents('.'+ClassName.checkbox)[0] ?  form.find(filter).parents('.'+ClassName.checkbox) : form.find(filter).parents('.'+ClassName.checkbox+'-button'))
-                        .removeClass(checkClass)
-                        .find('.'+ClassName.checkboxInput)
-                        .removeClass(checkClass);
                     }else{
                         $dom.addClass(checkClass);
                         !config.buttoned && $dom.find('.'+ClassName.checkboxInput).addClass(checkClass);
-                        //表示选中
-                        form.find(filter).prop('checked',true);
-                        (form.find(filter).parents('.'+ClassName.checkbox)[0] ?  form.find(filter).parents('.'+ClassName.checkbox) : form.find(filter).parents('.'+ClassName.checkbox+'-button'))
-                        .addClass(checkClass)
-                        .find('.'+ClassName.checkboxInput)
-                        .addClass(checkClass);
                     }
                 }
-
             }else{
                 if(checked===false){
                     //设置选中
@@ -622,22 +601,22 @@ dui.define('form',['jquery'],function($){
         Item = {
             switch:function(){
                 $(el).find(Selector.switch+filter).each(function(i,swc){
-                    new form.Item.switch(swc,options);
+                    swc.switchClass = new form.Item.switch(swc,options);
                 })
             },
             checkbox:function(){
                 $(el).find(Selector.checkbox).each(function(i,cbx){
-                    new form.Item.checkbox(cbx,options);
+                    cbx.checkboxClass = new form.Item.checkbox(cbx,options);
                 })
             },
             radio:function(){
                 $(el).find(Selector.radio).each(function(i,rdo){
-                    new form.Item.radio(rdo,options);
+                    rdo.radioClass = new form.Item.radio(rdo,options);
                 })
             },
             select:function(){
                 $(el).find(Selector.select).each(function(i,slt){
-                    new form.Item.select(slt,options);
+                    slt.selectClass = new form.Item.select(slt,options);
                 })
             }
         };
