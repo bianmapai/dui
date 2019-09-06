@@ -741,7 +741,6 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             that.setColumnsWidth();
             // 设置补丁
             that.setScrollPatch();
-            
         };
         if(data.length==0){
             that.renderForm();
@@ -756,6 +755,12 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         }
         // 关闭加载条
         that.duiLoading.close();
+        
+    }
+    /**
+     * 设置选中的数据
+     */
+    Class.prototype.setChecked = function(item,checked){
         
     }
     /**
@@ -806,16 +811,49 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
                 ather.attr('class','caret-wrapper')
                 sortDom.attr('class','caret-wrapper descending')
                 that.sort.field=field;
-                that.sort.sort = 'asc';
+                that.sort.sort = 'desc';
             }
             that.pullData(that.currPage);
         })
         // 复选框选择事件
         that.reElem.on('click','.dui-checkbox',function(e){
-            console.log('进来了');
+            var checkbox = $(this).find('input[dui-checkbox]'),data = checkbox.parents('tr')[0].data;
+            var name = checkbox.attr('name');
+            var childs = that.reElem.find(TABLEBODY).find('input[dui-checkbox][name="'+name+'"]');
+            var checked = checkbox[0].checked;
+            var isAll = typeof checkbox.attr('indeterminate') !== "undefined" ? true : false;
+            if(isAll){
+                //1.全选
+                // childs.each(function(i, item){
+                //     that.setChecked(item, checked);
+                // });
+                // //2.同步是不是全选
+                // that.synCheckedAll();
+            }else{
+                //单选
+                //1.设置当前选中
+                // 找到与这个相同的数据
+                that.reElem.find(TABLEBODY).find('tr').each(function(i,tr){
+                    if(tr.data.duiIndex==data.duiIndex){
+                        var duibi =$(tr).find('input[dui-checkbox][name="'+name+'"]')[0];
+                        if(duibi && duibi!=checkbox[0]){
+                            if(duibi.checkboxClass){
+                                duibi.checkboxClass.setChecked(checked);
+                            }else{
+                                if(checked){
+                                    $(duibi).attr('checked','checked');
+                                }else{
+                                    $(duibi).removeAttr('checked');
+                                }
+                                that.renderForm();
+                            }
+                        }
+                    }
+                })
+                //2.同步是不是全选
+                that.synCheckedAll();
+            }
         })
-
-
         // 同步滚动条
         that.duiBodyer.on('scroll', function(){
             that.synScroll();
@@ -870,9 +908,9 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         }
     }
     /**
-     * 同步选择框
+     * 同步全选
      */
-    Class.prototype.synChecked = function(){
+    Class.prototype.synCheckedAll = function(){
 
     }
     /**

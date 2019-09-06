@@ -66,9 +66,9 @@
                     <div class="dui-form-item__content">
                         <div class="dui-checkbox-group">
                             <input type="checkbox" dui-checkbox name="type[]" value="1" label="美食/餐厅线上活动" checked="checked">
-                            <input type="checkbox" dui-checkbox name="type[]" value="2" label="地推活动">
+                            <!-- <input type="checkbox" dui-checkbox name="type[]" value="2" label="地推活动">
                             <input type="checkbox" dui-checkbox name="type[]" value="3" label="线下主题活动">
-                            <input type="checkbox" dui-checkbox name="type[]" value="4" label="单纯品牌曝光">
+                            <input type="checkbox" dui-checkbox name="type[]" value="4" label="单纯品牌曝光"> -->
                         </div>
                     </div>
                 </div>
@@ -115,7 +115,15 @@ dui.use(['form'],function(form){
             console.log(data);
         })
     })
-
+    $('form[dui-form]').on('click','.dui-checkbox',function(e){
+        var othis = $(this),checkbox = othis.find('input[dui-checkbox]');
+        if(checkbox.prop('checked')){
+            checkbox.attr('checked','checked');
+        }else{
+            checkbox.removeAttr('checked');
+        }
+        form.render($('form[dui-form]')[0],'checkbox');
+    })
     
 })
 </script>

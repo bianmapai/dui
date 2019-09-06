@@ -115,12 +115,8 @@ dui.define('form',['jquery'],function($){
         };
         dui.setData(el,'checkbox',{},options);
         dui.setProps(el,'checkbox',props);
-        that.el = el;
-        // 配置信息
-        var config = that.config = $.extend(true,{},el.vnode.props.checkbox);
-        // 模板
-        template = that.template = ['<div class="dui-checkbox'+(config.buttoned?'-button':'')+(config.checked ? ' is-checked' :'')+
-            (config.disabled ? ' is-disabled' :'')+(config.bordered ? ' is-bordered' :'')+'">',
+        var config = that.config = $.extend(true,{},el.vnode.props.checkbox),
+        template = that.template = ['<div class="dui-checkbox'+(config.buttoned?'-button':'')+(config.checked ? ' is-checked' :'')+(config.disabled ? ' is-disabled' :'')+(config.bordered ? ' is-bordered' :'')+'">',
             (config.buttoned ? '' : ('<span class="dui-checkbox__input'+(config.checked ? ' is-checked' :'')+(config.disabled ? ' is-disabled' :'')+'">')),
                 '<span class="dui-checkbox'+(config.buttoned?'-button':'')+'__inner">'+(config.buttoned?config.label:'')+'</span>',
             (config.buttoned ? '' : '</span>'),
@@ -128,61 +124,67 @@ dui.define('form',['jquery'],function($){
                 return config.label ? '<span class="dui-checkbox__label">'+config.label+'</span>':'';
             }()),
         '</div>'].join(''),
-        // 显示的jquery元素
-        $showDom = that.$showDom = $(template),
-        // 当前所属的form
-        thisForm = $(el).parents(Selector.form),
-        // 赛选器
-        filter=Selector.checkbox+'[name="'+config.items+'"]',
-        // 选中样式
+        $dom = that.$showDom = $(template),
+        form = $(el).parents(Selector.form),filter=Selector.checkbox+'[name="'+config.items+'"]',
         checkClass="is-checked",
-        // 是否已经渲染过的选择器
         hasRenderSelector = '.'+ClassName.checkbox+(config.buttoned?'-button':'')+'__inner',
-        // 用来判断是否已经渲染过的元素
         hasRender = $(el).prev(hasRenderSelector);
-        // 如果是用来做全选的则去除掉name
         config.indeterminate && $(el).removeAttr('name');
-        // 判断是否已经渲染过,已经渲染过就删除掉
-        hasRender[0] && 
-        // 先把原始元素移动到显示元素的兄弟节点
-        hasRender.parents('.'+ClassName.checkbox).after(el) && 
-        // 移除显示元素
-        hasRender.parents('.'+ClassName.checkbox).remove();
-        // 插入显示元素
-        $(el).after($showDom) && 
-        // 隐藏原始元素
-        $showDom.find(hasRenderSelector).after(el);
-        // 设置元素的选中状态
-        el.checked = (config.checked && config.indeterminate!==true) ?  true : false;
-        // 设置事件
-        $showDom.off('click').on('click',function(e){
-            // 当前被点击的对象
-            var othis = $showDom,
-            // 当前被点击的checkbox
-            thisCheckbox = $(el),
-            // 当前的选择状态
-            checked=thisCheckbox.prop('checked');
-            // 如果是用来当做全选的元素
-            if(config.indeterminate){
-                el.checked = false;
-                if(othis.find('.'+ClassName.checkboxInput).hasClass('is-indeterminate')){
-                    othis.find('.'+ClassName.checkboxInput).removeClass('is-indeterminate').addClass(checkClass)
-                    othis.addClass(checkClass);
-                }else{
-                    if(othis.hasClass(checkClass)){
-                        othis.removeClass(checkClass);
-                        !config.buttoned && othis.find('.'+ClassName.checkboxInput).removeClass(checkClass);
+        //判断是否已经渲染过,已经渲染过就删除掉
+        hasRender[0] && hasRender.parents('.'+ClassName.checkbox).after(el) && hasRender.parents('.'+ClassName.checkbox).remove();
+        $(el).after($dom) && $dom.find(hasRenderSelector).after(el);
+        if((config.indeterminate && config.items)){
+            //设置当前是否默认勾选
+            //设置监听事件
+            form.find(filter).on('change',function(){
+                if(form.find(filter).length!==form.find(filter+':checked').length){
+                    $dom.removeClass(checkClass);
+                    if(form.find(filter+':checked').length>0){
+                        !config.buttoned && $dom.find('.'+ClassName.checkboxInput).removeClass(checkClass).addClass('is-indeterminate'); 
                     }else{
-                        othis.addClass(checkClass);
-                        !config.buttoned && othis.find('.'+ClassName.checkboxInput).addClass(checkClass);
+                        !config.buttoned && $dom.find('.'+ClassName.checkboxInput).removeClass(checkClass).removeClass('is-indeterminate'); 
+                    }
+                }else{
+                    $dom.addClass(checkClass);
+                    !config.buttoned && $dom.find('.'+ClassName.checkboxInput).removeClass('is-indeterminate').addClass(checkClass);
+                }
+            })
+        }
+        //设置事件
+        $dom.off('click').on('click',function(e){
+            if(config.disabled){
+                return;
+            }
+            var othis = $(el),checked = othis.prop('checked');
+            if(config.indeterminate){
+                if($dom.find('.'+ClassName.checkboxInput).hasClass('is-indeterminate')){
+                    $dom.find('.'+ClassName.checkboxInput).removeClass('is-indeterminate').addClass(checkClass)
+                    $dom.addClass(checkClass);
+                }else{
+                    if($dom.hasClass(checkClass)){
+                        $dom.removeClass(checkClass);
+                        !config.buttoned && $dom.find('.'+ClassName.checkboxInput).removeClass(checkClass);
+                    }else{
+                        $dom.addClass(checkClass);
+                        !config.buttoned && $dom.find('.'+ClassName.checkboxInput).addClass(checkClass);
                     }
                 }
             }else{
-                that.setChecked(!checked);
+                if(checked===false){
+                    //设置选中
+                    othis.prop('checked',true);
+                    $dom.addClass(checkClass);
+                    !config.buttoned && $dom.find('.'+ClassName.checkboxInput).addClass(checkClass);
+                }else{
+                    //设置不选中
+                    othis.prop('checked',false);
+                    $dom.removeClass(checkClass);
+                    !config.buttoned && $dom.find('.'+ClassName.checkboxInput).removeClass(checkClass);
+                }
             }
             //手动回调一下
-            thisCheckbox[0] && thisCheckbox.change && thisCheckbox.change()
-            el.vnode.event.checkbox && el.vnode.event.checkbox.change && el.vnode.event.checkbox.change.call(el,thisCheckbox.prop('checked'));
+            othis[0] && othis.change && othis.change()
+            el.vnode.event.checkbox && el.vnode.event.checkbox.change && el.vnode.event.checkbox.change.call(el,othis.prop('checked'));
         })
     },
     Radio=function(el,options){
@@ -691,22 +693,6 @@ dui.define('form',['jquery'],function($){
             && events.select.change.call(elements.original,that.value);
         }else{
             that.state.inited = true;
-        }
-    }
-    Checkbox.prototype.setChecked = function(checked){
-        var that = this,config= that.config,el=that.el;
-        var thisCheckbox = $(el),
-        othis = thisCheckbox.parents('.dui-checkbox');
-        if(checked===true){
-            //设置选中
-            checked=thisCheckbox.prop('checked',true);
-            othis.addClass(checkClass);
-            !config.buttoned && othis.find('.'+ClassName.checkboxInput).addClass(checkClass);
-        }else{
-            //设置不选中
-            checked=thisCheckbox.prop('checked',false);
-            othis.removeClass(checkClass);
-            !config.buttoned && othis.find('.'+ClassName.checkboxInput).removeClass(checkClass);
         }
     }
     form.init();

@@ -34,8 +34,7 @@ export function once (fn){
  */
 export function setVnode(el){
     if(!el.vnode){
-        var attrs = el.attributes,
-        vnode = {
+        var vnode = {
             elm:el,
             data:{
 
@@ -50,11 +49,6 @@ export function setVnode(el){
 
             }
         };
-        each(attrs,function(key,attr){
-            var attrName = attr.name;
-            var value = attr.nodeValue;
-            vnode.attrs[attrName] = value;
-        })
         el.vnode = vnode;
     }
 }
@@ -109,6 +103,13 @@ export function setProps(el,name,propconfig){
     if(!el.vnode){
         setVnode(el);
     }
+    var attrs = el.attributes;
+    el.vnode.attrs = {};
+    each(attrs,function(key,attr){
+        var attrName = attr.name;
+        var value = attr.nodeValue;
+        el.vnode.attrs[attrName] = value;
+    })
     el.vnode.props[name] = {};
     each(propconfig,function(k,info){
         var thisk = toLowerLine(k).replace('','');
