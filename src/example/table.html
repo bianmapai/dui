@@ -21,14 +21,16 @@
             </div>
         </div>
         <div class="dui-card__body">
+            <div class="toolbar">
+                <button class="dui-button dui-button__primary" id="getData">获取选中数据</button>
+            </div>
             <table dui-table id="ceshi"></table>
         </div>
     </div>
 </div>
 <script>
-dui.use(['table'],function(table){
-    console.log('进来了');
-    table.render({
+dui.use(['table','jquery','popup'],function(table,$,popup){
+    var thisTable = table.render({
         el:'#ceshi',
         height:'full-215',
         page:{
@@ -45,8 +47,10 @@ dui.use(['table'],function(table){
         },
         columns:[[
             {
-                field:'id',//字段名称对应数据库中的字段
-                title:'',//列显示标题
+                type:'checkbox',//类型，normal，checkbox，numbers,space中的任意值,如果type为checkbox则隐藏标题
+                fixed:true,//浮动列
+            },
+            {
                 type:'checkbox',//类型，normal，checkbox，numbers,space中的任意值,如果type为checkbox则隐藏标题
                 fixed:true,//浮动列
             }
@@ -65,6 +69,14 @@ dui.use(['table'],function(table){
                 title: '操作'}
         ]]
     });
+    $('#getData').on('click',function(e){
+        var data = thisTable.getCheckedData();
+        popup.dialog({
+            title:'选中数据',
+            content:JSON.stringify(data)
+        })
+        console.log(data);
+    })
 })
 </script>
 @@include('include/foot.html')

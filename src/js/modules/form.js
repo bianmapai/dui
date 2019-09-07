@@ -111,6 +111,10 @@ dui.define('form',['jquery'],function($){
                 type:[Boolean,String],
                 default:false
             },
+            state:{
+                type:[Boolean,String],
+                default:false
+            },
             items:String
         };
         dui.setData(el,'checkbox',{},options);
@@ -164,22 +168,17 @@ dui.define('form',['jquery'],function($){
             checked=thisCheckbox.prop('checked');
             // 如果是用来当做全选的元素
             if(config.indeterminate){
-                el.checked = false;
                 if(othis.find('.'+ClassName.checkboxInput).hasClass('is-indeterminate')){
-                    othis.find('.'+ClassName.checkboxInput).removeClass('is-indeterminate').addClass(checkClass)
-                    othis.addClass(checkClass);
+                    checked = false;
                 }else{
                     if(othis.hasClass(checkClass)){
-                        othis.removeClass(checkClass);
-                        !config.buttoned && othis.find('.'+ClassName.checkboxInput).removeClass(checkClass);
+                        checked = true;
                     }else{
-                        othis.addClass(checkClass);
-                        !config.buttoned && othis.find('.'+ClassName.checkboxInput).addClass(checkClass);
+                        checked = false;
                     }
                 }
-            }else{
-                that.setChecked(!checked);
             }
+            that.setChecked(!checked);
             //手动回调一下
             thisCheckbox[0] && thisCheckbox.change && thisCheckbox.change()
             el.vnode.event.checkbox && el.vnode.event.checkbox.change && el.vnode.event.checkbox.change.call(el,thisCheckbox.prop('checked'));
@@ -697,16 +696,24 @@ dui.define('form',['jquery'],function($){
         var that = this,config= that.config,el=that.el;
         var thisCheckbox = $(el),
         othis = thisCheckbox.parents('.dui-checkbox');
-        if(checked===true){
+        if(checked==='indeterminate' && config.indeterminate){
+            thisCheckbox.prop('checked',false)
+            othis.find('.'+ClassName.checkboxInput).removeClass('is-checked').addClass('is-indeterminate')
+            othis.removeClass('is-checked');
+            !config.buttoned && othis.find('.'+ClassName.checkboxInput).removeClass('is-checked');
+        }
+        else if(checked===true){
             //设置选中
-            checked=thisCheckbox.prop('checked',true);
+            !config.indeterminate ? thisCheckbox.prop('checked',true) : thisCheckbox.prop('checked',false);
             othis.addClass(checkClass);
             !config.buttoned && othis.find('.'+ClassName.checkboxInput).addClass(checkClass);
+            config.indeterminate && othis.find('.'+ClassName.checkboxInput).removeClass('is-indeterminate');
         }else{
             //设置不选中
-            checked=thisCheckbox.prop('checked',false);
+            thisCheckbox.prop('checked',false);
             othis.removeClass(checkClass);
             !config.buttoned && othis.find('.'+ClassName.checkboxInput).removeClass(checkClass);
+            config.indeterminate && othis.find('.'+ClassName.checkboxInput).removeClass('is-indeterminate');
         }
     }
     form.init();

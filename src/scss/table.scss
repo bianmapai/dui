@@ -143,9 +143,7 @@
     }
 
     &.is-hidden {
-      > * {
-        visibility: hidden;
-      }
+      visibility: hidden;
     }
   }
 

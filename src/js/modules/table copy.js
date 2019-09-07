@@ -1,317 +1,279 @@
-aiui.define(['jquery','form'],function($,form){
+dui.define('table',['jquery','template','form','popup'],function($,template,form,popup){
+    /**
+     * 初始化入口
+     */
     var _WIN = $(window),
     _DOC = $(document),
-    className = {
-        table:".aiui-table",
-        Main:".aiui-table-wrapper",
-        HeaderWrapper:".aiui-table-header-wrapper",
-        BodyWrapper:'.aiui-table-body-wrapper',
-        Fixed:".aiui-table-fixed",
-        FixedWrapper:".aiui-table-fixed-body-wrapper",
-        FixedRight:".aiui-table-fixed-right",
-        FixedRightWrapper:".aiui-table-fixed-body-wrapper",
-        SortSpan:'.caret-wrapper',
-        TotalWrapper:".aiui-table-total",
-        PageWrapper:".aiui-table-page",
-    },
-    TMPL_HEADER = function(options){
+    // 常量定义
+    ELEM = '.dui-table',HEADER='.dui-table__header-wrapper',BODYER='.dui-table__body-wrapper',
+    FIXED = '.dui-table__fixed',FIXED_LEFT='.dui-table__fixed-left',FIXED_RIGHT='.dui-table__fixed-right',
+    PAGE = '.diu-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
+    TABLEBODY='.dui-table__body',ROWHOVER='.dui-table__body tr',FIXED_HEAD='.dui-table__fixed-header-wrapper',
+    TABLEHEADER = '.dui-table__header',HEADER_TH = TABLEHEADER+' th',HEADER_SORT='.caret-wrapper',
+    // 列模板
+    TMPL_HEAD=function(options){
         options = options || {};
-        return ['<table cellspacing="0" cellpadding="0" border="0" class="aiui-table-header" ',
-            function(){
-                if(!options.fixed){
-                    // return 'style="width:{{tablewidth}}px"';
-                }
-            }(),
-            '>',
-            '<thead class="{{if is_group}}is-group{{/if}}">',
-            ,'{{each columns item1 i1}}'
-            ,'<tr>'
-                ,function(){
-                    if(!(options.fixed && options.fixed !== 'right') && !(options.fixed && options.fixed === 'right')){
-                        return '<% for(var i = 0; i < 3; i++){ %>';
-                    }
-                }()
-                ,'{{each item1 item2 i2}}'
-                ,function(){
-                    if(options.fixed && options.fixed !== 'right'){
-                        return '<% if(item2.fixed && item2.fixed !== "right" && item2.colspan==1 && !item2.HAS_PARENT){ %>';
-                    }else if(options.fixed && options.fixed === 'right'){
-                        return '<% if(item2.fixed && item2.fixed === "right" && item2.colspan==1 && !item2.HAS_PARENT){ %>';
-                    }else{
-                        return '<% if ((i==0 && item2.fixed && item2.fixed !== "right" && item2.colspan==1 && !item2.HAS_PARENT) || (i==1 && !item2.fixed) || (i==2 && item2.fixed && item2.fixed === "right" && item2.colspan==1 && !item2.HAS_PARENT)) { %>';
-                    }
-                }()
-                    ,'<th {{if item2.unresize}}unresize="{{item2.unresize}}"{{/if}} data-field="{{item2.field}}" '
-                    ,'{{if item2.field}}data-field="{{item2.field}}"{{/if}} '
-                    ,'data-key="{{item2.key}}" colspan="{{item2.colspan}}" '
-                    ,'rowspan="{{item2.rowspan}}" class="{{if item2.align}}is-{{item2.align}} {{/if}}{{if item2.sort && item2.colspan==1}}is-sortable{{/if}}">',
-                    ,'<div class="cell aiui-table{{index}}-{{item2.key}}">'
-                    ,'{{if item2.type=="checkbox"}}'
-                    ,'<input type="checkbox" aiui-checkbox indeterminate="true" {{if item2.checked}}checked="checked"{{/if}} name="checkall" value="all">'
-                    ,'{{else}}'
-                    ,'{{item2.title}}'
-                    ,'{{/if}}'
-                    ,'{{if item2.sort && item2.colspan==1}}'
-                    ,'<span class="caret-wrapper">'
-                        ,'<i class="sort-caret ascending"></i>'
-                        ,'<i class="sort-caret descending"></i>'
-                    ,'</span>'
-                    ,'{{/if}}'
-                    ,'{{if item2.filter && item2.colspan==1}}'
-                    ,'<span class="column-filter-trigger">'
-                        ,'<i class="baui-icon baui-icon-filter"></i>'
-                    ,'</span>'
-                    ,'{{/if}}'
-                    ,'</div>'
-                    ,'</th>'    
-                ,'<% } %>'
-                ,'{{/each}}'
-                ,function(){
-                    if(!(options.fixed && options.fixed !== 'right') && !(options.fixed && options.fixed === 'right')){
-                        return '<% } %>';
-                    }
-                }()
-            ,'</tr>'
-            ,'{{/each}}',
-            '</thead>',
-        '</table>'].join('')
+        return [
+            '<table cellspacing="0" cellpadding="0" border="0" class="dui-table__header">',
+                '<thead>',
+                    '{{each columns  item1 i1}}',
+                     '<tr>',
+                        //如果有fixed，则只要一次就可以找出来，否则需要三次
+                        !options.fixed ? '<% for(var i = 0; i < 3; i++){ %>':'',
+                        '{{each item1 item2 i2}}',
+                        function(){
+                            if(options.fixed && options.fixed!=='right'){
+                                // 找出左侧浮动
+                                return '<% if(item2.fixed && item2.fixed !== "right" && item2.colspan==1 && !item2.HAS_PARENT){ %>'
+                            }else if(options.fixed && options.fixed === 'right'){
+                                // 找出右侧浮动
+                                return '<% if(item2.fixed && item2.fixed === "right" && item2.colspan==1 && !item2.HAS_PARENT){ %>';
+                            }else{
+                                // 找出没有浮动
+                                return '<% if ((i==0 && item2.fixed && item2.fixed !== "right" && item2.colspan==1 && !item2.HAS_PARENT) || (i==1 && !item2.fixed) || (i==2 && item2.fixed && item2.fixed === "right" && item2.colspan==1 && !item2.HAS_PARENT)) { %>';
+                            }
+                        }(),
+                        //如果有子节点
+                        '<th{{if item2.minWidth}} data-minWidth="{{item2.minWidth}}"{{/if}}{{if item2.unresize || item2.colspan>1}} unresize="{{item2.unresize}}"{{/if}}',
+                        '{{if item2.field}} data-field="{{item2.field}}"{{/if}}',
+                        ' data-key="{{item2.key}}" colspan="{{item2.colspan}}" rowspan="{{item2.rowspan}}"',
+                        ' class="{{if item2.sort && item2.colspan==1}}is-sortable{{/if}}{{if item2.type!=="normal"}} dui-table__cell-{{item2.type}}{{/if}}{{if item2.align}} is-{{item2.align}}{{/if}}">',
+                            '<div class="cell dui-table-{{if item2.colGroup}}group{{else}}{{index}}-{{item2.key}}{{/if}}">',
+                                '{{if item2.type=="checkbox"}}',
+                                    '<input type="checkbox" dui-checkbox indeterminate="true"{{if checkAll}} checked="checked"{{/if}} dui-filter="checkAll">',
+                                '{{else}}',
+                                    '{{item2.title}}',
+                                '{{/if}}',
+                                // 排序
+                                '{{if item2.sort && item2.colspan==1 && item2.type!=="checkbox" && item2.type!=="numbers"}}',
+                                '<span class="caret-wrapper{{if initSort && initSort.field==item2.field && initSort.sort=="desc"}} descending{{/if}}{{if initSort && initSort.field==item2.field && initSort.sort && initSort.sort!=="desc"}} ascending{{/if}}">',
+                                    '<i class="sort-caret ascending"></i>',
+                                    '<i class="sort-caret descending"></i>',
+                                '</span>',
+                                '{{/if}}',
+                                // 
+                            '</div>',
+                        '</th>',
+                        '<% } %>',
+                        '{{/each}}',
+                        !options.fixed ? '<% } %>':'',
+                     '</tr>',   
+                    '{{/each}}',
+                '</thead>',
+            '</table>'
+        ].join('')
     },
-    TMPL_MAIN = ['<div class="aiui-form aiui-table{{if is_group}} aiui-table-group {{/if}}{{if border}}  aiui-table-border{{/if}}" aiui-filter="aiui-table-{{index}}-form" style="{{if height}}height:{{height}}px;{{/if}}{{if width}}width:{{width}};{{/if}}">',
-            '<div class="aiui-table-wrapper">',
-                '<div class="aiui-table-header-wrapper">',
-                TMPL_HEADER(),
+    TMPL_MAIN = function(){
+        return ['<div class="dui-table',
+        // 有边框
+        '{{if border}} dui-table--border{{/if}}',
+        // 行高亮
+        '{{if highlight}} dui-table--enable-row-hover{{/if}}"',
+        // table过滤
+        ' dui-filter="dui-table-{{index}}-form"',
+        // 设置table的宽高
+        ' style="{{if height}}height:{{height}}px{{/if}}">',
+            '<div class="dui-table__header-wrapper">',
+                TMPL_HEAD(),
+            '</div>',
+            '<div class="dui-table__body-wrapper{{if initScroll}} {{initScroll}}{{/if}}" style="height:{{bodyHeight}}px;">',
+                // 显示内容，暂不设置
+            '</div>',
+            '{{if fixedLCoumnsNum>0}}',
+            '<div class="dui-table__fixed dui-table__fixed-left">',
+                '<div class="dui-table__fixed-header-wrapper">',
+                    TMPL_HEAD({fixed:'left'}),
                 '</div>',
-                '<div class="aiui-table-body-wrapper">',
-                '</div>',
-                '<div class="aiui-table-fixed">',
-                    '<div class="aiui-table-fixed-header-wrapper">',
-                    TMPL_HEADER({fixed:'left'}),
-                    '</div>',
-                    '<div class="aiui-table-fixed-body-wrapper">',
-                    '</div>',
-                '</div>',
-                '<div class="aiui-table-fixed-right">',
-                '   <div class="aiui-table-fixed-header-wrapper">',
-                    TMPL_HEADER({fixed:'right'}),
-                    '</div>',
-                    '<div class="aiui-table-fixed-body-wrapper">',
-                    '</div>',
+                '<div class="dui-table__fixed-body-wrapper" style="height:{{bodyHeight}}px;">',
                 '</div>',
             '</div>',
-            '<div class="aiui-table-total">',
+            '{{/if}}',
+            '{{if fixedRCoumnsNum>0}}',
+            '<div class="dui-table__fixed dui-table__fixed-right">',
+                '<div class="dui-table__fixed-header-wrapper">',
+                    TMPL_HEAD({fixed:'right'}),
+                '</div>',
+                '<div class="dui-table__fixed-body-wrapper" style="height:{{bodyHeight}} px;">',
+                '</div>',
             '</div>',
-            '<div class="aiui-table-page">',
+            '{{/if}}',
+            '{{if page.show}}',
+            '<div class="diu-table__page">',
             '</div>',
+            '{{/if}}',
+            // 补丁
+            '<div class="dui-table__fixed-right-patch"></div>',
+            // 设置样式
             '<style>',
-                '{{each aloneColumns col i1}}',
-                    '.aiui-table{{index}}-{{col.key}}{',
-                        'width:{{col.width}}px;',
-                    '}',
+                '{{each columns  item1 i1}}',
+                    '{{each item1 item2 i2}}',
+                        '{{if item2.initWidth}}',
+                            '.dui-table-{{index}}-{{item2.key}}{',
+                                'width:{{item2.initWidth}}px;',
+                            '}',
+                        '{{/if}}',
+                    '{{/each}}',
                 '{{/each}}',
             '</style>',
-    '</div>'].join(''),
-    TMPL_TIP = '<div class="aiui-table-empty-block"><div class="aiui-table-empty-text">{{text}}</div></div>'
-    ,
-    thisTable = function(){
-        var that = this,
-        options = that.options;
-        that.id = options.id || options.index;
-        return {
-            reload:function(options){
-                that.reload.call(that,options);
-            },
-            search:function(where){
-                that.search.call(that,where);
-            },
-            options:options
-        };
+        '</div>'].join('')
     },
-    table = {
-        /**
-         * 版本号
-         */
-        v:'1.0.0',
-        index:0,
-        /**
-         * 自定渲染
-         */
-        init:function(filter,options){
-            
-        },
-        /**
-         * 单独渲染
-         */
-        render:function(options){
-            var original = $(options.elem)[0];
-            if(!original){
-                aiui.error('没有找到指定元素')
-                return;
-            }
-            var inst = new TableClass(options);
-            return thisTable.call(inst);
-        },
-        /**
-         * 设置当前table的回调函数
-         * @param {String} name 回调名称
-         * @param {Function} callbank 回调函数
-         */
-        on:function(name,callbank){
-            this.event[name] = callbank;
-        },
-        /**
-         * 事件管理器
-         */
-        event:{},
-    }
+    TMPL_TIP = '<div class="dui-table__empty-block"><div class="dui-table__empty-text">{{text}}</div></div>',
+    tableIndex=1,//唯一编号，自增形
+    table = function(options){
+        if(!options.el || !$(options.el)[0]){
+            throw new Error('初始化失败:没有获取到初始化元素');
+        }
+        var inst = new Class(options);
+        return thisTable.call(inst);
+    },
     /**
-     * 创建table
-     * @param {Object} options 参数
+     * 暴露接口方法
      */
-    ,TableClass = function(options){
-        var that=this;
-        that.options = $.extend({},{
-            elem:"",
-            treeTable:{},
-            columns:[],//列集合
-            stripe:true,//是否有横向border
-            border:true,//是否有竖线
-            data:{},//当前table的数据可以是数组，也可以是ajax对象
-            width:'',//当前table的宽度
-            height:'',//当前table高度
-            columnMinWidth:'40',//最小宽度
-            loading:true,//是否显示加载条
-            sort:'id',//排序字段
-            //可传入一个对象或者使用默认
-            where:{},
+    thisTable = function(){
+        var that=this,
+        config = this.config;
+        that.id = config.id || config.index;
+        return {
+            config:config,
+            getCheckedData:function(){
+                return that.checkedData;
+            }
+        }
+    },
+    /**
+     * 表格渲染主要类
+     */
+    Class = function(options){
+        var that = this,
+        options = that.options = options,
+        config = that.config = $.extend(true,{
+            el:'',//指定的table元素
+            columns:'',//列集合，是一个二维数组
+            height:'',//table的高度
+            width:'',//table的宽度
+            stripe:false,//是否为斑马纹 table
+            border:true,//是否带有纵向边框
+            initSort:'',//初始化的排序
+            autoSort:false,//是否仅前端排序
+            highlight:true,//当前行高亮
+            loading:'',//是否有加载条
+            title:'',//导出时的标题
+            minColumnWidth:60,//全局设置的列最小宽度
+            data:'',//数据或者ajax请求对象
+            done:'',//渲染完毕的回调
+            text:'',//一些操作提示语言
+            request:'',//请求参数配置
+            response:'',//响应参数配置
         },options);
-        //操作过后显示的一些文本如加载失败
-        that.options.text = $.extend({},{
-                empty:'暂无数据',
-                loadError:'ajax请求失败，请重试',
-                loading:'数据加载中',
-                notDataOrUrl:'没有设置数据或者url'
-        },that.options.text);
-        //提示框设置
-        that.options.Tooltip = $.extend({},{
-            show:true,
-            effect:'dark',
-        },that.options.Tooltip);
-        //page配置
-        that.options.page = $.extend({},{
+        that.where = config.where || {};
+        config.el  = $(config.el);
+        // 如果没有原始元素
+        if(!config.el[0]) return that;
+        //高度铺满：full-差距值
+        if(config.height && /^full-\d+$/.test(config.height)){
+            that.fullHeightGap = config.height.split('-')[1];
+            config.height = _WIN.height() - that.fullHeightGap;
+        }
+        // 操作过后显示的一些文本如加载失败
+        config.text = $.extend({},{
+            empty:'暂无数据',
+            loadError:'ajax请求失败，请重试',
+            loading:'数据加载中',
+            notDataOrUrl:'没有设置数据或者url'
+        },options.text);
+        // 填补默认配置
+        config.page = $.extend({},{
             show:false,
             limit:10,
             curr:1,
             limits:[10,20,30,40,50],
-        },that.options.page);
-        //配置请求参数
-        that.options.request = $.extend({
+        },options.page);
+        // 配置请求参数
+        config.request = $.extend({
             pageName: 'page'
-            ,limitName: 'size'
-        }, that.options.request)
-        //配置响应数据格式
-        that.options.response = $.extend({
+            ,limitName: 'size',
+            sortName:'sort',
+            whereName:'where'
+        },options.request);
+        // 配置响应数据格式
+        config.response = $.extend({
             statusName: 'code'
             ,statusCode: 1
             ,msgName: 'msg'
             ,dataName: 'data'
             ,countName: 'count'
-        },that.options.response);
-        //如果传入的page.show为true
-        if(that.options.page.show){
-            that.page = that.options.page.curr ? that.options.page.curr : 1;
-        }
-        //如果是treeTable
-        if(!$.isEmptyObject(that.options.treeTable)){
-            that.options.treeTable = $.extend({
-                iconColumn:'',
-                keyColumn:'id',
-                parentColumn:'pid',
-                expandIcon:'aiui-icon-caret-right',
-                expand:false
-            },that.options.treeTable)
-        }
-        that.render();
-    };
-    /**
-     * 渲染table
-     */
-    TableClass.prototype.render = function(){
-        var that = this,options = that.options,
-        hasRender = $(options.elem).next(className.table);
-        that.$original = $(options.elem);
-        options.aloneColumns = [];
-        that.index= options.index = ++table.index;
-        //如果存在
-        hasRender[0] && hasRender.remove();
-        //高度铺满：full-差距值
-        if(options.height && /^full-\d+$/.test(options.height)){
-            that.fullHeightGap = options.height.split('-')[1];
-            options.height = _WIN.height() - that.fullHeightGap;
-        }
-        //初始化参数
-        that.setInit();
-        //设置表格列宽度
-        that.setColsWidth();
-        //插入元素
-        that.tabledom = $(aiui.render(TMPL_MAIN,options));
-        that.$original.after(that.tabledom);
-        //设置容器
-        that.Mian = that.tabledom.find(className.Main);
-        that.HeaderWrapper = that.tabledom.find(className.HeaderWrapper);
-        that.BodyWrapper = that.tabledom.find(className.BodyWrapper);
-        that.Fixed = that.tabledom.find(className.Fixed);
-        that.FixedWrapper = that.Fixed.find(className.FixedWrapper);
-        that.FixedRight = that.tabledom.find(className.FixedRight);
-        that.FixedRightWrapper = that.FixedRight.find(className.FixedRightWrapper);
-        that.TotalWrapper = that.tabledom.find(className.TotalWrapper);
-        that.PageWrapper = that.tabledom.find(className.PageWrapper);
-        that.loading = aiui.loading(that.tabledom[0])
-        that.gutter = $('<th class="gutter"></th>');
-        that.patch = $('<div class="aiui-table-fixed-right-patch"></div>');
-        //设置表格大小
-        that.fullSize();
-        //如果是多级表头
-        if(options.columns.length>1){
-            var ths = that.Fixed.find('th');
-            $.each(ths,function(index,th){
-                $(th).css('height',that.HeaderWrapper.find('[data-key="'+$(th).data('key')+'"]').outerHeight());
-            })
-            var ths = that.FixedRight.find('th');
-            $.each(ths,function(index,th){
-                $(th).css('height',that.HeaderWrapper.find('[data-key="'+$(th).data('key')+'"]').outerHeight());
-            })
-        }
-        //刷新表单
-        that.renderForm();
-        //拉取数据
-        that.Pulldata(that.page);
-        //设置事件
-        that.setEvent();
-        //初始化浮动列
-        that.InitFixed();
+        },options.response);
+        // 设置当前页面
+        that.currPage = parseInt(config.page.curr) || 1;
+        // 设置初始化排序列
+        config.initSort && (that.sort = $.extend(true,{},config.initSort));
+        // 初始化
+        that.init();
     }
     /**
-     * 初始化参数配置
+     * 初始化方法
      */
-    TableClass.prototype.setInit = function(type){
-        var that = this,options=that.options;
-        options.clientWidth = options.width || function(){ //获取容器宽度
-            //如果父元素宽度为0（一般为隐藏元素），则继续查找上层元素，直到找到真实宽度为止
-            var getWidth = function(parent){
-              var width, isNone;
-              parent = parent || that.$original.parent()
-              width = parent.width();
-              try {
-                isNone = parent.css('display') === 'none';
-              } catch(e){}
-              if(parent[0] && (!width || isNone)) return getWidth(parent.parent());
-              return width;
+    Class.prototype.init = function(){
+        var that = this,config=that.config,
+        el = config.el,
+        hasRender = el.next(ELEM),
+        columns = config.columns,
+        // 每次都加1，保证唯一性
+        index = that.index = config.index = tableIndex++;;
+        // 初始化columns
+        that.initColumns();
+        // 插入显示元素
+        var str = template.render(TMPL_MAIN(),config),
+        reElem = that.reElem = $(str),
+        duiHeader     = that.duiHeader     = reElem.find(HEADER),
+        duiBodyer     = that.duiBodyer     = reElem.find(BODYER),
+        duiFixed      = that.duiFixed      = reElem.find(FIXED),
+        duiFixedL     = that.duiFixedL     = reElem.find(FIXED_LEFT),
+        duiFixedLWrap = that.duiFixedLWrap = duiFixedL.find(FIXED_WRAP),
+        duiFixedR     = that.duiFixedR     = reElem.find(FIXED_RIGHT),
+        duiFixedRWrap = that.duiFixedRWrap = duiFixedR.find(FIXED_WRAP),
+        duiPage       = that.duiPage       = reElem.find(PAGE),
+        duiGutter     = that.duiGutter     = $('<th class="gutter"><div class="cell"></div></th>'),
+        duiPatch      = that.duiPatch      = reElem.find(PATCH),
+        duiLoading    = that.duiLoading    = popup.loading({target:reElem[0]});
+        // 如果已经渲染过了则移除
+        hasRender[0] && hasRender.remove();
+        el.after(reElem);
+        // 设置表格大小样式
+        that.fullSize();
+        // 同步header高度
+        duiHeader.find('th').each(function(i,item){
+            var key = $(item).data('key');
+            duiFixedL.find('th[data-key="'+key+'"]').css('height',$(item).outerHeight());
+            duiFixedR.find('th[data-key="'+key+'"]').css('height',$(item).outerHeight());
+        })
+        // 渲染form
+        that.renderForm();
+        // 获取数据
+        that.pullData(that.currPage);
+        // 设置事件
+        that.setEvent();
+    }
+    /**
+     * 初始化列
+     */
+    Class.prototype.initColumns = function(){
+        var that = this,config = that.config,
+        columns = config.columns,
+        initColWidthWithType = function(item){
+            var initWidth = {
+                checkbox: 48
+                ,space: 15
+                ,numbers: 40
             };
-            return getWidth();
-        }();
-        if(type=='width') return options.clientWidth;
-
-        $.each(options.columns,function(i1,row){
+            // 如果没有type或者类型目前不支持则赋值为normal
+            if(!item.type && !initWidth[item.type]) item.type = "normal";
+            if(item.type !== "normal"){
+                item.unresize = true;
+                item.width = item.width || initWidth[item.type];
+            }
+        };
+        $.each(columns,function(i1,row){
             $.each(row,function(i2,col){
                 if(!col){
                     row.splice(i2, 1);
@@ -323,184 +285,263 @@ aiui.define(['jquery','form'],function($,form){
                 //复杂表头处理
                 if(col.IsGroup || col.colspan>1){
                     var childIndex = 0;
-                    $.each(options.columns[i1+1],function(i22,col22){
+                    $.each(columns[i1+1],function(i22,col22){
                         if(col22.HAS_PARENT || (childIndex > 1 && childIndex == col22.colspan)) return;
                         col22.HAS_PARENT = true;
                         col22.parentKey = 'row'+i1+'-col'+i2;
                         childIndex = childIndex + parseInt(col22.colspan > 1 ? col22.colspan : 1);
                     })
                     col.colGroup = true; //标注是组合列
-                    that.options.is_group = true;
                 }
-                //初始化列默认数据
-                that.initColumn(col);
-            })                      
+                initColWidthWithType(col);
+            })
         })
+        // 初始化列宽度
+        that.initColumnsWidth();
     }
     /**
-     * 初始化类型列
+     * 获取table的总宽度
      */
-    TableClass.prototype.initColumn=function(col){
-        var widthConfig={
-            checkbox:40
-            ,radio: 40
-            ,numbers: 40
-            ,icon:100
-        }
-        if(!col.type) col.type = "normal";
-        if(col.type !== "normal"){
-            col.unresize = true;//禁止拖动
-            col.width = col.width || widthConfig[col.type];
-        }
-    }  
+    Class.prototype.getClientWidth = function(){
+        var that = this,options = that.config;
+        options.clientWidth = options.width || function(){ //获取容器宽度
+            //如果父元素宽度为0（一般为隐藏元素），则继续查找上层元素，直到找到真实宽度为止
+            var getWidth = function(parent){
+              var width, isNone;
+              parent = parent || options.el.parent();
+              width = parent.width();
+              try {
+                isNone = parent.css('display') === 'none';
+              } catch(e){}
+              if(parent[0] && (!width || isNone)) return getWidth(parent.parent());
+              return width;
+            };
+            return getWidth();
+        }();
+        return options.clientWidth;
+    }
     /**
-     * 表格样式设置
+     * 设置表格样式
      */
-    TableClass.prototype.fullSize= function(){
-        var that = this,options = that.options,
-        height = options.height, bodyHeight;
+    Class.prototype.fullSize = function(){
+        var that = this,options = that.config,
+        height = options.height, bodyHeight,
+        headerHeight = that.duiHeader.height();
         if(that.fullHeightGap){
             height = _WIN.height() - that.fullHeightGap;
             if(height < 135) height = 135;
-            that.tabledom.css('height', height-1);
+            that.reElem.css('height', height);
         }
         if(!height) return;
-        bodyHeight = parseFloat(height) - (that.HeaderWrapper.outerHeight() || 38);
+        bodyHeight = parseFloat(height) - (that.duiHeader.outerHeight() || 48);
         // //减去分页栏的高度
-        // if(options.page){
-        //     bodyHeight = bodyHeight - (that.PageWrapper.outerHeight() || 41) - 2;
+        // if(options.page.show){
+        //     bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
         // }
-        that.BodyWrapper.css('height', bodyHeight);
-        that.FixedWrapper.css('height',bodyHeight);
-        that.FixedRightWrapper.css('height',bodyHeight);
+        // 设置bodyWrap高度
+        that.duiBodyer.css('height',bodyHeight);
     }
     /**
-     * 设置列宽度
+     * 设置浮动列效果
      */
-    TableClass.prototype.setColsWidth=function(){
-        var that = this,options = that.options,
-        hasRender = that.tabledom && that.tabledom[0] ? true : false,
-        colNums = 0, //列个数
-        autoColNums = 0, //自动列宽的列个数
-        autoWidth = 0, //自动列分配的宽度
-        countWidth = 0, //所有列总宽度和
-        cntrWidth = that.setInit('width');
-        options.aloneColumns =[];//用来装所有列宽
-        //统计列个数
-        that.eachColumn(function(i,col){
-            col.hide || colNums++;
+    Class.prototype.setFixedStyle = function(){
+        var that = this,bodyHeight = that.duiBodyer.height(),
+        scrollHeight = that.duiBodyer.prop('offsetHeight')-that.duiBodyer.prop('clientHeight'),
+        fixedLWidth = that.duiFixedL.find(FIXED_HEAD).width(),
+        fixedRWidth = that.duiFixedR.find(FIXED_HEAD).width(),
+        headerHeight = that.duiHeader.height();
+        // 设置浮动的高要考虑1px的boarder
+        that.duiFixed.css('height',(that.reElem.outerHeight()-(scrollHeight?scrollHeight:1)));
+        // 设置左侧浮动的宽
+        that.duiFixedL.css('width',fixedLWidth)
+        // 设置左侧浮动的宽
+        that.duiFixedR.css('width',fixedRWidth)
+        // 设置浮动内容的高度和距离header的高度
+        that.duiFixed.find(FIXED_WRAP).css({
+            height:(bodyHeight-scrollHeight),
+            top:headerHeight
+        });
+    }
+    /**
+     * 设置初始化列宽
+     */
+    Class.prototype.initColumnsWidth=function(){
+        // 初始化的时候是没有横向滚动条
+        var that = this,options=that.config
+        ,colNums = 0 //列个数
+        ,autoColNums = 0 //自动列宽的列个数
+        ,autoWidth = 0 //自动列分配的宽度
+        ,countWidth = 0 //所有列总宽度和
+        ,clientWidth = that.getClientWidth()
+        ,fixedLCoumnsNum = options.fixedLCoumnsNum = 0,//左侧浮动列个数
+        fixedRCoumnsNum = options.fixedRCoumnsNum = 0,//右侧浮动列个数
+        totalWidth = 0;//叠加所有列最小宽度
+        that.eachColumns(function(i,col){
+            col.hide || function(){
+                var width = 0
+                , minWidth = col.minWidth || options.minColumnWidth;
+                width = col.width || minWidth;
+                if (/\d+%$/.test(width)) { //列宽为百分比
+                    width = Math.floor((parseFloat(width) / 100) * clientWidth);
+                    width < minWidth && (width = minWidth);
+                }
+                totalWidth += width;
+            }()
+            col.hide || colNums++
         })
-        //获取当前table的宽度
-        cntrWidth = cntrWidth - function(){
-            return (options.border) ? colNums + 1 : 2;
-        }() - aiui.scrollWidth() - 1;
-        /**
-         * 获取自动分配列宽
-         * @param {Boolean} back 是否检测
-         */
+        if(totalWidth>clientWidth){
+            options.initScroll = 'is-scrolling-left';
+        }else{
+            options.initScroll = 'is-scrolling-none';
+        }
+        // 初始化的时候是不需要减去滚动条
+        clientWidth = clientWidth-function(){
+            return options.border ? colNums+1 : 0;
+        }();
+        // 获取自动分配列的宽度
         var getAutoWidth = function(back){
-            //遍历所有列
-            $.each(options.columns, function (i1, row) {
-                $.each(row, function (i2, col) {
-                    var width = 0
-                    , minWidth = col.minWidth || options.columnMinWidth; //最小宽度
-                    if (!col) {
-                        row.splice(i2, 1);
-                        return;
+            that.eachColumns(function(i,col){
+                var width = 0
+                , minWidth = col.minWidth || options.minColumnWidth; //最小宽度
+                if (col.colGroup || col.hide) return;
+                if (!back) {
+                    width = col.width || 0;
+                    if (/\d+%$/.test(width)) { //列宽为百分比
+                        width = Math.floor((parseFloat(width) / 100) * clientWidth);
+                        width < minWidth && (width = minWidth);
+                    } else if (!width) { //列宽未填写
+                        col.width = width = 0;
+                        autoColNums++;
                     }
-                    if (col.colGroup || col.hide) return;
-
-                    if (!back) {
-                        width = col.width || 0;
-                        if (/\d+%$/.test(width)) { //列宽为百分比
-                            width = Math.floor((parseFloat(width) / 100) * cntrWidth);
-                            width < minWidth && (width = minWidth);
-                        } else if (!width) { //列宽未填写
-                            col.width = width = 0;
-                            autoColNums++;
-                        }
-                    } else if (autoWidth && autoWidth < minWidth) {
-                        autoColNums--;
-                        width = minWidth;
-                    }
-
-                    if (col.hide) width = 0;
-                    countWidth = countWidth + width;
-                });
-            });
-            //如果未填充满，则将剩余宽度平分
-            (cntrWidth > countWidth && autoColNums) && (
-                autoWidth = (cntrWidth - countWidth) / autoColNums
-            );
+                } else if (autoWidth && autoWidth < minWidth) {
+                    autoColNums--;
+                    width = minWidth;
+                }
+                if (col.hide) width = 0;
+                countWidth = countWidth + width;
+                //如果未填充满，则将剩余宽度平分
+                (clientWidth > countWidth && autoColNums) && (
+                    autoWidth = (clientWidth - countWidth) / autoColNums
+                );
+            },true);
         }
         getAutoWidth();
-        getAutoWidth(true); //重新检测分配的宽度是否低于最小列宽
-        //自动分配列个数
-        that.autoColNums = autoColNums;
-        //设置列宽
-        that.eachColumn(function(index,col){
-            var minWidth = col.minWidth || options.columnMinWidth;
+        getAutoWidth(true);
+        // 记录自动分配列的个数
+        options.autoColNums = autoColNums;
+        // 设置列宽
+        that.eachColumns(function(index,col){
+            var minWidth = col.minWidth || options.minColumnWidth;
+            col.minWidth = minWidth;
             if(col.colGroup || col.hide) return;
-            //给位分配宽的列平均分配宽
-            if(col.width === 0) {
-                if(hasRender){
-                    that.setCssRule(col.key, function (item) {
-                        item.style.width = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth) + 'px';
-                    });
-                }else{
-                    col.width = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth);
-                }
+            if(col.width === 0){
+                col.initWidth = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth);
+                // 设置当前列为自动分配宽度列
+                col.autoColumn = true;
             }else if(/\d+%$/.test(col.width)){
-                if(hasRender){
-                    that.setCssRule(col.key, function(item){
-                        item.style.width = Math.floor((parseFloat(col.width) / 100) * cntrWidth) + 'px';
-                    });
-                }else{
-                    col.width = Math.floor((parseFloat(col.width) / 100) * cntrWidth);
+                col.initWidth = Math.floor((parseFloat(col.width) / 100) * clientWidth);
+            }else{
+                col.initWidth = col.width;
+            }
+            if(col.fixed && col.fixed!=='right'){
+                options.fixedLCoumnsNum++;
+            }else if(col.fixed && col.fixed==='right'){
+                options.fixedRCoumnsNum++;
+            }
+        },true);
+    }
+    /**
+     * 设置列宽，根据是否有滚动条调整
+     */
+    Class.prototype.setColumnsWidth = function(){
+        var that = this,options=that.config,
+        clientWidth = that.getClientWidth(),
+        colNums = 0,//列个数
+        countWidth = 0,//已经有宽度的列总宽度
+        scrollWidth = (that.duiBodyer[0].offsetWidth-that.duiBodyer[0].clientWidth),
+        scrollHeight = (that.duiBodyer[0].offsetHeight-that.duiBodyer[0].clientHeight);
+        // 获取根据最小宽度得到的总宽度
+        that.eachColumns(function(i,col){
+            col.hide || colNums++
+        })
+        // 修正滚动条
+        clientWidth = clientWidth-function(){
+            return options.border ? colNums+1 : 0;
+        }()-(scrollWidth>0?(dui.getScrollWidth()+2):0);
+        // 获取剩余宽度
+        var getAutoAllWidth = function(){
+            that.eachColumns(function(i,col){
+                var width = 0
+                , minWidth = col.minWidth || options.minColumnWidth; //最小宽度
+                if (col.colGroup || col.hide) return;
+                width = col.width || 0;
+                if (/\d+%$/.test(width)) { //列宽为百分比
+                    width = Math.floor((parseFloat(width) / 100) * clientWidth);
+                    width < minWidth && (width = minWidth);
                 }
+                countWidth += width;
+            })
+            return (clientWidth-countWidth);
+        }(),autoWidth = (getAutoAllWidth/options.autoColNums);
+        // 设置样式
+        that.eachColumns(function(i,col){
+            var minWidth = col.minWidth || options.minColumnWidth,
+            thisWidth = 1;
+            if(col.colGroup || col.hide) return;
+            // 给自动分配列宽的列分配宽度
+            if(col.autoColumn){
+                that.getCssRule(col.key,function(rule){
+                    rule.style.width = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth) + 'px';
+                })
             }
-            options.aloneColumns.push(col);
+            // 给宽度为百分比的宽设置宽度
+            else if(/\d+%$/.test(col.width)){
+                that.getCssRule(col.key,function(rule){
+                    rule.style.width = Math.floor((parseFloat(col.width) / 100) * clientWidth) + 'px';
+                })
+            }
         })
     }
     /**
-     * 初始化浮动列的显示隐藏
+     * 设置滚动条补丁
      */
-    TableClass.prototype.InitFixed = function(){
-        var that = this,bodyWidth=that.HeaderWrapper.find('table').outerWidth(),
-        tableWidth = that.tabledom.width();
-        if(tableWidth>=bodyWidth){
-            that.Fixed.css('display','none');
-            that.FixedRight.css('display','none');
+    Class.prototype.setScrollPatch = function(){
+        var that = this,options = that.config,
+        duiMainTable = that.duiBodyer.children('table');
+        scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
+        scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
+        // 如果有右侧滚动条
+        if(scrollWidth>0){
+            // 设置补丁
+            that.duiGutter.css("width",scrollWidth);
+            that.duiGutter.css('display','block');
+            that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
+            // 如果是多级表头
+            if(options.columns.length>1){
+                that.gutter.attr('rowspan',options.columns.length);
+            }
+            that.duiFixedR.css({
+                'right':(scrollWidth),//减1是为了遮住滚动条的边框
+            });
+            that.duiPatch.css({
+                width:scrollWidth,
+                height:that.duiHeader.height()
+            })
         }else{
-            that.Fixed.css('display','');
-            that.FixedRight.css('display','');
+            that.duiFixedR.css({
+                'right':'',
+            });
+            that.duiGutter.css('display','none');
         }
-        that.setScollPatch();
-        that.synScroll();
     }
     /**
-     * 设置table的列宽规则
-     * @param {String} key 规则键
-     * @param {Function} callback 回调方法
+     * 循环列
+     * @param {Function} callback 回调函数
+     * @param {Array} columns 要循环的二维列
      */
-    TableClass.prototype.setCssRule = function(key,callback){
-        var that = this
-        ,style = that.tabledom.find('style')[0]
-        ,sheet = style.sheet || style.styleSheet || {}
-        ,rules = sheet.cssRules || sheet.rules;
-        $.each(rules,function(i,item){
-            if(item.selectorText === ('.aiui-table'+that.index+'-'+ key)){
-                return callback(item), true;
-            }
-        })
-    }
-    /**
-     * 循环列操作
-     * @param {Function} callback 回调方法啊
-     */
-    TableClass.prototype.eachColumn = function(callback,columns){
-        var that=this,options = that.options,
-        columns = $.extend(true, [], columns || options.columns),arrs=[],index = 0;
+    Class.prototype.eachColumns = function(callback,oldItem){
+        var that=this,options = that.config,
+        columns = $.extend(true, [], options.columns),arrs=[],index = 0;
         //重新整理表头结构
         $.each(columns, function (i1, item1) {
             $.each(item1, function (i2, item2) {
@@ -525,44 +566,76 @@ aiui.define(['jquery','form'],function($,form){
         var eachArrs = function(obj){
             $.each(obj || arrs, function(i, item){
                 if(item.CHILD_COLS) return eachArrs(item.CHILD_COLS);
+                item = oldItem ? getOldItem(item) : item;
                 typeof callback === 'function' && callback(i, item);
             });
+        },
+        getOldItem = function(item){
+            var res;
+            $.each(options.columns,function(i,row){
+                $.each(row,function(i1,col){
+                    if(col.key==item.key){
+                        res = col;
+                        return;    
+                    }
+                })
+            })
+            return res;
         };
         eachArrs();
     }
     /**
-     * 刷新表单
+     * 设置table的列宽规则
+     * @param {String} key 规则键
+     * @param {Function} callback 回调方法
      */
-    TableClass.prototype.renderForm = function(){
-        var that = this;
-        form.render(that.tabledom[0]);
+    Class.prototype.getCssRule = function(key,callback){
+        var that = this
+        ,style = that.reElem.find('style')[0]
+        ,sheet = style.sheet || style.styleSheet || {}
+        ,rules = sheet.cssRules || sheet.rules;
+        $.each(rules,function(i,item){
+            if(item.selectorText === ('.dui-table-'+that.index+'-'+ key)){
+                return callback(item), true;
+            }
+        })
     }
     /**
-     * 拉取数据
-     * @param {number} curr 获取页数
-     * @param {Object} param 请求参数
+     * 渲染form
      */
-    TableClass.prototype.Pulldata = function(curr,params={}){
-        var that = this,options = that.options,
+    Class.prototype.renderForm = function(){
+        var that = this;
+        form.render(that.reElem,'checkbox');
+    }
+    /**
+     * 获取数据
+     */
+    Class.prototype.pullData = function(curr){
+        var that = this,options=that.config,
         request = options.request,
-        response = options.response;
-        that.startTime = new Date().getTime();
-        options.loading && that.loading.show();
-        if(options.data.url){
-            //如果是url
-            if(!options.treeTable.iconColumn){
+        response = options.response,
+        ajaxOpt = options.data,
+        params = that.buildRequest();
+        that.startTime = new Date().getTime()
+        //如果需要显示加载条
+        options.loading && that.duiLoading.show();
+        // 如果是数组
+        if(ajaxOpt.url){
+            // 说明是请求远程数据
+            // 如果是treetable则不需要分页
+            if(!options.treeTable){
                 //如果不是treeTable则需要分页
                 params[request.pageName] = curr;
                 params[request.limitName] = options.page.limit;
             }
-            var data = $.extend(params, {where:options.where});
-            if(options.data.contentType && options.data.contentType.indexOf("application/json") == 0){ //提交 json 格式
-                data = JSON.stringify(data);
+            // 以json提交
+            if(ajaxOpt.contentType && ajaxOpt.contentType.indexOf("application/json") == 0){ //提交 json 格式
+                params = JSON.stringify(params);
             }
             $.ajax({
-                type: options.data.method || 'get',
-                url: options.data.url,
-                contentType: options.data.contentType,
+                url:ajaxOpt.url,
+                type: ajaxOpt.type || 'get',
+                contentType: ajaxOpt.contentType,
                 data: params,
                 dataType: 'json',
                 headers: options.data.headers || {},
@@ -571,520 +644,449 @@ aiui.define(['jquery','form'],function($,form){
                         that.renderData(res,params[request.pageName],res[response.countName]);
                         that.consumingTime = new Date().getTime() -  that.startTime;
                     }else{
-                        that.renderForm();
-                        that.BodyWrapper.html(aiui.render(TMPL_TIP,{text:res.msg || options.text.loadError
-                        }));
+                        that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.loadError}));
                     }
                 },
                 error:function(){
-                    that.BodyWrapper.html(aiui.render(TMPL_TIP,{text:options.text.loadError}));
-                    that.loading.close();
+                    that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.loadError}));
+                    // 关闭加载框
+                    that.duiLoading.close();
                 }
             })
-        }else if(options.data && options.data.constructor === Array){//如果是已知数据
+
+        }else if(options.data && options.data.constructor === Array){
             var res = {},limit= options.page.limit
             ,startLimit = curr*limit - limit,
             data = JSON.parse(JSON.stringify(options.data))||[];
             if(params.sort && params.sort.field){
-                data = aiui.sort(data,params.sort.field,params.sort.sort?params.sort.sort:'asc')
+                data = dui.sort(data,params.sort.field,params.sort.sort?params.sort.sort:'asc')
             }
-            res[response.dataName] = (!options.treeTable.iconColumn)?(data.concat().splice(startLimit, limit)):data;
+            res[response.dataName] = data.concat().splice(startLimit, limit);
             res[response.countName] = data.length;
             that.renderData(res, curr, data.length);
         }else{
-            that.BodyWrapper.html(aiui.render(TMPL_TIP,{text:options.text.notDataOrUrl}));
+            that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.notDataOrUrl}));
         }
     }
     /**
-     * 填充数据
+     * 渲染
      * @param {Object} res 返回数据
      * @param {number} curr 当前页
      * @param {number} count 总条数
      */
-    TableClass.prototype.renderData = function(res,curr,count){
-        aiui.defaults.imports.log = console.log;
-        var that = this
-        ,options = that.options;
-        var data = res[options.response.dataName] || [],
-        isTreeTable = options.treeTable.iconColumn ? true : false,
-        bodytemplate = '<table cellspacing="0" cellpadding="0" border="0" class="aiui-table-body"><tbody></tbody></table>',
-        setBody = function(opt){
-            //如果是排序
-            var tds_lef = [],tds=[],tds_right=[];
-            var tdtemplate = ['<td aiui-field="{{field}}" data-key="{{key}}" class="{{if align}}is-{{align}}{{/if}} {{if hidden}} is-hidden{{/if}}"',
-                    '{{if style}} style="{{style}}"{{/if}} aiui-type="{{if type}}{{type}}{{else}}text{{/if}}"',
-                    '>',
-                    '<div class="cell aiui-table{{stylekey}}">',
-                    '{{if field=="'+options.treeTable.iconColumn+'"}}',
-                    '<span style="padding-left:#{#(level-1)*16#}#px">',
-                    '<i class="aiui-table-expand-icon '+options.treeTable.expandIcon+'" #{#if !hasChild#}#style="visibility: hidden;"#{#/if#}#></i>',
-                    '</span>',
-                    '{{/if}}',
+    Class.prototype.renderData = function(res,curr,count){
+        var that = this,options = that.config;
+        columns = options.columns,
+        resData = res[options.response.dataName] || [],
+        bodytemplate = '<table cellspacing="0" cellpadding="0" border="0" class="dui-table__body"><tbody></tbody></table>',
+        // 设置body方法
+        setBody = function(){
+            var tds_lef = [],tds=[],tds_right=[],
+            bodyTable = $(bodytemplate),
+            bodyLeftTable  = $(bodytemplate),
+            bodyRightTable = $(bodytemplate),
+            tdTmpl = [
+                '<td dui-field="{{field}}" class="{{if align}} is-{{align}}{{/if}}{{if type!=="normal"}} dui-table__cell-{{type}}{{/if}}" dui-key="{{key}}"{{if style}} style="{{style}}"{{/if}}>',
+                    '<div class="cell dui-table-{{stylekey}}">',
+                    // 如果是模板
                     '{{if template}}{{@ template}}',
                     '{{else}}',
-                        '{{if type=="checkbox"}}',//多选框
-                        '<input type="checkbox" value="{{if alias}}#{#{{alias}}#}#{{else}}#{#{{field}}#}#{{/if}}" aiui-checkbox name="{{if alias}}{{alias}}{{else}}{{field}}{{/if}}[]">',//如果是选择框
-                        '{{else if type=="status"}}',//如果是单选框
-                        '<input type="checkbox" value="{{if alias}}#{#{{alias}}#}#{{else}}#{#{{field}}#}#{{/if}}" truevalue="1" falsevalue="0" aiui-switch name="{{if alias}}{{alias}}{{else}}{{field}}{{/if}}[]">',
+                        // 如果是选择框
+                        '{{if type=="checkbox"}}',
+                        '<input type="checkbox" value="{{@ fieldName}}"{{if checkAll}} checked="checked"{{/if}} dui-checkbox>',//如果是选择框
                         '{{else if type=="numbers"}}',//如果是序号
-                        '#{#aiui_index#}#',
+                        '{{@ duiIndex}}',
                         '{{else}}',
-                        '{{if alias}}#{#{{alias}}#}#{{else}}{{if field}}#{#{{field}}#}#{{/if}}{{/if}}',//如果是文本
+                        '{{@ fieldName}}',
                         '{{/if}}',
-                    '{{/if}}</div>',
-                '</td>'].join('');
-            var body = $(aiui.render(bodytemplate,options))
-            var body_left = $(aiui.render(bodytemplate))
-            var body_right = $(aiui.render(bodytemplate))
-            that.eachColumn(function(i4,column){
+                    '{{/if}}',
+                    '</div>',
+                '</td>'
+            ].join('');
+            that.eachColumns(function(i,column){
                 column.stylekey = options.index+'-'+column.key;
-                var temp = aiui.render(tdtemplate,column).replace(/#{#/g,"{{").replace(/#}#/g,"}}");
-                if(column.fixed && column.fixed!='right'){
+                column.fieldName = '{{'+column.field+'}}';
+                column.duiIndex = '{{duiIndex}}';
+                var temp = template.render(tdTmpl,column);
+                if(column.fixed && column.fixed!=='right'){
                     tds_lef.push(temp);
-                }else if(column.fixed && column.fixed=='right'){
+                }else if(column.fixed && column.fixed==='right'){
                     tds_right.push(temp);
                 }else{
                     tds.push(temp);
                 }
             })
-
             tds = tds_lef.concat(tds).concat(tds_right);
-            $.each(data,function(index,row){
-                row.aiui_index=((curr?curr:1)-1)*options.page.limit+index+1;
-                var trCache = {
-                    aiui_index:((curr?curr:1)-1)*options.page.limit+index+1,
-                    index:index,
-                    fixed:'center',
-                    oldData:row
-                },tr = tds.length>0 ? $('<tr class="aiui-table-row'+(options.treeTable.expand || row.expand ? ' is-open' : '')+'">'+aiui.render(tds.join(''),row)+'</tr>') : '',
-                tr_left = tds_lef.length>0 ? $('<tr class="aiui-table-row'+(options.treeTable.expand || row.expand ? ' is-open' : '')+'">'+aiui.render(tds_lef.join(''),row)+'</tr>') : '',
-                tr_right =tds_right.length>0 ? $('<tr class="aiui-table-row'+(options.treeTable.expand || row.expand ? ' is-open' : '')+'">'+aiui.render(tds_right.join(''),row)+'</tr>') :'',
-                leftData = JSON.parse(JSON.stringify(trCache)),centerData=JSON.parse(JSON.stringify(trCache)),rightData=JSON.parse(JSON.stringify(trCache));
-                tr[0]? (centerData.fixed='center',tr[0].data = centerData) : '';
-                tr_left[0] ? (leftData.fixed='left',tr_left[0].data = leftData) : '';
-                tr_right[0] ? (rightData.fixed='right',tr_right[0].data = rightData) : '';
-                if(!$.isEmptyObject(options.treeTable)){
-                    that.treeTableSetHidden(data,row,function(){
-                        tr.css('display','none');
-                        tr_left.css('display','none');
-                        tr_right.css('display','none');
-                    });
-                }
-                body.append(tr);
-                body_left.append(tr_left);
-                body_right.append(tr_right);
+            // 循环数据
+            $.each(resData,function(index,row){
+                row.duiIndex = ((curr?curr:1)-1)*options.page.limit+index+1;
+                var tr_left =tds_lef.length>0 ? $('<tr >'+template.render(tds_lef.join(''),row)+'</tr>'):'',
+                    tr_right =tds_right.length>0 ? $('<tr >'+template.render(tds_right.join(''),row)+'</tr>'):'',
+                    tr = tds.length>0 ? $('<tr >'+template.render(tds.join(''),row)+'</tr>'):'';
+                // 设置数据
+                tr_left[0] ? tr_left[0].data = row:'';
+                tr_right[0]? tr_right[0].data = row:'';
+                tr[0] ? tr[0].data = row:'';
+                // 放置元素
+                bodyTable.append(tr),bodyLeftTable.append(tr_left),bodyRightTable.append(tr_right);
             })
-            that.BodyWrapper.scrollTop(0);
-            that.BodyWrapper.html(''),that.BodyWrapper.append(body);
-            that.FixedWrapper.html(''),that.FixedWrapper.append(body_left);
-            that.FixedRightWrapper.html(''),that.FixedRightWrapper.append(body_right);
-            //设置同高
-            that.FixedWrapper.find('td').each(function(index,td){
-                $(td).css('height',that.BodyWrapper.find('td[data-key="'+$(td).data('key')+'"]').outerHeight())
-            })
-            that.FixedRightWrapper.find('td').each(function(index,td){
-                $(td).css('height',that.BodyWrapper.find('td[data-key="'+$(td).data('key')+'"]').outerHeight())
-            })
+            that.duiBodyer.scrollTop(0);
+            that.duiBodyer.html(''),that.duiBodyer.append(bodyTable);
+            that.duiFixedLWrap.html(''),that.duiFixedLWrap.append(bodyLeftTable);
+            that.duiFixedRWrap.html(''),that.duiFixedRWrap.append(bodyRightTable);
+            // 渲染form
             that.renderForm();
-            //设置滚动条补
-            that.hasInit ? that.setScollPatch() : setTimeout(function(){
-                that.setScollPatch();
-            }, 100);
-            that.hasInit = true;
-            //关闭加载
-            that.loading.close();
-        }
+            // 重新设置浮动高度
+            that.fullSize();
+            // 重新设置浮动样式
+            that.setFixedStyle();
+            // 重新设置列宽
+            that.setColumnsWidth();
+            // 设置补丁
+            that.setScrollPatch();
+        };
         if(data.length==0){
             that.renderForm();
-            that.FixedWrapper.html('');
-            that.FixedRightWrapper.html('');
-            that.BodyWrapper.html('');
-            that.BodyWrapper.html(aiui.render(TMPL_TIP,{text:options.text.empty}));
-            that.loading.close();
+            that.duiFixedLWrap.html('');
+            that.duiFixedRWrap.html('');
+            that.duiBodyer.html('');
+            that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.empty}));
             return;
-        }
-        //如果是treeTable
-        if(isTreeTable){
-            var tree = new aiui.jsTree();
-            data = tree.toList(data);
-        }
-        setBody();
-        that.setColsWidth();
-        //同步选中
-        that.synChecked(true);
-    }
-    /**
-     * 设置treeTable的隐藏列
-     */
-    TableClass.prototype.treeTableSetHidden = function(data,row,callback){
-        var that=this,options=that.options;
-        aiui.each(data,function(index,item){
-            if(row[options.treeTable.parentColumn]==item[options.treeTable.keyColumn] && !item.expand && !options.treeTable.expand){
-                callback();
-            }
-        })
-    }
-    /**
-     * treeTable的数据处理
-     */
-    TableClass.prototype.treeTableDataHandle=function(data){
-        var that = this,options=that.options,
-        treeTable = options.treeTable,clone = JSON.parse(JSON.stringify(data));
-        /**
-         * 整理成树形结构数据
-         * @param {Object} clone 需要整理的数据
-         * @param {String} key 数据主键名称
-         * @param {String} parentKey 数据的pid名称
-         * @param {Srting} pid 父级id
-         * @param {number} level 层级别
-         */
-        function makeTree(clone,key,parentKey,pid,level){
-            var $trees = [];
-            $.each(clone,function(index,item){
-                if(item[parentKey]==pid){
-                    item['level'] = level + 1;
-                    $trees.push(item);
-                    $trees=$trees.concat(makeTree(clone,treeTable.keyColumn,treeTable.parentColumn,item[key],level+1))
-                }
-            })
-            return $trees;
-        }
-        return makeTree(clone,treeTable.keyColumn,treeTable.parentColumn,0,0);
-    }
-    /**
-     * table滚动条补丁
-     */
-    TableClass.prototype.setScollPatch = function(){
-        var that = this,options=that.options
-        ,scrollbarwidth = aiui.scrollWidth(),
-        bodyHeight = that.BodyWrapper.height();
-        scollwidth = that.BodyWrapper.find('table').width()-that.BodyWrapper.width();
-        scollheight = that.BodyWrapper.find('table').height()-that.BodyWrapper.height();
-        if(scollheight>0){//有纵向滚动条
-            that.patch.css('width',scrollbarwidth);
-            that.patch.css('height',that.HeaderWrapper.outerHeight());
-            that.Mian.append(that.patch);
-            that.FixedRight.css('right',scrollbarwidth);
-            that.FixedRightWrapper.css('height',bodyHeight-scrollbarwidth);
-            that.FixedWrapper.css('height',bodyHeight-scrollbarwidth);
         }else{
-            that.patch.remove();
-            that.FixedRight.css('right','');
-            that.FixedRightWrapper.css('height','');
-            that.FixedWrapper.css('height','');
+            // 设置body
+            setBody();
         }
-        if(scollwidth>0){
-            that.gutter.css('width',scrollbarwidth).css('display','block');
-            that.HeaderWrapper.find('thead>tr').eq(0).append(that.gutter);
-            //如果是多表头
-            if(options.columns.length>1){
-                that.gutter.attr('rowspan',options.columns.length);
-            }
-        }else{
-            that.gutter.remove();
-        }
+        // 关闭加载条
+        that.duiLoading.close();
     }
     /**
      * 设置事件
      */
-    TableClass.prototype.setEvent = function(){
-        var that = this
-        ,options = that.options
-        ,_BODY = $('body')
-        ,dict = {}
-        ,th = that.HeaderWrapper.find('th')
-        ,resizing;
-        /**
-         * 列宽拖拽
-         */
-        th.on('mousemove', function(e){
-            var othis = $(this)
-            ,oLeft = othis.offset().left
-            ,pLeft = e.clientX - oLeft;
-            if(othis.attr('colspan') > 1 || othis.attr('unresize')=='true' || dict.resizeStart){
-                return;
+    Class.prototype.setEvent = function(){
+        var that = this,options = that.config,
+        th = that.reElem.find(HEADER_TH),
+        _BODY = $('body'),
+        dict = {},resizing;
+        // 排序事件
+        th.on('click',function(e){
+            var othis = $(this),
+            sortWrap = othis.find(HEADER_SORT),
+            field = othis.data('field'),
+            sortType = that.sort.sort,
+            type;
+            if(!sortWrap[0] || resizing === 1) return resizing = 2;
+            if(sortType==='desc'){
+                type = 'asc';
+            }else if(sortType==='asc'){
+                type = 'desc';
+            }else{
+                type = 'asc';
             }
-            dict.allowResize = othis.width() - pLeft <= 10;
-            _BODY.css('cursor', (dict.allowResize ? 'col-resize' : ''));
-        }).on('mouseleave', function(){
-            if(dict.resizeStart) return;
-            _BODY.css('cursor', '');
-        }).on('mousedown', function(e){
-            e.preventDefault();
-            var othis = $(this);
-            if(dict.allowResize){
-                var field = othis.data('key');
-                e.preventDefault();
-                dict.resizeStart = true; //开始拖拽
-                dict.offset = [e.clientX, e.clientY]; //记录初始坐标
-                that.getCssRule(field, function(item){
-                    var width = item.style.width || othis.outerWidth();
-                    dict.rule = item;
-                    dict.ruleWidth = parseFloat(width);
-                    dict.minWidth = othis.data('minwidth') || options.cellMinWidth;
-                });
+            that.sort(field,type);
+        }).find(sortWrap+' .sort-caret').on('click',function(e){
+            var othis = $(this),
+            index = othis.index(),
+            field = othis.parents('th').eq(0).data('field');
+            e.stopPropagation();
+            if(index===0){
+                that.sort(field, 'asc');
+            }else{
+                that.sort(field, 'desc');
             }
         })
-        //拖拽中
-        _DOC.on('mousemove', function(e){
+
+
+
+        // that.reElem.on('click',HEADER_TH+'.is-sortable',function(){
+        //     var othis = $(this),field = othis.data('field'),
+        //     sortDom = othis.find('.caret-wrapper'),
+        //     ather = that.reElem.find(HEADER_TH).find('.caret-wrapper');
+        //     if(that.sort && that.sort.field==field){
+        //         if(that.sort.sort=='desc'){
+        //             ather.attr('class','caret-wrapper');
+        //             sortDom.attr('class','caret-wrapper');
+        //             that.sort = {};
+        //         }else if(that.sort.sort=='asc'){
+        //             that.sort.sort = 'desc';
+        //             ather.attr('class','caret-wrapper')
+        //             sortDom.attr('class','caret-wrapper descending');
+        //         }else{
+        //             that.sort.sort = 'asc';
+        //             ather.attr('class','caret-wrapper')
+        //             sortDom.attr('class','caret-wrapper ascending');
+        //         }
+        //     }else{
+        //         that.sort.field = field;
+        //         that.sort.sort = 'asc';
+        //         ather.attr('class','caret-wrapper')
+        //         sortDom.attr('class','caret-wrapper ascending');
+        //     }
+        //     that.pullData(that.currPage);
+        // }).on('click',HEADER_TH+'.is-sortable .caret-wrapper',function(e){
+        //     e.stopPropagation();
+        //     var othis = $(e.target),field = othis.parents('th').data('field'),
+        //     sortDom = $(this),ather = that.reElem.find(HEADER_TH).find('.caret-wrapper');
+        //     if(othis.hasClass('ascending')){
+        //         //如果是升序
+        //         if(that.sort && that.sort.field==field && sortDom.hasClass('ascending')) return;
+        //         ather.attr('class','caret-wrapper')
+        //         sortDom.attr('class','caret-wrapper ascending')
+        //         that.sort.field=field;
+        //         that.sort.sort = 'asc';
+        //     }else if(othis.hasClass('descending')){
+        //         //如果是降序
+        //         if(that.sort && that.sort.field==field && sortDom.hasClass('descending')) return;
+        //         ather.attr('class','caret-wrapper')
+        //         sortDom.attr('class','caret-wrapper descending')
+        //         that.sort.field=field;
+        //         that.sort.sort = 'desc';
+        //     }
+        //     that.pullData(that.currPage);
+        // })
+        // 复选框选择事件
+        that.reElem.on('click','.dui-checkbox',function(e){
+            var othis=$(this),
+            checkbox = othis.find('input[dui-checkbox]'),
+            data = checkbox.parents('tr')[0].data;
+            var childs = that.reElem.find(TABLEBODY).find('input[dui-checkbox]');
+            var checked = checkbox[0].checked;
+            var isAll = typeof checkbox.attr('indeterminate') !== "undefined" ? true : false;
+            if(isAll){
+                // 首先设置元素选中
+                // 获得当前选中状态
+                if(othis.hasClass('is-checked')){
+                    checked = true;
+                }else if(othis.hasClass('is-indeterminate')){
+                    checked = true;
+                }else{
+                    checked = false;
+                }
+                // 设置其他选择框的选中
+                childs.each(function(i,item){
+                    if(item.checkboxClass){
+                        item.checkboxClass.setChecked(checked);
+                    }else{
+                        if(checked){
+                            $(item).attr('checked','checked');
+                        }else{
+                            $(item).removeAttr('checked');
+                        }
+                        that.renderForm();
+                    }
+                })
+                //2.同步是不是全选
+                that.synCheckedAll();
+            }else{
+                //单选
+                //1.设置当前选中
+                // 找到与这个相同的数据
+                that.reElem.find(TABLEBODY).find('tr').each(function(i,tr){
+                    if(tr.data.duiIndex==data.duiIndex){
+                        var duibi =$(tr).find('input[dui-checkbox]');
+                        duibi.each(function(i,item){
+                            if(item && item!=checkbox[0]){
+                                if(item.checkboxClass){
+                                    item.checkboxClass.setChecked(checked);
+                                }else{
+                                    if(checked){
+                                        $(item).attr('checked','checked');
+                                    }else{
+                                        $(item).removeAttr('checked');
+                                    }
+                                    that.renderForm();
+                                }
+                            }
+                        })
+                    }
+                })
+                //2.同步是不是全选
+                that.synCheckedAll();
+            }
+        })
+        // 同步滚动条
+        that.duiBodyer.on('scroll', function(){
+            that.synScroll();
+        });
+        // table大小发生变化事件
+        _WIN.on('resize',function(e){
+            that.resize();
+        })
+        // 行事件
+        that.reElem.on('mouseenter',ROWHOVER,function(){
+            var othis = $(this),
+            index = othis.index();
+            that.reElem.find(TABLEBODY).find('tr:eq('+index+')').addClass('hover-row');
+        }).on('mouseleave',ROWHOVER,function(){
+            var othis = $(this),
+            index = othis.index();
+            that.reElem.find(TABLEBODY).find('tr:eq('+index+')').removeClass('hover-row');
+        });
+        // 拖拽事件
+        th.on('mousemove',function(e){
+            var othis = $(this),
+            oLeft = othis.offset().left,
+            pLeft = e.clientX - oLeft;
+            // 不允许拖拽
+            if(othis.attr('unresize')==='true' || dict.resizeStart) return;
+            // 是否处于拖拽允许区域
+            dict.allowResize = othis.width() - pLeft <= 10;
+            // 如果处于允许移动范围则修改指针样式
+            othis.css('cursor', (dict.allowResize ? 'col-resize' : ''));
+        }).on('mouseleave',function(e){
+            var othis = $(this);
+            if(dict.resizeStart) return;
+            othis.css('cursor', '');
+        }).on('mousedown',function(e){
+            var othis = $(this);
+            var key = othis.data('key');
+            e.preventDefault();
+            // 开始拖拽
+            dict.resizeStart = true;
+            // 记录初始坐标
+            dict.offset = [e.clientX, e.clientY];
+            // 获取当前列的样式规则
+            that.getCssRule(key, function(item){
+                var width = item.style.width || othis.outerWidth();
+                dict.rule = item;
+                dict.ruleWidth = parseFloat(width);
+                dict.minWidth = othis.data('minwidth') || options.minColumnWidth;
+            });
+            _BODY.css('cursor', 'col-resize');
+        })
+        // 拖拽中
+        _BODY.on('mousemove',function(e){
             if(dict.resizeStart){
                 e.preventDefault();
                 if(dict.rule){
-                    var setWidth = dict.ruleWidth + e.clientX - dict.offset[0];
-                    if(setWidth < dict.minWidth) setWidth = dict.minWidth;
-                    dict.rule.style.width = setWidth + 'px';
-                    //重新判断是否能浮动
-                    that.InitFixed();
+                  var setWidth = dict.ruleWidth + e.clientX - dict.offset[0];
+                  if(setWidth < dict.minWidth) setWidth = dict.minWidth;
+                  dict.rule.style.width = setWidth + 'px';
                 }
                 resizing = 1
             }
-        }).on('mouseup', function(e){
-            e.preventDefault();
+        }).on('mouseup',function(e){
             if(dict.resizeStart){
                 dict = {};
                 _BODY.css('cursor', '');
-                that.setScollPatch();
+                that.setScrollPatch();
+                that.renderFixedShadow();
             }
             if(resizing === 2){
                 resizing = null;
             }
-        });
-        /**
-         * 大小发生变化事件
-         */
-        $(window).on('resize',function(){ //自适应
-            that.resize();
-        });
-        /**
-         * 同步滚动条
-         */
-        that.BodyWrapper.on('scroll', function(){
-            that.synScroll();
-        });
-        /**
-         * 排序
-         */
-        th.on('click','.caret-wrapper',function(e){
-            e.preventDefault();
-            var thatth = $(this).parents('th'),
-            field = thatth.data('field'),
-            cansort = thatth.find(className.SortSpan)[0]? true : false,
-            oldsort = thatth.hasClass('ascending') ? 'asc' : (thatth.hasClass('descending')?'desc':false),
-            sort,sortClass;
-            if(!cansort) return;
-            if(!oldsort){
-                sort = 'asc';
-                sortClass = 'ascending';
-            }else if(oldsort=='asc'){
-                sort = 'desc';
-                sortClass = 'descending';
-            }else if(oldsort=='desc'){
-                sort = 'clear';
-                sortClass = '';
-            }
-            that.sort = {
-                field:field,
-                sort:sort
-            }
-            if(sort=='clear'){
-                that.sort = undefined;
-            }
-            clearOtherSort(thatth);
-            thatth.removeClass('ascending').removeClass('descending').addClass(sortClass);
-            that.Pulldata(that.page,{sort:that.sort});
         })
-        th.on('click','.ascending',function(e){
-            e.stopPropagation();
-            var thatClick = $(this),
-            thatth = thatClick.parents('th'),
-            field = thatth.data('field'),
-            cansort = thatth.find(className.SortSpan)[0]? true : false;
-            if(!cansort) return;
-            clearOtherSort(thatth);
-            thatth.removeClass('descending')
-            if(thatth.hasClass('ascending')){
-                that.sort = undefined;
-                thatth.removeClass('ascending');
-            }else{
-                thatth.addClass('ascending');
-                that.sort = {
-                    field:field,
-                    sort:'asc'
-                }
+    }
+    /**
+     * 重新制定表格大小
+     */
+    Class.prototype.resize = function(){
+        this.fullSize();
+        this.setColumnsWidth();
+        this.setFixedStyle();
+        this.setScrollPatch();
+        this.renderFixedShadow();
+    }
+    /**
+     * 初始化浮动的阴影显示效果
+     */
+    Class.prototype.renderFixedShadow = function(){
+        var that = this,othis = that.duiBodyer,
+        scrollBarWidth = othis.prop('offsetWidth') - othis.prop('clientWidth'),
+        scrollBarHeight = othis.prop('offsetHeight') - othis.prop('clientHeight'),
+        scrollAll = othis.find('table').width(),
+        clientWidth = othis.width(),
+        allScrollWidth = (scrollAll-clientWidth)
+        ,scrollLeft = othis.scrollLeft();
+        if(scrollBarHeight==0){
+            othis.attr('class',BODYER.slice(1,BODYER.length)+' is-scrolling-none');
+        }else{
+            //如果滚动横向
+            if(scrollLeft == (allScrollWidth+scrollBarWidth)){
+                othis.attr('class',BODYER.slice(1,BODYER.length)+' is-scrolling-right');
+            }else if(scrollLeft>0 && scrollLeft<(allScrollWidth+scrollBarWidth)){
+                othis.attr('class',BODYER.slice(1,BODYER.length)+' is-scrolling-middle');
+            }else if(scrollLeft==0){
+                othis.attr('class',BODYER.slice(1,BODYER.length)+' is-scrolling-left');
             }
-            that.Pulldata(that.page,{sort:that.sort});
-        })
-        th.on('click','.descending',function(e){
-            e.stopPropagation();
-            var thatClick = $(this),
-            thatth = thatClick.parents('th'),
-            field = thatth.data('field'),
-            cansort = thatth.find(className.SortSpan)[0]? true : false;
-            if(!cansort) return;
-            clearOtherSort(thatth);
-            thatth.removeClass('ascending')
-            if(thatth.hasClass('descending')){
-                that.sort = undefined;
-                thatth.removeClass('descending');
-            }else{
-                thatth.addClass('descending');
-                that.sort = {
-                    field:field,
-                    sort:'desc'
-                }
-            }
-            that.Pulldata(that.page,{sort:that.sort});
-        })
-        function clearOtherSort(thisTh){
-            thisTh.siblings().removeClass('ascending').removeClass('descending');
         }
-        /**
-         * 复选框点击事件
-         */
-        that.tabledom.on('click','input[aiui-checkbox]+',function(e){
-            var thatClick = $(this),checkbox = thatClick.prev(),
-            tr = thatClick.parents('tr')[0],trData=tr.data,thisTd = thatClick.parents('td'),
-            isFixed = thatClick.parents('.aiui-table-fixed')[0] ? true :false,
-            dom = thatClick.parents('td');
-            if(!trData){//全选
-                var key = thatClick.parents('th').data('key');
-                $.each(that.options.columns,function(i1,row){
-                    $.each(row,function(i2,col){
-                        if(col.key==key){
-                            col.checked = checkbox.attr('checked') ? true : false;
-                        }
-                    })
-                })
-                //同步选项
-                that.synChecked(true);
-            }else{//单选
-                console.log($(checkbox).attr('checked'));
-                var tr = undefined,td=undefined;
-                if(!isFixed){//如果当前点击的是浮动
-                    tr = that.FixedWrapper.find('tr').eq(trData.index);
-                }else{
-                    tr = that.BodyWrapper.find('tr').eq(trData.index);
-                }
-                td = tr.find('td[data-key="'+thisTd.data('key')+'"]');
-                if(checkbox.attr('checked')!==undefined){
-                    td.find('input[aiui-checkbox]').attr('checked','checked');
-                }else{
-                    td.find('input[aiui-checkbox]').removeAttr('checked');
-                }
+    }
+    /**
+     * 同步全选
+     */
+    Class.prototype.synCheckedAll = function(){
+        var that = this;options = that.config,
+        // 获取选择框的个数，只充body获取
+        checkboxAll = that.duiBodyer.find('input[dui-checkbox]'),
+        // 获取当前选中个数
+        checkedCheckbox = that.duiBodyer.find('input[dui-checkbox]:checked'),
+        // 获取全选按钮
+        checkAll = that.reElem.find(TABLEHEADER).find('input[dui-checkbox][dui-filter="checkAll"]'),
+        // 默认当前状态
+        checkAllState = false;
+        // 如果所有个数等于选中个数则是全选
+        if(checkboxAll.length==checkedCheckbox.length){
+            checkAllState = true;
+        }
+        // 如果选中个数为0则为不选中
+        else if(checkedCheckbox.length==0){
+            checkAllState = false;
+        }else{
+            checkAllState = 'indeterminate';
+        }
+        checkAll.each(function(i,item){
+            if(item.checkboxClass){
+                item.checkboxClass.setChecked(checkAllState);
+            }else{
+                $(item).attr('state','indeterminate');
                 that.renderForm();
-                //同步选项
-                that.synChecked();
             }
         })
-        /**
-         * treeTable的打开关闭事件
-         */
-        that.tabledom.on('click','.aiui-table-expand-icon',function(e){
-            var thatClick = $(this),tr = thatClick.parents('tr'),show='',
-            isOpen = tr.hasClass('is-open')?true:false,childs=tr[0].data.oldData.hasChild ? tr[0].data.oldData.child : [],
-            allTrs = that.tabledom.find('tbody>tr');
-            isOpen ? tr.removeClass('is-open') : tr.addClass('is-open');
-            $.each(allTrs,function(i,item){
-                update(item,childs)
-            })
-            /**
-             * 修改子节点属性
-             * @param {Document} dom 当前动
-             * @param {object} tempchilds 判断条件，即为子节点
-             */
-            function update(dom,tempchilds){
-                aiui.each(tempchilds,function(i,child){
-                    if(dom.data.oldData[options.treeTable.keyColumn]==child[options.treeTable.keyColumn]){
-                        if(isOpen){
-                            $(dom).css('display','none');
-                            if(dom.data.oldData.hasChild){
-                                $(dom).removeClass('is-open');
-                            }
-                        }else{
-                            $(dom).css('display','');
-                        }
-                    }else{
-                        if(isOpen){
-                            if(child.hasChild){
-                                update(dom,child.child);
-                            } 
-                        }
-                    }
-                })
-            }
+        // 设置选中数据
+        that.checkedData = [];
+        // 获取数据
+        checkedCheckbox.parents('tr').each(function(i,tr){
+            var data = $.extend(true,{},tr.data);
+            delete data.duiIndex;
+            that.checkedData.push(data);
         })
     }
     /**
      * 同步滚动条
      */
-    TableClass.prototype.synScroll = function(){
-        var that = this,othis = that.BodyWrapper
+    Class.prototype.synScroll = function(){
+        var that = this,othis = that.duiBodyer
         ,scrollLeft = othis.scrollLeft()
         ,scrollTop = othis.scrollTop();
-        that.HeaderWrapper.scrollLeft(scrollLeft);
-        that.FixedWrapper.scrollTop(scrollTop);
-        that.FixedRightWrapper.scrollTop(scrollTop);
-    }
-    //获取样式规则
-    TableClass.prototype.getCssRule = function(field,callback){
-        var that = this
-        ,style = that.tabledom.find('style')[0];
-        var sheet = style.sheet || style.styleSheet || {}
-        ,rules = sheet.cssRules || sheet.rules;
-        $.each(rules, function (i, item) {
-            if(item.selectorText === ('.aiui-table'+that.index+'-'+ field)){
-                return callback(item), true;
-            }
-        });
+        that.duiHeader.scrollLeft(scrollLeft);
+        that.duiFixed.find(FIXED_WRAP).scrollTop(scrollTop);
+        // 渲染shown
+        that.renderFixedShadow();
     }
     /**
-     * 同步选中
+     * 组装请求参数
      */
-    TableClass.prototype.synChecked=function(init){
-        var that = this;options = that.options;
-        that.eachColumn(function(i1,thiscolumn){
-            //定义总的个数，选中个数
-            var total,checked = 0;
-            if(init){
-                if(thiscolumn.type!='checkbox') return;
-                //如果当前这个列，类型是checkbox，并且默认选中则处理
-                if(thiscolumn.checked){
-                    that.tabledom.find('td[data-key="'+thiscolumn.key+'"]').find('input[aiui-checkbox]').attr('checked','checked');
-                }else{
-                    that.tabledom.find('td[data-key="'+thiscolumn.key+'"]').find('input[aiui-checkbox]').removeAttr('checked');
-                }
-            }else{
-                if(thiscolumn.type=='checkbox'){
-                    total = that.BodyWrapper.find('td[data-key="'+thiscolumn.key+'"]').length;
-                    checked = that.BodyWrapper.find('td[data-key="'+thiscolumn.key+'"]').find('input[checked="checked"]').length;
-                    if(total==checked){
-                        that.tabledom.find('th[data-key="'+thiscolumn.key+'"]').find('input[aiui-checkbox]').attr('checked','checked')
-                    }else{
-                        that.tabledom.find('th[data-key="'+thiscolumn.key+'"]').find('input[aiui-checkbox]').removeAttr('checked')
-                    }
-                }
-            }
-        })
-        that.renderForm();
+    Class.prototype.buildRequest = function(){
+        var that = this,config = that.config,
+        request = config.request,
+        where = that.where,sort = that.sort,
+        params = {};
+        // 如果有sort
+        sort && (params[request.sortName] = sort);
+        // 如果有where
+        where && (params[request.whereName] = where);
+        return params;
     }
     /**
-     * 搜索方法
+     * 渲染方法
      */
-    TableClass.prototype.search = function(where){
-        var that = this,options = that.options;
-        options.where = where;
-        $param = {
-            where:where
-        }
-        this.Pulldata(1,$param);
+    table.render = function(options){
+        return table(options);
     }
     /**
-     * 重置table大小
+     * 自动初始化
      */
-    TableClass.prototype.resize= function(){
-        this.fullSize();
-        this.setColsWidth();
-        this.InitFixed();
+    table.init = function(){
+
     }
     return table;
-});
+})

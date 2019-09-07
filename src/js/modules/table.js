@@ -9,7 +9,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
     FIXED = '.dui-table__fixed',FIXED_LEFT='.dui-table__fixed-left',FIXED_RIGHT='.dui-table__fixed-right',
     PAGE = '.diu-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
     TABLEBODY='.dui-table__body',ROWHOVER='.dui-table__body tr',FIXED_HEAD='.dui-table__fixed-header-wrapper',
-    TABLEHEADER = '.dui-table__header',HEADER_TH = TABLEHEADER+' th',
+    TABLEHEADER = '.dui-table__header',HEADER_TH = TABLEHEADER+' th',HEADER_SORT='.caret-wrapper',
     // 列模板
     TMPL_HEAD=function(options){
         options = options || {};
@@ -34,13 +34,13 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
                             }
                         }(),
                         //如果有子节点
-                        '<th {{if item2.unresize || item2.colspan>1}}unresize="{{item2.unresize}}"{{/if}}',
+                        '<th{{if item2.minWidth}} data-minWidth="{{item2.minWidth}}"{{/if}}{{if item2.unresize || item2.colspan>1}} unresize="{{item2.unresize}}"{{/if}}',
                         '{{if item2.field}} data-field="{{item2.field}}"{{/if}}',
                         ' data-key="{{item2.key}}" colspan="{{item2.colspan}}" rowspan="{{item2.rowspan}}"',
                         ' class="{{if item2.sort && item2.colspan==1}}is-sortable{{/if}}{{if item2.type!=="normal"}} dui-table__cell-{{item2.type}}{{/if}}{{if item2.align}} is-{{item2.align}}{{/if}}">',
                             '<div class="cell dui-table-{{if item2.colGroup}}group{{else}}{{index}}-{{item2.key}}{{/if}}">',
                                 '{{if item2.type=="checkbox"}}',
-                                    '<input type="checkbox" dui-checkbox indeterminate="true"{{if checkAll}} checked="checked"{{/if}} id="dui-table-{{index}}-checkbox">',
+                                    '<input type="checkbox" dui-checkbox indeterminate="true"{{if checkAll}} checked="checked"{{/if}} dui-filter="checkAll">',
                                 '{{else}}',
                                     '{{item2.title}}',
                                 '{{/if}}',
@@ -135,7 +135,9 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         that.id = config.id || config.index;
         return {
             config:config,
-
+            getCheckedData:function(){
+                return that.checkedData;
+            }
         }
     },
     /**
@@ -143,6 +145,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
      */
     Class = function(options){
         var that = this,
+        state = that.state = {init:true},
         options = that.options = options,
         config = that.config = $.extend(true,{
             el:'',//指定的table元素
@@ -204,7 +207,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         // 设置当前页面
         that.currPage = parseInt(config.page.curr) || 1;
         // 设置初始化排序列
-        config.initSort && (that.sort = $.extend(true,{},config.initSort));
+        config.initSort && (that.sortKey = $.extend(true,{},config.initSort));
         // 初始化
         that.init();
     }
@@ -251,6 +254,14 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         that.pullData(that.currPage);
         // 设置事件
         that.setEvent();
+        // 设置当前状态已经初始化完毕，因为可能会有ajax请求，所以确保ajax请求完毕
+        var interval = setInterval(function(){
+            if(that.duiBodyer.children().length>0){
+                clearInterval(interval);
+                that.state.init = false;
+            }
+        }, 50);
+        
     }
     /**
      * 初始化列
@@ -345,6 +356,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
     Class.prototype.setFixedStyle = function(){
         var that = this,bodyHeight = that.duiBodyer.height(),
         scrollHeight = that.duiBodyer.prop('offsetHeight')-that.duiBodyer.prop('clientHeight'),
+        scrollWidth = that.duiBodyer.prop('offsetWidth')-that.duiBodyer.prop('clientWidth'),
         fixedLWidth = that.duiFixedL.find(FIXED_HEAD).width(),
         fixedRWidth = that.duiFixedR.find(FIXED_HEAD).width(),
         headerHeight = that.duiHeader.height();
@@ -359,6 +371,14 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             height:(bodyHeight-scrollHeight),
             top:headerHeight
         });
+        // 如果没有横向滚动条则隐藏
+        if(scrollHeight==0){
+            that.duiFixed.css('display','none');
+        }else{
+            that.duiFixed.css('display','');
+        }
+        // 去除补丁
+        
     }
     /**
      * 设置初始化列宽
@@ -430,6 +450,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         // 设置列宽
         that.eachColumns(function(index,col){
             var minWidth = col.minWidth || options.minColumnWidth;
+            col.minWidth = minWidth;
             if(col.colGroup || col.hide) return;
             if(col.width === 0){
                 col.initWidth = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth);
@@ -507,11 +528,10 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         duiMainTable = that.duiBodyer.children('table');
         scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
         scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
+        Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth();
+        patchWidth = Surplus >scrollWidth ? Surplus : scrollWidth;
         // 如果有右侧滚动条
         if(scrollWidth>0){
-            // 设置补丁
-            that.duiGutter.css("width",scrollWidth);
-            that.duiGutter.css('display','block');
             that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
             // 如果是多级表头
             if(options.columns.length>1){
@@ -520,6 +540,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             that.duiFixedR.css({
                 'right':(scrollWidth),//减1是为了遮住滚动条的边框
             });
+            
             that.duiPatch.css({
                 width:scrollWidth,
                 height:that.duiHeader.height()
@@ -528,6 +549,12 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             that.duiFixedR.css({
                 'right':'',
             });
+        }
+        if(scrollHeight>0 || patchWidth){
+            // 设置移动补丁
+            that.duiGutter.css("width",patchWidth);
+            that.duiGutter.css('display','block');
+        }else{
             that.duiGutter.css('display','none');
         }
     }
@@ -690,7 +717,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
                     '{{else}}',
                         // 如果是选择框
                         '{{if type=="checkbox"}}',
-                        '<input type="checkbox" value="{{@ fieldName}}" dui-checkbox name="{{field}}[]">',//如果是选择框
+                        '<input type="checkbox" value="{{@ fieldName}}"{{if checkAll}} checked="checked"{{/if}} dui-checkbox>',//如果是选择框
                         '{{else if type=="numbers"}}',//如果是序号
                         '{{@ duiIndex}}',
                         '{{else}}',
@@ -738,7 +765,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             // 重新设置浮动样式
             that.setFixedStyle();
             // 重新设置列宽
-            that.setColumnsWidth();
+            that.state.init && that.setColumnsWidth();
             // 设置补丁
             that.setScrollPatch();
         };
@@ -755,99 +782,96 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         }
         // 关闭加载条
         that.duiLoading.close();
-        
-    }
-    /**
-     * 设置选中的数据
-     */
-    Class.prototype.setChecked = function(item,checked){
-        
     }
     /**
      * 设置事件
      */
     Class.prototype.setEvent = function(){
-        var that = this,options = that.config;
+        var that = this,options = that.config,
+        th = that.reElem.find(HEADER_TH),
+        _BODY = $('body'),
+        dict = {},resizing;
         // 排序事件
-        that.reElem.on('click',HEADER_TH+'.is-sortable',function(){
-            var othis = $(this),field = othis.data('field'),
-            sortDom = othis.find('.caret-wrapper'),
-            ather = that.reElem.find(HEADER_TH).find('.caret-wrapper');
-            if(that.sort && that.sort.field==field){
-                if(that.sort.sort=='desc'){
-                    ather.attr('class','caret-wrapper');
-                    sortDom.attr('class','caret-wrapper');
-                    that.sort = {};
-                }else if(that.sort.sort=='asc'){
-                    that.sort.sort = 'desc';
-                    ather.attr('class','caret-wrapper')
-                    sortDom.attr('class','caret-wrapper descending');
-                }else{
-                    that.sort.sort = 'asc';
-                    ather.attr('class','caret-wrapper')
-                    sortDom.attr('class','caret-wrapper ascending');
-                }
+        th.on('click',function(e){
+            var othis = $(this),
+            sortWrap = othis.find(HEADER_SORT),
+            field = othis.data('field'),
+            sortType = that.sortKey.sort,
+            type;
+            if(!sortWrap[0] || resizing === 1) return resizing = 2;
+            if(sortType==='desc'){
+                type = null;
+            }else if(sortType==='asc'){
+                type = 'desc';
             }else{
-                that.sort.field = field;
-                that.sort.sort = 'asc';
-                ather.attr('class','caret-wrapper')
-                sortDom.attr('class','caret-wrapper ascending');
+                type = 'asc';
             }
-            that.pullData(that.currPage);
-        }).on('click',HEADER_TH+'.is-sortable .caret-wrapper',function(e){
+            that.sort(field,type);
+        }).find(HEADER_SORT+' .sort-caret').on('click',function(e){
+            var othis = $(this),
+            index = othis.index(),
+            field = othis.parents('th').eq(0).data('field');
             e.stopPropagation();
-            var othis = $(e.target),field = othis.parents('th').data('field'),
-            sortDom = $(this),ather = that.reElem.find(HEADER_TH).find('.caret-wrapper');
-            if(othis.hasClass('ascending')){
-                //如果是升序
-                if(that.sort && that.sort.field==field && sortDom.hasClass('ascending')) return;
-                ather.attr('class','caret-wrapper')
-                sortDom.attr('class','caret-wrapper ascending')
-                that.sort.field=field;
-                that.sort.sort = 'asc';
-            }else if(othis.hasClass('descending')){
-                //如果是降序
-                if(that.sort && that.sort.field==field && sortDom.hasClass('descending')) return;
-                ather.attr('class','caret-wrapper')
-                sortDom.attr('class','caret-wrapper descending')
-                that.sort.field=field;
-                that.sort.sort = 'desc';
+            if(index===0){
+                that.sort(field, 'asc');
+            }else{
+                that.sort(field, 'desc');
             }
-            that.pullData(that.currPage);
         })
         // 复选框选择事件
         that.reElem.on('click','.dui-checkbox',function(e){
-            var checkbox = $(this).find('input[dui-checkbox]'),data = checkbox.parents('tr')[0].data;
-            var name = checkbox.attr('name');
-            var childs = that.reElem.find(TABLEBODY).find('input[dui-checkbox][name="'+name+'"]');
+            var othis=$(this),
+            checkbox = othis.find('input[dui-checkbox]'),
+            data = checkbox.parents('tr')[0].data;
+            var childs = that.reElem.find(TABLEBODY).find('input[dui-checkbox]');
             var checked = checkbox[0].checked;
             var isAll = typeof checkbox.attr('indeterminate') !== "undefined" ? true : false;
             if(isAll){
-                //1.全选
-                // childs.each(function(i, item){
-                //     that.setChecked(item, checked);
-                // });
-                // //2.同步是不是全选
-                // that.synCheckedAll();
+                // 首先设置元素选中
+                // 获得当前选中状态
+                if(othis.hasClass('is-checked')){
+                    checked = true;
+                }else if(othis.hasClass('is-indeterminate')){
+                    checked = true;
+                }else{
+                    checked = false;
+                }
+                // 设置其他选择框的选中
+                childs.each(function(i,item){
+                    if(item.checkboxClass){
+                        item.checkboxClass.setChecked(checked);
+                    }else{
+                        if(checked){
+                            $(item).attr('checked','checked');
+                        }else{
+                            $(item).removeAttr('checked');
+                        }
+                        that.renderForm();
+                    }
+                })
+                //2.同步是不是全选
+                that.synCheckedAll();
             }else{
                 //单选
                 //1.设置当前选中
                 // 找到与这个相同的数据
                 that.reElem.find(TABLEBODY).find('tr').each(function(i,tr){
                     if(tr.data.duiIndex==data.duiIndex){
-                        var duibi =$(tr).find('input[dui-checkbox][name="'+name+'"]')[0];
-                        if(duibi && duibi!=checkbox[0]){
-                            if(duibi.checkboxClass){
-                                duibi.checkboxClass.setChecked(checked);
-                            }else{
-                                if(checked){
-                                    $(duibi).attr('checked','checked');
+                        var duibi =$(tr).find('input[dui-checkbox]');
+                        duibi.each(function(i,item){
+                            if(item && item!=checkbox[0]){
+                                if(item.checkboxClass){
+                                    item.checkboxClass.setChecked(checked);
                                 }else{
-                                    $(duibi).removeAttr('checked');
+                                    if(checked){
+                                        $(item).attr('checked','checked');
+                                    }else{
+                                        $(item).removeAttr('checked');
+                                    }
+                                    that.renderForm();
                                 }
-                                that.renderForm();
                             }
-                        }
+                        })
                     }
                 })
                 //2.同步是不是全选
@@ -872,13 +896,106 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             index = othis.index();
             that.reElem.find(TABLEBODY).find('tr:eq('+index+')').removeClass('hover-row');
         });
+        // 拖拽事件
+        th.on('mousemove',function(e){
+            var othis = $(this),
+            oLeft = othis.offset().left,
+            pLeft = e.clientX - oLeft;
+            // 不允许拖拽
+            if(othis.attr('unresize')==='true' || dict.resizeStart) return;
+            // 是否处于拖拽允许区域
+            dict.allowResize = othis.width() - pLeft <= 10;
+            // 如果处于允许移动范围则修改指针样式
+            othis.css('cursor', (dict.allowResize ? 'col-resize' : ''));
+        }).on('mouseleave',function(e){
+            var othis = $(this);
+            if(dict.resizeStart) return;
+            othis.css('cursor', '');
+        }).on('mousedown',function(e){
+            var othis = $(this);
+            if(dict.allowResize){
+                var key = othis.data('key');
+                e.preventDefault();
+                // 开始拖拽
+                dict.resizeStart = true;
+                // 记录初始坐标
+                dict.offset = [e.clientX, e.clientY];
+                // 获取当前列的样式规则
+                that.getCssRule(key, function(item){
+                    var width = item.style.width || othis.outerWidth();
+                    dict.rule = item;
+                    dict.ruleWidth = parseFloat(width);
+                    dict.minWidth = othis.data('minwidth') || options.minColumnWidth;
+                });
+                _BODY.css('cursor', 'col-resize');
+            }
+        })
+        // 拖拽中
+        _BODY.on('mousemove',function(e){
+            if(dict.resizeStart){
+                e.preventDefault();
+                if(dict.rule){
+                  var setWidth = dict.ruleWidth + e.clientX - dict.offset[0];
+                  if(setWidth < dict.minWidth) setWidth = dict.minWidth;
+                  dict.rule.style.width = setWidth + 'px';
+                }
+                resizing = 1;
+                that.setFixedStyle();
+                that.setScrollPatch();
+                that.renderFixedShadow();
+            }
+        }).on('mouseup',function(e){
+            if(dict.resizeStart){
+                dict = {};
+                _BODY.css('cursor', '');
+            }
+            if(resizing === 2){
+                resizing = null;
+            }
+        })
+    }
+    /**
+     * 排序方法
+     */
+    Class.prototype.sort = function(field,type){
+        var that = this,options = that.config,
+        th = that.reElem.find(HEADER_TH+'[data-field="'+field+'"]'),
+        ClassName;
+        if(th.length==0) return;
+        // 如果已经在状态中
+        if(that.sortKey.field==field && that.sortKey.sort==type) return;
+        // 如果当前选中字段和已经有的字段不一致
+        if(field && that.sortKey.field!=field){
+            type = 'asc';
+        }
+        // 设置排序
+        that.sortKey = {
+            field:field,
+            sort:type
+        }
+        // 如果类型为空则删除掉sort
+        if(type===null){
+            that.sortKey = {};
+        }
+        // 设置排序样式
+        th.siblings().find(HEADER_SORT).attr('class','caret-wrapper');
+        // 设置当前样式
+        if(type=='asc'){
+            ClassName = 'caret-wrapper ascending';
+        }else if(type=='desc'){
+            ClassName = 'caret-wrapper descending';
+        }else{
+            ClassName = 'caret-wrapper'
+        }
+        th.find(HEADER_SORT).attr('class',ClassName);
+        // 执行排序请求
+        that.pullData(that.currPage);
     }
     /**
      * 重新制定表格大小
      */
     Class.prototype.resize = function(){
         this.fullSize();
-        this.setColumnsWidth();
         this.setFixedStyle();
         this.setScrollPatch();
         this.renderFixedShadow();
@@ -911,7 +1028,41 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
      * 同步全选
      */
     Class.prototype.synCheckedAll = function(){
-
+        var that = this;options = that.config,
+        // 获取选择框的个数，只充body获取
+        checkboxAll = that.duiBodyer.find('input[dui-checkbox]'),
+        // 获取当前选中个数
+        checkedCheckbox = that.duiBodyer.find('input[dui-checkbox]:checked'),
+        // 获取全选按钮
+        checkAll = that.reElem.find(TABLEHEADER).find('input[dui-checkbox][dui-filter="checkAll"]'),
+        // 默认当前状态
+        checkAllState = false;
+        // 如果所有个数等于选中个数则是全选
+        if(checkboxAll.length==checkedCheckbox.length){
+            checkAllState = true;
+        }
+        // 如果选中个数为0则为不选中
+        else if(checkedCheckbox.length==0){
+            checkAllState = false;
+        }else{
+            checkAllState = 'indeterminate';
+        }
+        checkAll.each(function(i,item){
+            if(item.checkboxClass){
+                item.checkboxClass.setChecked(checkAllState);
+            }else{
+                $(item).attr('state','indeterminate');
+                that.renderForm();
+            }
+        })
+        // 设置选中数据
+        that.checkedData = [];
+        // 获取数据
+        checkedCheckbox.parents('tr').each(function(i,tr){
+            var data = $.extend(true,{},tr.data);
+            delete data.duiIndex;
+            that.checkedData.push(data);
+        })
     }
     /**
      * 同步滚动条
@@ -931,7 +1082,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
     Class.prototype.buildRequest = function(){
         var that = this,config = that.config,
         request = config.request,
-        where = that.where,sort = that.sort,
+        where = that.where,sort = that.sortKey,
         params = {};
         // 如果有sort
         sort && (params[request.sortName] = sort);
