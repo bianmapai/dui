@@ -175,6 +175,7 @@
       height: 27px;
       line-height: 27px;
       text-overflow: ellipsis;
+      white-space: nowrap;
       display: inline-block;
       vertical-align: middle;
       box-sizing: border-box;
@@ -196,7 +197,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
-    word-break: break-all;
     line-height: 23px;
     height: 23px;
     padding-left: 10px;
