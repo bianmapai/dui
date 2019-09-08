@@ -474,65 +474,65 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
      * 根据有没有滚动条确定自动分割列的宽
      */
     Class.prototype.resColumnsWidth = function(){
-        var that = this,options = that.config,
-        scrollWidth = scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),
-        autoColNums = options.autoColNums,
-        subtractWidth = parseFloat(scrollWidth/autoColNums);//大于0则右侧有滚动条;
-        that.eachColumns(function(i,col){
-            if(col.autoColumn){
-                if(col.subtract && scrollWidth==0){
-                    col.subtract = false;
-                    that.getCssRule(col.key,function(rule){
-                        rule.style.width = (parseFloat(rule.style.width)+col.subtractWidth)+'px';
-                    })
-                }else if(!col.subtract && scrollWidth>0){
-                    col.subtract = true;
-                    col.subtractWidth = subtractWidth;
-                    that.getCssRule(col.key,function(rule){
-                        rule.style.width = (parseFloat(rule.style.width)-subtractWidth)+'px';
-                    })
-                }
-            }
-        },true)
+        // var that = this,options = that.config,
+        // scrollWidth = scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),
+        // autoColNums = options.autoColNums,
+        // subtractWidth = parseFloat(scrollWidth/autoColNums);//大于0则右侧有滚动条;
+        // that.eachColumns(function(i,col){
+        //     if(col.autoColumn){
+        //         if(col.subtract && scrollWidth==0){
+        //             col.subtract = false;
+        //             that.getCssRule(col.key,function(rule){
+        //                 rule.style.width = (parseFloat(rule.style.width)+col.subtractWidth)+'px';
+        //             })
+        //         }else if(!col.subtract && scrollWidth>0){
+        //             col.subtract = true;
+        //             col.subtractWidth = subtractWidth;
+        //             that.getCssRule(col.key,function(rule){
+        //                 rule.style.width = (parseFloat(rule.style.width)-subtractWidth)+'px';
+        //             })
+        //         }
+        //     }
+        // },true)
     }
     /**
      * 设置滚动条补丁
      */
     Class.prototype.setScrollPatch = function(){
-        // var that = this,options = that.config,
-        // duiMainTable = that.duiBodyer.children('table');
-        // scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
-        // scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
-        // Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth();
+        var that = this,options = that.config,
+        duiMainTable = that.duiBodyer.children('table');
+        scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
+        scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
+        Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth();
         
-        // patchWidth = Surplus >scrollWidth ? Surplus : scrollWidth;
-        // // 如果有右侧滚动条
-        // if(scrollWidth>0){
-        //     that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
-        //     // 如果是多级表头
-        //     if(options.columns.length>1){
-        //         that.gutter.attr('rowspan',options.columns.length);
-        //     }
-        //     that.duiFixedR.css({
-        //         'right':(scrollWidth),//减1是为了遮住滚动条的边框
-        //     });
+        patchWidth = Surplus >scrollWidth ? Surplus : scrollWidth;
+        // 如果有右侧滚动条
+        if(scrollWidth>0){
+            that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
+            // 如果是多级表头
+            if(options.columns.length>1){
+                that.gutter.attr('rowspan',options.columns.length);
+            }
+            that.duiFixedR.css({
+                'right':(scrollWidth),//减1是为了遮住滚动条的边框
+            });
             
-        //     that.duiPatch.css({
-        //         width:scrollWidth,
-        //         height:that.duiHeader.height()
-        //     })
-        // }else{
-        //     that.duiFixedR.css({
-        //         'right':'',
-        //     });
-        // }
-        // if(scrollHeight>0 || patchWidth){
-        //     // 设置移动补丁
-        //     that.duiGutter.css("width",patchWidth);
-        //     that.duiGutter.css('display','block');
-        // }else{
-        //     that.duiGutter.css('display','none');
-        // }
+            that.duiPatch.css({
+                width:scrollWidth,
+                height:that.duiHeader.height()
+            })
+        }else{
+            that.duiFixedR.css({
+                'right':'',
+            });
+        }
+        if(scrollHeight>0 || patchWidth){
+            // 设置移动补丁
+            that.duiGutter.css("width",patchWidth);
+            that.duiGutter.css('display','block');
+        }else{
+            that.duiGutter.css('display','none');
+        }
     }
     /**
      * 循环列
