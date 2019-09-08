@@ -315,15 +315,16 @@ Dui.prototype.use = function(deps,callback){
     if(window.jQuery && jQuery.fn.on){
         that.each(deps, function(index, item){
           if(item === 'jquery'){
-            deps.splice(index, 1);
+            that.modules.jquery = {};
+            that.modules.jquery.status = 'loaded';
+            that.modules.jquery.deps = [];
+            that.modules.jquery.callback = function(){
+                return window.$;
+            }
+            that.modules.jquery.oncomplete = that.modules.jquery.oncomplete || [];
+            that.modulesMap.jquery = {};
           }
         });
-        that.modules.jquery = {};
-        that.modules.jquery.status = 'loaded';
-        that.modules.jquery.deps = [];
-        that.modules.jquery.callback = function(){
-            return window.$;
-        }
     }
     var depsCount = deps.length;
     var params = [];
@@ -357,13 +358,15 @@ Dui.prototype.loadMod=function(name,callback){
         //需要加载的地址
         var url = getDepUrl(name);
         that.loadJs(url,function(){
+            
             //如果define的不是函数
             if (!isFunction(that.modules[name].callback)) {
                 execMod(name, callback);
                 return 0;
             }
+            
             //define的是函数
-            that.use(that.modules[name].deps, function () {                    
+            that.use(that.modules[name].deps, function () {
                 execMod(name, callback, slice.call(arguments, 0));
             });
             return 1;
@@ -398,7 +401,6 @@ Dui.prototype.loadMod=function(name,callback){
         });
         return 3;
     }
-
     //已经执行过
     callback(that.modulesMap[name].exports);
     return 4;

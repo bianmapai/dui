@@ -21,15 +21,13 @@
             </div>
         </div>
         <div class="dui-card__body">
-            <div class="toolbar">
-                <button class="dui-button dui-button__primary" id="getData">获取选中数据</button>
-            </div>
             <table dui-table id="ceshi"></table>
         </div>
     </div>
 </div>
 <script>
 dui.use(['table','jquery','popup'],function(table,$,popup){
+    console.log('进来了');
     var thisTable = table.render({
         el:'#ceshi',
         height:'full-215',
@@ -60,7 +58,7 @@ dui.use(['table','jquery','popup'],function(table,$,popup){
             ,{field:'sign', title: '签名', width: '30%', minWidth: 100} //部定义当前单元格的最小宽度
             ,{field:'experience', title: '积分', sort: true}
             ,{field:'score', title: '评分', sort: true}
-            ,{field:'classify', title: '职业'}
+            ,{field:'classify', width:80,title: '职业'}
             ,{field:'wealth', width:137, title: '财富', sort: true}
             ,{
                 field:'',

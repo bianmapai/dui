@@ -100,7 +100,7 @@ gulp.task("serve",gulp.series("build", ()=>{
             baseDir: "./dist",
             // index:"example/index.html"
         },
-        ui: false
+        // ui: false
     }, function(err, bs) {
         console.log(bs.options.getIn(["urls", "local"]));
     });

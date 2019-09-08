@@ -430,6 +430,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
                     } else if (!width) { //列宽未填写
                         col.width = width = 0;
                         autoColNums++;
+                        
                     }
                 } else if (autoWidth && autoWidth < minWidth) {
                     autoColNums--;
@@ -445,9 +446,8 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         }
         getAutoWidth();
         getAutoWidth(true);
-        // 记录自动分配列的个数
-        options.autoColNums = autoColNums;
         // 设置列宽
+        autoColNums = 0;
         that.eachColumns(function(index,col){
             var minWidth = col.minWidth || options.minColumnWidth;
             col.minWidth = minWidth;
@@ -456,6 +456,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
                 col.initWidth = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth);
                 // 设置当前列为自动分配宽度列
                 col.autoColumn = true;
+                autoColNums++;
             }else if(/\d+%$/.test(col.width)){
                 col.initWidth = Math.floor((parseFloat(col.width) / 100) * clientWidth);
             }else{
@@ -467,96 +468,71 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
                 options.fixedRCoumnsNum++;
             }
         },true);
+        options.autoColNums = autoColNums;
     }
     /**
-     * 设置列宽，根据是否有滚动条调整
+     * 根据有没有滚动条确定自动分割列的宽
      */
-    Class.prototype.setColumnsWidth = function(){
-        var that = this,options=that.config,
-        clientWidth = that.getClientWidth(),
-        colNums = 0,//列个数
-        countWidth = 0,//已经有宽度的列总宽度
-        scrollWidth = (that.duiBodyer[0].offsetWidth-that.duiBodyer[0].clientWidth),
-        scrollHeight = (that.duiBodyer[0].offsetHeight-that.duiBodyer[0].clientHeight);
-        // 获取根据最小宽度得到的总宽度
+    Class.prototype.resColumnsWidth = function(){
+        var that = this,options = that.config,
+        scrollWidth = scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),
+        autoColNums = options.autoColNums,
+        subtractWidth = parseFloat(scrollWidth/autoColNums);//大于0则右侧有滚动条;
         that.eachColumns(function(i,col){
-            col.hide || colNums++
-        })
-        // 修正滚动条
-        clientWidth = clientWidth-function(){
-            return options.border ? colNums+1 : 0;
-        }()-(scrollWidth>0?(dui.getScrollWidth()+2):0);
-        // 获取剩余宽度
-        var getAutoAllWidth = function(){
-            that.eachColumns(function(i,col){
-                var width = 0
-                , minWidth = col.minWidth || options.minColumnWidth; //最小宽度
-                if (col.colGroup || col.hide) return;
-                width = col.width || 0;
-                if (/\d+%$/.test(width)) { //列宽为百分比
-                    width = Math.floor((parseFloat(width) / 100) * clientWidth);
-                    width < minWidth && (width = minWidth);
-                }
-                countWidth += width;
-            })
-            return (clientWidth-countWidth);
-        }(),autoWidth = (getAutoAllWidth/options.autoColNums);
-        // 设置样式
-        that.eachColumns(function(i,col){
-            var minWidth = col.minWidth || options.minColumnWidth,
-            thisWidth = 1;
-            if(col.colGroup || col.hide) return;
-            // 给自动分配列宽的列分配宽度
             if(col.autoColumn){
-                that.getCssRule(col.key,function(rule){
-                    rule.style.width = Math.floor(autoWidth >= minWidth ? autoWidth : minWidth) + 'px';
-                })
+                if(col.subtract && scrollWidth==0){
+                    col.subtract = false;
+                    that.getCssRule(col.key,function(rule){
+                        rule.style.width = (parseFloat(rule.style.width)+col.subtractWidth)+'px';
+                    })
+                }else if(!col.subtract && scrollWidth>0){
+                    col.subtract = true;
+                    col.subtractWidth = subtractWidth;
+                    that.getCssRule(col.key,function(rule){
+                        rule.style.width = (parseFloat(rule.style.width)-subtractWidth)+'px';
+                    })
+                }
             }
-            // 给宽度为百分比的宽设置宽度
-            else if(/\d+%$/.test(col.width)){
-                that.getCssRule(col.key,function(rule){
-                    rule.style.width = Math.floor((parseFloat(col.width) / 100) * clientWidth) + 'px';
-                })
-            }
-        })
+        },true)
     }
     /**
      * 设置滚动条补丁
      */
     Class.prototype.setScrollPatch = function(){
-        var that = this,options = that.config,
-        duiMainTable = that.duiBodyer.children('table');
-        scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
-        scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
-        Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth();
-        patchWidth = Surplus >scrollWidth ? Surplus : scrollWidth;
-        // 如果有右侧滚动条
-        if(scrollWidth>0){
-            that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
-            // 如果是多级表头
-            if(options.columns.length>1){
-                that.gutter.attr('rowspan',options.columns.length);
-            }
-            that.duiFixedR.css({
-                'right':(scrollWidth),//减1是为了遮住滚动条的边框
-            });
+        // var that = this,options = that.config,
+        // duiMainTable = that.duiBodyer.children('table');
+        // scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
+        // scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
+        // Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth();
+        
+        // patchWidth = Surplus >scrollWidth ? Surplus : scrollWidth;
+        // // 如果有右侧滚动条
+        // if(scrollWidth>0){
+        //     that.duiHeader.find('thead>tr').eq(0).append(that.duiGutter);
+        //     // 如果是多级表头
+        //     if(options.columns.length>1){
+        //         that.gutter.attr('rowspan',options.columns.length);
+        //     }
+        //     that.duiFixedR.css({
+        //         'right':(scrollWidth),//减1是为了遮住滚动条的边框
+        //     });
             
-            that.duiPatch.css({
-                width:scrollWidth,
-                height:that.duiHeader.height()
-            })
-        }else{
-            that.duiFixedR.css({
-                'right':'',
-            });
-        }
-        if(scrollHeight>0 || patchWidth){
-            // 设置移动补丁
-            that.duiGutter.css("width",patchWidth);
-            that.duiGutter.css('display','block');
-        }else{
-            that.duiGutter.css('display','none');
-        }
+        //     that.duiPatch.css({
+        //         width:scrollWidth,
+        //         height:that.duiHeader.height()
+        //     })
+        // }else{
+        //     that.duiFixedR.css({
+        //         'right':'',
+        //     });
+        // }
+        // if(scrollHeight>0 || patchWidth){
+        //     // 设置移动补丁
+        //     that.duiGutter.css("width",patchWidth);
+        //     that.duiGutter.css('display','block');
+        // }else{
+        //     that.duiGutter.css('display','none');
+        // }
     }
     /**
      * 循环列
@@ -764,8 +740,8 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             that.fullSize();
             // 重新设置浮动样式
             that.setFixedStyle();
-            // 重新设置列宽
-            that.state.init && that.setColumnsWidth();
+            // 重置自增列宽
+            that.resColumnsWidth();
             // 设置补丁
             that.setScrollPatch();
         };
@@ -996,6 +972,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
      */
     Class.prototype.resize = function(){
         this.fullSize();
+        this.resColumnsWidth();
         this.setFixedStyle();
         this.setScrollPatch();
         this.renderFixedShadow();
