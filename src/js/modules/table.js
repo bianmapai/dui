@@ -350,8 +350,10 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
             if(height < 135) height = 135;
             that.reElem.css('height', height);
         }
+        that.fixedHeight = that.reElem.height();
         if(!height) return;
         bodyHeight = parseFloat(height) - (that.duiHeader.outerHeight() || 48);
+        
         //减去分页栏的高度
         if(options.page.show){
             bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
