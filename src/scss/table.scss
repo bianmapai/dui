@@ -189,6 +189,9 @@
     height: 23px;
     padding-left: 10px;
     padding-right: 10px;
+    .#{$namespace}-button--mini{
+      padding:4px 10px;
+    }
   }
 
   // 拥有多级表头
@@ -463,6 +466,7 @@
     border-top: 1px solid #ebeef5;
     height: 40px;
   }
+  
 }
 
 

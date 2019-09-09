@@ -1,0 +1,90 @@
+@@include('include/head.html')
+<div class="dui-breadcrumb">
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner"><a href="/">首页</a></span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">表单</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">表单集合</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+</div>
+<div class="dui-body">
+    <div class="dui-card box-card is-never-shadow">
+        <div class="dui-card__header">
+            <div class="clearfix">
+                <span>数据表格</span>
+            </div>
+        </div>
+        <div class="dui-card__body">
+            <table dui-table id="ceshi"></table>
+        </div>
+    </div>
+</div>
+<script>
+dui.use(['table','jquery','popup'],function(table,$,popup){
+    var thisTable = table.render({
+        el:'#ceshi',
+        height:'full-215',
+        page:{
+            show:true
+        },
+        data:{
+            url:'/json/menu.json',
+            type:'get',
+            dataType:'json'
+        },
+        columns:[[{
+                "field": "id",
+                "type": "checkbox",
+                "fixed": "left"
+            }, {
+                "field": "title",
+                "title": "菜单名称",
+                "width": 200
+            }, {
+                "field": "url_value",
+                "title": "连接地址",
+            }, {
+                "field": "sort",
+                "title": "排序",
+                "type": "normal",
+                "width": 100,
+                "align": "center",
+                "template": "<div class=\"dui-input\">\n                                <input type=\"text\" value=\"{{sort}}\" style=\"height:22px;width:60px;text-align:center\" class=\"dui-input__inner\" name=\"sort\">\n                            <\/div>"
+            }, {
+                "field": "icon",
+                "title": "图标",
+                "width": 100,
+                "align": "center",
+                "template": "<i class=\"dui-icon-menu-show dui-icon-fw {{icon}}\"><\/i>"
+            }, {
+                "field": "status",
+                "title": "状态",
+                "template":"<input type=\"checkbox\" name=\"status\" dui-switch value=\"{{status}}\" true-value\"1\" false-value=\"0\">",
+                "width": 80,
+                "align": "center"
+            }, {
+                "title": "操作",
+                "type": "normal",
+                "width": 144,
+                "fixed": "right",
+                "align": "center",
+                "template": "{{if ![].includes(id)}}<div class=\"dui-button-group\"><button data-url=\"\/admin.php\/admin\/Menu\/edit\/id\/{{id}}.html\" class=\"dui-button dui-button--mini dui-button--primary js-jump pop\">编辑<\/button><button data-url=\"\/admin.php\/admin\/Menu\/delete\/id\/{{id}}.html\" class=\"dui-button dui-button--mini dui-button--danger js-jump url_get confirm\">删除<\/button><\/div>{{else}}<button class=\"dui-button dui-button--mini dui-button--danger is-disabled\" disabled=\"disabled\">不可操作<\/button>{{\/if}}"
+            }
+        ]]
+    });
+    $('#getData').on('click',function(e){
+        var data = thisTable.getCheckedData();
+        popup.dialog({
+            title:'选中数据',
+            content:JSON.stringify(data)
+        })
+    })
+})
+</script>
+@@include('include/foot.html')

@@ -56,7 +56,7 @@ dui.define(['jquery','form'],function($,form){
         res['total'] = '<span class="dui-pagination__total">共 '+config.total+' 条</span>',
         res['sizes'] = ['<span class="dui-pagination__sizes">',
             function(){
-                var html = '<select dui-select size="mini" id="dui-pagination-'+that.index+'-size">';
+                var html = '<select dui-select size="mini">';
                 $.each(config.sizes,function(i,size){
                     html += '<option value="'+size+'" '+(size==config.size ? 'selected="selected"' : '')+'>'+size+'条/页</option>';
                 })
@@ -168,7 +168,7 @@ dui.define(['jquery','form'],function($,form){
             that.jump(config.current+1);
         })
         //页面size切换事件
-        that.dom.on('change','#dui-pagination-'+that.index+'-size',function(e){
+        that.dom.on('change','.dui-pagination__sizes select[dui-select]',function(e){
             var size = $(this).val();
             that.jump(null,size);
         })

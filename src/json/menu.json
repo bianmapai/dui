@@ -1,0 +1,179 @@
+{
+    "status": "true",
+    "code": 1,
+    "msg": "获取成功",
+    "count": 19,
+    "data": [
+        {
+            "id": 1,
+            "pid": 0,
+            "title": "首页",
+            "url_value": "admin\/index\/index",
+            "sort": 100,
+            "icon": "aiui-icon-home",
+            "status": 1
+        },
+        {
+            "id": 2,
+            "pid": 1,
+            "title": "快捷操作",
+            "url_value": "",
+            "sort": 100,
+            "icon": "aiui-icon-folder-open-o",
+            "status": 1
+        },
+        {
+            "id": 3,
+            "pid": 2,
+            "title": "后台首页",
+            "url_value": "admin\/index\/index",
+            "sort": 100,
+            "icon": "aiui-icon-tachometer",
+            "status": 1
+        },
+        {
+            "id": 4,
+            "pid": 2,
+            "title": "个人设置",
+            "url_value": "admin\/index\/profile",
+            "sort": 100,
+            "icon": "aiui-icon-user",
+            "status": 1
+        },
+        {
+            "id": 5,
+            "pid": 2,
+            "title": "清空缓存",
+            "url_value": "admin\/index\/clearcache",
+            "sort": 100,
+            "icon": "aiui-icon-trash-o",
+            "status": 1
+        },
+        {
+            "id": 6,
+            "pid": 0,
+            "title": "系统",
+            "url_value": "admin\/system\/index",
+            "sort": 100,
+            "icon": "aiui-icon-setting2",
+            "status": 1
+        },
+        {
+            "id": 7,
+            "pid": 6,
+            "title": "系统功能",
+            "url_value": "",
+            "sort": 100,
+            "icon": "aiui-icon-wrench",
+            "status": 1
+        },
+        {
+            "id": 8,
+            "pid": 7,
+            "title": "系统设置",
+            "url_value": "admin\/system\/index",
+            "sort": 100,
+            "icon": "aiui-icon-wrench",
+            "status": 1
+        },
+        {
+            "id": 9,
+            "pid": 7,
+            "title": "配置管理",
+            "url_value": "admin\/config\/index",
+            "sort": 100,
+            "icon": "aiui-icon-gears",
+            "status": 1
+        },
+        {
+            "id": 10,
+            "pid": 7,
+            "title": "菜单管理",
+            "url_value": "admin\/menu\/index",
+            "sort": 100,
+            "icon": "aiui-icon-list-ul",
+            "status": 1
+        },
+        {
+            "id": 11,
+            "pid": 7,
+            "title": "附件管理",
+            "url_value": "admin\/attachment\/index",
+            "sort": 100,
+            "icon": "aiui-icon-cloud-upload",
+            "status": 1
+        },
+        {
+            "id": 12,
+            "pid": 7,
+            "title": "日志管理",
+            "url_value": "admin\/log\/index",
+            "sort": 100,
+            "icon": "aiui-icon-bug",
+            "status": 1
+        },
+        {
+            "id": 13,
+            "pid": 7,
+            "title": "数据库管理",
+            "url_value": "admin\/database\/index",
+            "sort": 100,
+            "icon": "aiui-icon-database",
+            "status": 1
+        },
+        {
+            "id": 14,
+            "pid": 6,
+            "title": "扩展管理",
+            "url_value": "",
+            "sort": 100,
+            "icon": "aiui-icon-th-large",
+            "status": 1
+        },
+        {
+            "id": 15,
+            "pid": 14,
+            "title": "应用管理",
+            "url_value": "admin\/module\/index",
+            "sort": 100,
+            "icon": "aiui-icon-th-large",
+            "status": 1
+        },
+        {
+            "id": 16,
+            "pid": 14,
+            "title": "插件管理",
+            "url_value": "admin\/plugin\/index",
+            "sort": 100,
+            "icon": "aiui-icon-puzzle-piece",
+            "status": 1
+        },
+        {
+            "id": 17,
+            "pid": 14,
+            "title": "钩子管理",
+            "url_value": "admin\/hook\/index",
+            "sort": 100,
+            "icon": "aiui-icon-anchor",
+            "status": 1
+        },
+        {
+            "id": 25,
+            "pid": 9,
+            "title": "新增配置",
+            "url_value": "admin\/config\/add",
+            "sort": 100,
+            "icon": "",
+            "status": 1
+        },
+        {
+            "id": 26,
+            "pid": 10,
+            "title": "新增菜单",
+            "url_value": "admin\/menu\/add",
+            "sort": 100,
+            "icon": "",
+            "status": 1
+        }
+    ]
+}

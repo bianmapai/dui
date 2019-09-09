@@ -160,6 +160,7 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
             loading:'',//是否有加载条
             title:'',//导出时的标题
             minColumnWidth:60,//全局设置的列最小宽度
+            treeTable:'',//treeTable配置
             data:'',//数据或者ajax请求对象
             done:'',//渲染完毕的回调
             text:'',//一些操作提示语言
@@ -204,10 +205,16 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
             ,dataName: 'data'
             ,countName: 'count'
         },options.response);
+        // 树形表格配置
+        config.treeTable = config.treeTable ? ($.extend(true,{
+            children:'children',//子节点名称
+            expandColumn:'',//展开图标显示的列
+            expandAll:false,//是否全部展开
+        },config.treeTable)) : false; 
         // 设置当前页面
         that.currPage = parseInt(config.page.curr) || 1;
         // 设置初始化排序列
-        config.initSort && (that.sortKey = $.extend(true,{},config.initSort));
+        config.initSort ? (that.sortKey = $.extend(true,{},config.initSort)) : (that.sortKey={});
         // 初始化
         that.init();
     }
@@ -261,7 +268,6 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
                 that.state.init = false;
             }
         }, 50);
-        
     }
     /**
      * 初始化列
@@ -668,7 +674,7 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
      */
     Class.prototype.renderForm = function(){
         var that = this;
-        form.render(that.reElem,'checkbox');
+        form.render(that.reElem);
     }
     /**
      * 获取数据
