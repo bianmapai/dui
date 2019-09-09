@@ -92,18 +92,6 @@
     }
   }
 
-  @include m(scrollable-x) {
-    .#{$namespace}-table__body-wrapper {
-      overflow-x: auto;
-    }
-  }
-
-  @include m(scrollable-y) {
-    .#{$namespace}-table__body-wrapper {
-      overflow-y: auto;
-    }
-  }
-
   thead {
     color: $--table-header-font-color;
     font-weight: 500;
@@ -439,25 +427,6 @@
     border-top-color: $--color-primary;
   }
 
-  .hidden-columns {
-    visibility: hidden;
-    position: absolute;
-    z-index: -1;
-  }
-
-  @include m(striped) {
-    & .#{$namespace}-table__body {
-      & tr.#{$namespace}-table__row--striped {
-        td {
-          background: #FAFAFA;
-        }
-        &.current-row td {
-          background-color: $--table-current-row-background-color;
-        }
-      }
-    }
-  }
-
   @include e(body) {
     tr.hover-row {
       &, &.#{$namespace}-table__row--striped {
@@ -474,16 +443,6 @@
     }
   }
 
-  @include e(column-resize-proxy) {
-    position: absolute;
-    left: 200px;
-    top: 0;
-    bottom: 0;
-    width: 0;
-    border-left: $--table-border;
-    z-index: 10;
-  }
-
   @include e(column-filter-trigger) {
     display: inline-block;
     line-height: 34px;
@@ -496,34 +455,16 @@
     }
   }
 
-  @include m(enable-row-transition) {
-    .#{$namespace}-table__body td {
-      transition: background-color .25s ease;
-    }
-  }
-
-  @include m(enable-row-hover) {
-    .#{$namespace}-table__body tr:hover > td {
-      background-color: $--table-row-hover-background-color;
-    }
-  }
-
-  @include m(fluid-height) {
-    .#{$namespace}-table__fixed,
-    .#{$namespace}-table__fixed-right {
-      bottom: 0;
-      overflow: hidden;
-    }
-  }
-
-  [class*=el-table__row--level] {
-    .#{$namespace}-table__expand-icon {
-      display: inline-block;
-      width: 20px;
-      line-height: 20px;
-      height: 20px;
-      text-align: center;
-      margin-right: 3px;
-    }
+  @include e(page){
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 7px 7px 0;
+    border-top: 1px solid #ebeef5;
+    height: 40px;
   }
 }
+
+
+//table_page
+

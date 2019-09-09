@@ -151,7 +151,8 @@ Dui.defaults = {
         'popup':'modules/popup',
         'element':'modules/element',
         'form':'modules/form',
-        'table':'modules/table'
+        'table':'modules/table',
+        'pagination':'modules/pagination',
     },
     //存储回调函数
     callBack:{},

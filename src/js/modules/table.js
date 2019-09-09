@@ -1,4 +1,4 @@
-dui.define('table',['jquery','template','form','popup'],function($,template,form,popup){
+dui.define('table',['jquery','template','form','popup','pagination'],function($,template,form,popup,pagination){
     /**
      * 初始化入口
      */
@@ -7,7 +7,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
     // 常量定义
     ELEM = '.dui-table',HEADER='.dui-table__header-wrapper',BODYER='.dui-table__body-wrapper',
     FIXED = '.dui-table__fixed',FIXED_LEFT='.dui-table__fixed-left',FIXED_RIGHT='.dui-table__fixed-right',
-    PAGE = '.diu-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
+    PAGE = '.dui-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
     TABLEBODY='.dui-table__body',ROWHOVER='.dui-table__body tr',FIXED_HEAD='.dui-table__fixed-header-wrapper',
     TABLEHEADER = '.dui-table__header',HEADER_TH = TABLEHEADER+' th',HEADER_SORT='.caret-wrapper',
     // 列模板
@@ -98,7 +98,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             '</div>',
             '{{/if}}',
             '{{if page.show}}',
-            '<div class="diu-table__page">',
+            '<div class="dui-table__page">',
             '</div>',
             '{{/if}}',
             // 补丁
@@ -185,9 +185,9 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         // 填补默认配置
         config.page = $.extend({},{
             show:false,
-            limit:10,
-            curr:1,
-            limits:[10,20,30,40,50],
+            size:10,
+            current:1,
+            sizes:[10,20,30,40,50],
         },options.page);
         // 配置请求参数
         config.request = $.extend({
@@ -343,11 +343,11 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         }
         if(!height) return;
         bodyHeight = parseFloat(height) - (that.duiHeader.outerHeight() || 48);
-        // //减去分页栏的高度
-        // if(options.page.show){
-        //     bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
-        // }
-        // 设置bodyWrap高度
+        //减去分页栏的高度
+        if(options.page.show){
+            bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
+        }
+        //设置bodyWrap高度
         that.duiBodyer.css('height',bodyHeight);
     }
     /**
@@ -355,8 +355,8 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
      */
     Class.prototype.setFixedStyle = function(){
         var that = this,bodyHeight = that.duiBodyer.height(),
-        scrollHeight = that.duiBodyer.prop('offsetHeight')-that.duiBodyer.prop('clientHeight'),
-        scrollWidth = that.duiBodyer.prop('offsetWidth')-that.duiBodyer.prop('clientWidth'),
+        scrollHeight = that.getScrollHeight(that.duiBodyer[0]),
+        scrollWidth = that.getScrollWidth(that.duiBodyer[0]),
         fixedLWidth = that.duiFixedL.find(FIXED_HEAD).width(),
         fixedRWidth = that.duiFixedR.find(FIXED_HEAD).width(),
         headerHeight = that.duiHeader.height();
@@ -474,26 +474,90 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
      * 根据有没有滚动条确定自动分割列的宽
      */
     Class.prototype.resColumnsWidth = function(){
-        // var that = this,options = that.config,
-        // scrollWidth = scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),
-        // autoColNums = options.autoColNums,
-        // subtractWidth = parseFloat(scrollWidth/autoColNums);//大于0则右侧有滚动条;
-        // that.eachColumns(function(i,col){
-        //     if(col.autoColumn){
-        //         if(col.subtract && scrollWidth==0){
-        //             col.subtract = false;
-        //             that.getCssRule(col.key,function(rule){
-        //                 rule.style.width = (parseFloat(rule.style.width)+col.subtractWidth)+'px';
-        //             })
-        //         }else if(!col.subtract && scrollWidth>0){
-        //             col.subtract = true;
-        //             col.subtractWidth = subtractWidth;
-        //             that.getCssRule(col.key,function(rule){
-        //                 rule.style.width = (parseFloat(rule.style.width)-subtractWidth)+'px';
-        //             })
-        //         }
-        //     }
-        // },true)
+        var that = this,options = that.config,
+        scrollWidth = that.getScrollWidth(that.duiBodyer[0]),
+        autoColNums = options.autoColNums,
+        allCols = 0,
+        subtractWidth = parseFloat(scrollWidth/autoColNums);//大于0则右侧有滚动条;
+        // 给自动分配列宽的列减去滚动条宽度
+        that.eachColumns(function(i,col){
+            if(col.colGroup || col.hide) return;
+            allCols ++ ;
+            if(col.autoColumn){
+                if(col.subtract && scrollWidth==0){
+                    col.subtract = false;
+                    that.getCssRule(col.key,function(rule){
+                        rule.style.width = (parseFloat(rule.style.width)+col.subtractWidth)+'px';
+                    })
+                }else if(!col.subtract && scrollWidth>0){
+                    col.subtract = true;
+                    col.subtractWidth = subtractWidth;
+                    that.getCssRule(col.key,function(rule){
+                        rule.style.width = (parseFloat(rule.style.width)-subtractWidth)+'px';
+                    })
+                }
+            }
+        },true);
+        //填补 Math.floor 造成的数差
+        var patchNums = that.duiBodyer.width() - that.getScrollWidth(that.duiBodyer[0])
+        - that.duiBodyer.children('table').outerWidth();
+        if(autoColNums && patchNums >= -allCols && patchNums <= allCols){
+            var getEndTh = function (th) {
+                var field;
+                th = th || that.duiHeader.eq(0).find('thead th:last-child')
+                field = th.data('field');
+                if (!field && th.prev()[0]) {
+                    return getEndTh(th.prev())
+                }
+                return th
+            }
+            , th = getEndTh()
+            , key = th.data('key');
+            that.getCssRule(key, function (item) {
+                var width = item.style.width || th.outerWidth();
+                item.style.width = (parseFloat(width) + patchNums) + 'px';
+                //二次校验，如果仍然出现横向滚动条（通常是 1px 的误差导致）
+                if(that.duiBodyer.height() - that.duiBodyer.prop('clientHeight') > 0) {
+                    item.style.width = (parseFloat(item.style.width) - 1) + 'px';
+                }
+            });
+        }
+    }
+    /**
+     * 获取元素滚动条宽度
+     */
+    Class.prototype.getScrollWidth = function(elem){
+        var width = 0;
+        if(elem){
+            width = elem.offsetWidth - elem.clientWidth;
+        } else {
+            elem = document.createElement('div');
+            elem.style.width = '100px';
+            elem.style.height = '100px';
+            elem.style.overflowY = 'scroll';
+            document.body.appendChild(elem);
+            width = elem.offsetWidth - elem.clientWidth;
+            document.body.removeChild(elem);
+        }
+        return width;
+    }
+    /**
+     * 获取横向滚动条
+     */
+    Class.prototype.getScrollHeight = function(elem){
+        var height = 0;
+        if(elem){
+            height = elem.offsetHeight - elem.clientHeight;
+        } else {
+            elem = document.createElement('div');
+            elem.style.width = '100px';
+            elem.style.height = '100px';
+            elem.style.overflowX = 'scroll';
+            document.body.appendChild(elem);
+            height = elem.offsetHeight - elem.clientHeight;
+            document.body.removeChild(elem);
+        }
+        return height;
     }
     /**
      * 设置滚动条补丁
@@ -501,10 +565,9 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
     Class.prototype.setScrollPatch = function(){
         var that = this,options = that.config,
         duiMainTable = that.duiBodyer.children('table');
-        scrollWidth = that.duiBodyer.prop('offsetWidth') - that.duiBodyer.prop('clientWidth'),//大于0则右侧有滚动条
-        scrollHeight= that.duiBodyer.prop('offsetHeight') - that.duiBodyer.prop('clientHeight');//大于0则底部有滚动条
-        Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth();
-        
+        scrollWidth = that.getScrollWidth(that.duiBodyer[0]),//大于0则右侧有滚动条
+        scrollHeight= that.getScrollHeight(that.duiBodyer[0]);//大于0则底部有滚动条
+        Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth(); 
         patchWidth = Surplus >scrollWidth ? Surplus : scrollWidth;
         // 如果有右侧滚动条
         if(scrollWidth>0){
@@ -626,7 +689,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             if(!options.treeTable){
                 //如果不是treeTable则需要分页
                 params[request.pageName] = curr;
-                params[request.limitName] = options.page.limit;
+                params[request.limitName] = options.page.size;
             }
             // 以json提交
             if(ajaxOpt.contentType && ajaxOpt.contentType.indexOf("application/json") == 0){ //提交 json 格式
@@ -738,10 +801,10 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
             that.renderForm();
             // 重新设置浮动高度
             that.fullSize();
+            // 重新设置列宽
+            that.resColumnsWidth();
             // 重新设置浮动样式
             that.setFixedStyle();
-            // 重置自增列宽
-            that.resColumnsWidth();
             // 设置补丁
             that.setScrollPatch();
         };
@@ -755,6 +818,18 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
         }else{
             // 设置body
             setBody();
+        }
+        if(options.page.show===true){
+            pagination.render($.extend(true,options,{
+                el:that.duiPage[0],
+                total:count,
+                size:options.page.size,
+                current:that.currPage,
+                jump:function(data){
+                    that.currPage = data.page,options.page.size = data.size;
+                    that.pullData(that.currPage);
+                }
+            }))
         }
         // 关闭加载条
         that.duiLoading.close();
@@ -982,7 +1057,7 @@ dui.define('table',['jquery','template','form','popup'],function($,template,form
      */
     Class.prototype.renderFixedShadow = function(){
         var that = this,othis = that.duiBodyer,
-        scrollBarWidth = othis.prop('offsetWidth') - othis.prop('clientWidth'),
+        scrollBarWidth = that.getScrollWidth(othis[0]),
         scrollBarHeight = othis.prop('offsetHeight') - othis.prop('clientHeight'),
         scrollAll = othis.find('table').width(),
         clientWidth = othis.width(),

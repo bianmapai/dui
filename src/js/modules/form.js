@@ -267,6 +267,7 @@ dui.define('form',['jquery'],function($){
                 type:[Boolean,String],
                 default:false
             },//是否禁用
+            size:String,//大小
             clearable:Boolean,//是否有清除按钮
             placeholder:String,//没有选中的显示值
             filterable:Boolean,//是否允许搜索
@@ -364,10 +365,10 @@ dui.define('form',['jquery'],function($){
                 '<div x-arrow="" class="popper__arrow"></div>',
             '</div>'
         ].join(' '),
-        clickHtml = ['<div class="'+ClassName.select+'">',
+        clickHtml = ['<div class="'+ClassName.select+(config.size ? ' '+ClassName.select+'--'+config.size:'')+'">',
             // 是否有多选
             (config.multiple ? '<div class="dui-select__tags"><span></span></div>':''),
-            '<div class="dui-input dui-input--suffix'+(config.disabled ? ' is-disabled':'')+'">',
+            '<div class="dui-input'+(config.size ? ' dui-input--'+config.size:'')+' dui-input--suffix'+(config.disabled ? ' is-disabled':'')+'">',
                 '<input class="dui-input__inner dui-input--suffix"'+(!config.filterable ? ' readonly="readonly"':'')+' placeholder="'+config.placeholder+'"'+(config.disabled ? 'disabled="disabled"':'')+'>',
                 // 显示箭头按钮
                 '<span class="dui-input__suffix">',
@@ -428,13 +429,13 @@ dui.define('form',['jquery'],function($){
             original.find('option[selected]').each(function(i,slt){
                 var val = $(slt).val();
                 if($.inArray(val,value)==-1){
-                    value.push(val);
+                    that.value.push(val);
                 }
             })
         }else{
             //单选
             original.find('option[selected]').each(function(i,slt){
-                 value = $(slt).val();
+                that.value = $(slt).val();
             })
         }
         that.setValue();

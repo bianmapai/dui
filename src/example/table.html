@@ -27,27 +27,18 @@
 </div>
 <script>
 dui.use(['table','jquery','popup'],function(table,$,popup){
-    console.log('进来了');
     var thisTable = table.render({
         el:'#ceshi',
         height:'full-215',
         page:{
-            show:false
+            show:true
         },
         data:{
             url:'/json/table.json',
             type:'get',
             dataType:'json'
         },
-        initSort:{
-            field:'sex',
-            sort:'desc'
-        },
         columns:[[
-            {
-                type:'checkbox',//类型，normal，checkbox，numbers,space中的任意值,如果type为checkbox则隐藏标题
-                fixed:true,//浮动列
-            },
             {
                 type:'checkbox',//类型，normal，checkbox，numbers,space中的任意值,如果type为checkbox则隐藏标题
                 fixed:true,//浮动列
