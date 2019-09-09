@@ -355,9 +355,11 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
         //减去分页栏的高度
         if(options.page.show){
             bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
+            that.fixedHeight = that.reElem.height()-(that.duiPage.outerHeight() || 41);
         }
         //设置bodyWrap高度
         that.duiBodyer.css('height',bodyHeight);
+        
     }
     /**
      * 设置浮动列效果
@@ -370,11 +372,12 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
         fixedRWidth = that.duiFixedR.find(FIXED_HEAD).width(),
         headerHeight = that.duiHeader.height();
         // 设置浮动的高要考虑1px的boarder
-        that.duiFixed.css('height',(that.reElem.outerHeight()-(scrollHeight?scrollHeight:1)));
+        that.duiFixed.css('height',(that.fixedHeight-(scrollHeight?scrollHeight:1)));
         // 设置左侧浮动的宽
         that.duiFixedL.css('width',fixedLWidth)
         // 设置左侧浮动的宽
         that.duiFixedR.css('width',fixedRWidth)
+        console.log(bodyHeight);
         // 设置浮动内容的高度和距离header的高度
         that.duiFixed.find(FIXED_WRAP).css({
             height:(bodyHeight-scrollHeight),
