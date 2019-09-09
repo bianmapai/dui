@@ -8,7 +8,7 @@
  */
 var JsTree = function(options){
     var that = this;
-    that.config = $.extend({
+    that.config = dui.extend(true,{
         id:"id",    // id名称
         pid:"pid",   // pid名称
         child:"child", // 子元素键名
@@ -24,7 +24,7 @@ var JsTree = function(options){
 JsTree.prototype.toLayer = function(lists,pid,level){
     var that = this,config= that.config,trees = [],clone=JSON.parse(JSON.stringify(lists));
     pid = pid ? pid : 0,level=level?level:0;
-    aiui.each(clone,function(key,value){
+    dui.each(clone,function(key,value){
         if(value[config.pid]==pid){
             var child = that.toLayer(clone,value[config.id],level+1)
             if(child.length>0){
@@ -39,7 +39,7 @@ JsTree.prototype.toLayer = function(lists,pid,level){
 JsTree.prototype.toList = function(lists,pid,level){
     var that = this,config= that.config,trees = [],clone=JSON.parse(JSON.stringify(lists));
     pid = pid ? pid : 0,level=level?level:0;
-    aiui.each(clone,function(key,value){
+    dui.each(clone,function(key,value){
         var temp =JSON.parse(JSON.stringify(clone));
         if(value[config.pid]==pid){
             value['level'] = level + 1;

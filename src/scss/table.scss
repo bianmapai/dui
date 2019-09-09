@@ -33,12 +33,6 @@
   }
 
   // 展开行
-  @include e(expand-column) {
-    .cell {
-      padding: 0;
-      text-align: center;
-    }
-  }
 
   @include e(expand-icon) {
     position: relative;
@@ -467,6 +461,16 @@
     height: 40px;
   }
   
+  [class*=#{$namespace}-table__row--level] {
+    .#{$namespace}-table__expand-icon {
+      display: inline-block;
+      width: 20px;
+      line-height: 20px;
+      height: 20px;
+      text-align: center;
+      margin-right: 3px;
+    }
+  }
 }
 
 

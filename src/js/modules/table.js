@@ -9,7 +9,8 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
     FIXED = '.dui-table__fixed',FIXED_LEFT='.dui-table__fixed-left',FIXED_RIGHT='.dui-table__fixed-right',
     PAGE = '.dui-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
     TABLEBODY='.dui-table__body',ROWHOVER='.dui-table__body tr',FIXED_HEAD='.dui-table__fixed-header-wrapper',
-    TABLEHEADER = '.dui-table__header',HEADER_TH = TABLEHEADER+' th',HEADER_SORT='.caret-wrapper',
+    TABLEHEADER = '.dui-table__header',HEADER_TH = TABLEHEADER+' th',HEADER_SORT='.caret-wrapper',TREETABLE_EXPAND='dui-table__expand-icon',
+    TREETABLE_EXPANDED='dui-table__expand-icon--expanded',
     // 列模板
     TMPL_HEAD=function(options){
         options = options || {};
@@ -208,6 +209,8 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
         // 树形表格配置
         config.treeTable = config.treeTable ? ($.extend(true,{
             children:'children',//子节点名称
+            keyColumn:'id',//主键
+            parentColumn:'pid',//上级编号
             expandColumn:'',//展开图标显示的列
             expandAll:false,//是否全部展开
         },config.treeTable)) : false; 
@@ -766,6 +769,21 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
                         '{{else if type=="numbers"}}',//如果是序号
                         '{{@ duiIndex}}',
                         '{{else}}',
+                        function(){
+                            if(options.treeTable){
+                                return ['{{if field=="'+options.treeTable.expandColumn+'"}}',
+                                '<span class="dui-table__row--level_#{#level#}#" style="padding-left:#{#(level-1)*16#}#px">',
+                                    '#{#if hasChild#}#',
+                                    '<span class="dui-table__expand-icon#{#if '+options.treeTable.expandAll+' || expand #}# dui-table__expand-icon--expanded#{#/if#}#">',
+                                        '<i class="'+(options.treeTable.expandIcon ? options.treeTable.expandIcon:' dui-icon-arrow-right')+'"></i>',
+                                    '</span>',
+                                    '#{#else#}#',
+                                    '<span class="dui-table__placeholder"></span>',
+                                    '#{#/if#}#',
+                                '</span>',
+                                '{{/if}}',].join('');
+                            }
+                        }(),
                         '{{@ fieldName}}',
                         '{{/if}}',
                     '{{/if}}',
@@ -776,7 +794,7 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
                 column.stylekey = options.index+'-'+column.key;
                 column.fieldName = '{{'+column.field+'}}';
                 column.duiIndex = '{{duiIndex}}';
-                var temp = template.render(tdTmpl,column);
+                var temp = template.render(tdTmpl,column).replace(/#{#/g,"{{").replace(/#}#/g,"}}");
                 if(column.fixed && column.fixed!=='right'){
                     tds_lef.push(temp);
                 }else if(column.fixed && column.fixed==='right'){
@@ -788,7 +806,7 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
             tds = tds_lef.concat(tds).concat(tds_right);
             // 循环数据
             $.each(resData,function(index,row){
-                row.duiIndex = ((curr?curr:1)-1)*options.page.limit+index+1;
+                row.duiIndex = ((curr?curr:1)-1)*options.page.size+index+1;
                 var tr_left =tds_lef.length>0 ? $('<tr >'+template.render(tds_lef.join(''),row)+'</tr>'):'',
                     tr_right =tds_right.length>0 ? $('<tr >'+template.render(tds_right.join(''),row)+'</tr>'):'',
                     tr = tds.length>0 ? $('<tr >'+template.render(tds.join(''),row)+'</tr>'):'';
@@ -796,6 +814,19 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
                 tr_left[0] ? tr_left[0].data = row:'';
                 tr_right[0]? tr_right[0].data = row:'';
                 tr[0] ? tr[0].data = row:'';
+                // 如果是树形表格则判断是否显示该列
+                if(options.treeTable){
+                    // 两个都不显示
+                    if((options.treeTable.expandAll || row.expand) || row[options.treeTable.parentColumn]==0){
+                        tr.css('display','');
+                        tr_left.css('display','');
+                        tr_right.css('display','');
+                    }else{
+                        tr.css('display','none');
+                        tr_left.css('display','none');
+                        tr_right.css('display','none');
+                    }
+                }
                 // 放置元素
                 bodyTable.append(tr),bodyLeftTable.append(tr_left),bodyRightTable.append(tr_right);
             })
@@ -814,17 +845,19 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
             // 设置补丁
             that.setScrollPatch();
         };
-        if(data.length==0){
-            that.renderForm();
-            that.duiFixedLWrap.html('');
-            that.duiFixedRWrap.html('');
-            that.duiBodyer.html('');
-            that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.empty}));
-            return;
-        }else{
-            // 设置body
-            setBody();
+        // 如果是树形table
+        if(options.treeTable){
+            // 不显示分页
+            options.page.show=false;
+            // 设置数据
+            var treeUtils =  new dui.jsTree({
+                child:options.treeTable.children,
+                id:options.treeTable.keyColumn,
+                pid:options.treeTable.parentColumn,
+            });
+            resData = treeUtils.toList(resData);
         }
+        // 如果需要显示分页
         if(options.page.show===true){
             pagination.render($.extend(true,options,{
                 el:that.duiPage[0],
@@ -836,6 +869,17 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
                     that.pullData(that.currPage);
                 }
             }))
+        }
+        if(resData.length==0){
+            that.renderForm();
+            that.duiFixedLWrap.html('');
+            that.duiFixedRWrap.html('');
+            that.duiBodyer.html('');
+            that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.empty}));
+            return;
+        }else{
+            // 设置body
+            setBody();
         }
         // 关闭加载条
         that.duiLoading.close();
@@ -931,6 +975,89 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
                         })
                     }
                 })
+                // 如果是树形table，还需要同步上下级选中
+                if(options.treeTable){
+                    var //获取所有选中的角标
+                    checkIndexs = [];
+                    that.duiBodyer.find(TABLEBODY).find('input[dui-checkbox]:checked').parents('tr').each(function(key,value){
+                        checkIndexs.push(value.data.duiIndex);
+                    }),
+                    AllSyn = [].concat(getUpIndex(data)).concat(getDownIndex(data));
+                    function getUpIndex(trData){
+                        var upData = [],trs=that.duiBodyer.find(TABLEBODY).find('tr');
+                        trs.each(function(i,item){
+                            if(item.data && item.data[options.treeTable.keyColumn] == trData[options.treeTable.parentColumn]){
+                                if(checked==false){
+                                    var tempdata = $.extend(true,{},item.data[options.treeTable.children]),
+                                    isInArray = false;
+                                    $.each(tempdata,function(i1,old){
+                                        if(trData[options.treeTable.keyColumn]==old[options.treeTable.keyColumn]){
+                                            delete tempdata[i1];
+                                        }
+                                    })
+                                    $.each(tempdata,function(i1,old){
+                                        $.each(trs,function(i3,newTr){
+                                            if(old[options.treeTable.keyColumn]==newTr.data[options.treeTable.keyColumn]){
+                                                old = newTr.data;
+                                                if($.inArray(old.duiIndex,checkIndexs)!=-1){
+                                                    isInArray = true;
+                                                    return;
+                                                }
+                                            }
+                                        })
+                                        if(isInArray){
+                                            return;
+                                        }
+                                    })
+                                    if(isInArray){
+                                        return;
+                                    }
+                                }
+                                if($.inArray(item.data.duiIndex,upData)==-1){
+                                    upData.push(item.data.duiIndex);
+                                }
+                                if(item.data[options.treeTable.parentColumn]){
+                                    upData = upData.concat(getUpIndex(item.data));
+                                }
+                            }
+                        })
+                        return upData;
+                    }
+                    function getDownIndex(trData){
+                        var downData = [],trs=that.duiBodyer.find(TABLEBODY).find('tr'),
+                        childrens = (trData[options.treeTable.children]||[]).map(function(value,key){
+                            return value[options.treeTable.keyColumn];
+                        });
+                        trs.each(function(i,item){
+                            if(item.data && $.inArray(item.data[options.treeTable.keyColumn],childrens)!=-1){
+                                downData.push(item.data.duiIndex);
+                                if(item.data.hasChild){
+                                    downData = downData.concat(getDownIndex(item.data));
+                                }
+                            }
+                        })
+                        return downData;
+                    }
+                    that.reElem.find(TABLEBODY).find('tr').each(function(i,tr){
+                        if($.inArray(tr.data.duiIndex,AllSyn)!=-1){
+                            var duibi =$(tr).find('input[dui-checkbox]');
+                            duibi.each(function(i,item){
+                                if(item && item!=checkbox[0]){
+                                    if(item.checkboxClass){
+                                        item.checkboxClass.setChecked(checked);
+                                    }else{
+                                        if(checked){
+                                            $(item).attr('checked','checked');
+                                        }else{
+                                            $(item).removeAttr('checked');
+                                        }
+                                        that.renderForm();
+                                    }
+                                }
+                            })
+                        }
+                    })
+                }
                 //2.同步是不是全选
                 that.synCheckedAll();
             }
@@ -1008,6 +1135,48 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
             }
             if(resizing === 2){
                 resizing = null;
+            }
+        })
+        // treeTable事件
+        that.reElem.on('click','.'+TREETABLE_EXPAND,function(e){
+            var othis = $(this),tr = othis.parents('tr'),
+            isExpand = othis.hasClass(TREETABLE_EXPANDED) ? true : false,
+            childs=tr[0].data.hasChild ? tr[0].data[options.treeTable.children] : [],
+            allTrs = that.reElem.find(TABLEBODY+' tbody>tr');
+            if(isExpand){
+                othis.removeClass(TREETABLE_EXPANDED);
+            }else{
+                othis.addClass(TREETABLE_EXPANDED);
+            }
+            allTrs.each(function(i,item){
+                updateShow(item,childs);
+            })
+            // 重新设置列宽
+            that.resColumnsWidth();
+            /**
+             * 修改当前table行显示或者不显示
+             * @param {Element} curr 当前点击元素的所在的tr
+             * @param {Object} child 判断条件
+             */
+            function updateShow(curr,child){
+                $.each(child,function(i,item){
+                    if(curr.data[options.treeTable.keyColumn]==item[options.treeTable.keyColumn]){
+                        if(isExpand){
+                            $(curr).css('display','none');
+                            if(curr.data.hasChild){
+                                $(curr).find('.'+TREETABLE_EXPAND).removeClass(TREETABLE_EXPANDED);
+                            }
+                        }else{
+                            $(curr).css('display','');
+                        }
+                    }else{
+                        if(isExpand){
+                            if(item.hasChild){
+                                updateShow(curr,item[options.treeTable.children]);
+                            } 
+                        }
+                    }
+                })
             }
         })
     }
