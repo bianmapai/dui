@@ -159,6 +159,10 @@ dui.define('form',['jquery'],function($){
         // 设置元素的选中状态
         el.checked = (config.checked && config.indeterminate!==true) ?  true : false;
         // 设置事件
+        // 如果disabled
+        if(config.disabled){
+            return;
+        }
         $showDom.off('click').on('click',function(e){
             // 当前被点击的对象
             var othis = $showDom,

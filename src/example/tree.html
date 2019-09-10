@@ -1,0 +1,65 @@
+@@include('include/head.html')
+<div class="dui-breadcrumb">
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner"><a href="/">首页</a></span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">表单</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">表单集合</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+</div>
+<div class="dui-body">
+    <div class="dui-card box-card is-never-shadow">
+        <div class="dui-card__header">
+            <div class="clearfix">
+                <span>数据表格</span>
+            </div>
+        </div>
+        <div class="dui-card__body">
+            <div dui-table id="ceshi"></div>
+        </div>
+    </div>
+</div>
+<script>
+dui.use('tree',function(tree){
+    var thisTree = tree.render({
+        el:'#ceshi',
+        showCheckbox:true,
+        data:[{
+            id: 1,
+            label: '一级 2',
+            children: [{
+                id: 3,
+                label: '二级 2-1',
+                children: [{
+                    id: 4,
+                    label: '三级 3-1-1'
+                }, {
+                    id: 5,
+                    label: '三级 3-1-2',
+                    // disabled: true
+                }]
+        }, 
+        {
+            id: 2,
+            label: '二级 2-2',
+            // disabled: true,
+            children: [{
+                id: 6,
+                label: '三级 3-2-1'
+            },{
+                id: 7,
+                label: '三级 3-2-2',
+                // disabled: true
+            }]
+        }]
+  }]
+    })
+})
+</script>
+@@include('include/foot.html')

@@ -146,13 +146,15 @@ Dui.prototype.extend = extend;
 //默认配置文件
 Dui.defaults = {
     modules:{
-        'jquery':'modules/jquery',
-        'template':'modules/template',
-        'popup':'modules/popup',
-        'element':'modules/element',
-        'form':'modules/form',
-        'table':'modules/table',
-        'pagination':'modules/pagination',
+        'jquery':'modules/jquery', // jquery
+        'template':'modules/template', // 模板引擎
+        'popup':'modules/popup', // 弹出层
+        'element':'modules/element', // 基本元素
+        'form':'modules/form', // 表单
+        'table':'modules/table', // 表格
+        'pagination':'modules/pagination',// 分页
+        'tree':'modules/tree', // 树形插件
+        'duiDate':'modules/duiDate',// 时间插件
     },
     //存储回调函数
     callBack:{},
