@@ -21,15 +21,18 @@
             </div>
         </div>
         <div class="dui-card__body">
+            <button class="dui-button" id="getData">获取选中数据</button>
             <div dui-table id="ceshi"></div>
         </div>
     </div>
 </div>
 <script>
-dui.use('tree',function(tree){
+dui.use(['tree','jquery'],function(tree,$){
     var thisTree = tree.render({
         el:'#ceshi',
         showCheckbox:true,
+        expandAll:true,
+        name:'id',
         data:[{
             id: 1,
             label: '一级 2',
@@ -42,7 +45,8 @@ dui.use('tree',function(tree){
                 }, {
                     id: 5,
                     label: '三级 3-1-2',
-                    // disabled: true
+                    // disabled: true,
+                    // checked:tree
                 }]
         }, 
         {
@@ -59,6 +63,10 @@ dui.use('tree',function(tree){
             }]
         }]
   }]
+    })
+    $('#getData').on('click',function(e){
+        var data = thisTree.getCheckedData();
+        console.log(data);
     })
 })
 </script>

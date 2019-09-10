@@ -46,7 +46,9 @@ dui.define('tree',['jquery','form'],function($,form){
         var that = this,config = that.config;
         return {
             config:config,
-
+            getCheckedData:function(){
+                return that.getCheckedData();
+            }
         }
     }
     /**
@@ -64,7 +66,6 @@ dui.define('tree',['jquery','form'],function($,form){
         that.checkeds = $.extend(true,[],config.checkeds);
         // 层级数据转列表数据
         that.dataList = that.layerToList(data);
-        console.log(that.dataList);
         // 设置事件
         that.evens();
     }
@@ -86,6 +87,25 @@ dui.define('tree',['jquery','form'],function($,form){
             return res;
         }
         return digui(data,pid);
+    }
+    /**
+     * 获取选中数据
+     */
+    Class.prototype.getCheckedData = function(){
+        var that = this,config=that.config,
+        datalist=$.extend(true,{},that.dataList),
+        checkedIds = [],res = [];
+        that.el.find('input[dui-checkbox]:checked').parents('.dui-checkbox').parent().each(function(i,oNone){
+            checkedIds.push($(oNone).data('key'));
+        })
+        $.each(datalist,function(key,value){
+            if($.inArray(value[config.idName],checkedIds)!==-1){
+                delete value[config.childName];
+                delete value.pid;
+                res.push(value);
+            }
+        })
+        return res;
     }
     /**
      * 获取显示元素
@@ -171,14 +191,14 @@ dui.define('tree',['jquery','form'],function($,form){
             var othis = $(this),treeNode = othis.parent(),
             id = treeNode.data('key'),thisData = that.dataList[id],
             childs = thisData[config.childName] || [],checkbox = othis.find('input[dui-checkbox]'),
-            currCheckedAll = [],checked = checkbox[0].checked,
+            checked = checkbox[0].checked,
             checkedIds = [].concat(getDownIds(childs)).concat(getUpIds(thisData));
-            that.el.find('input[dui-checkbox]:checked').parents('.dui-checkbox').parent().each(function(i,oNone){
-                currCheckedAll.push($(oNone).data('key'));
-            })
             // 获取所有的下级id
             function getUpIds(thisData){
-                var res = [];
+                var res = [],currCheckedAll = [];
+                that.el.find('input[dui-checkbox]:checked').parents('.dui-checkbox').parent().each(function(i,oNone){
+                    currCheckedAll.push($(oNone).data('key'));
+                })
                 var item = that.dataList[thisData.pid],
                 isInArray = false;
                 if(item){
@@ -195,17 +215,16 @@ dui.define('tree',['jquery','form'],function($,form){
                         $.each(tempChild,function(i,cd){
                             if($.inArray(cd[config.idName],currCheckedAll)!==-1){
                                 isInArray = true;
-                                return [];
+                                return res;
                             }
                         })
-                        if(isInArray){
-                            return [];
-                        }
                     }
-                    res.push(item[config.idName]);
-                    // 如果有父节点
-                    if(item.pid){
-                        res = res.concat(getUpIds(item));
+                    if(!isInArray){
+                        res.push(item[config.idName]);
+                        // 如果有父节点
+                        if(item.pid){
+                            res = res.concat(getUpIds(item));
+                        }
                     }
                 }
                 return res;
@@ -213,11 +232,11 @@ dui.define('tree',['jquery','form'],function($,form){
             function getDownIds(child){
                 var res = [];
                 $.each(child,function(key,item){
-                    if(!item.disabled){
+                    if(!item.disabled || item[config.childName]){
                         res.push(item[config.idName]);
-                        if(item[config.childName]){
-                            res = res.concat(getDownIds(item[config.childName]))
-                        }
+                    }
+                    if(item[config.childName]){
+                        res = res.concat(getDownIds(item[config.childName]))
                     }
                 })
                 return res;
@@ -240,9 +259,6 @@ dui.define('tree',['jquery','form'],function($,form){
                     }
                 }
             })
-
-
-            
         });
     }
     /**
