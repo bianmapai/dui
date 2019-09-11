@@ -13,10 +13,36 @@ const cleanCSS = require('gulp-clean-css');//css压缩插件
 const fileinclude = require("gulp-file-include");//公共文件头部底部
 const browserSync = require("browser-sync");//服务器
 const reload      = browserSync.reload;//手动刷新
+
+//构建上传组件
+gulp.task("upload",()=>{
+    //构建upload组件的方法
+    return gulp.src(["src/js/upload/index.js"])
+        .pipe(rollup({
+            external: ['jquery'],
+            paths: {
+                jquery: 'jquery'
+            },
+            plugins: [
+                resolve(),
+                commonjs(),
+                babel({
+                    runtimeHelpers: true
+                })
+            ]
+        }, {
+            format: 'amd',//打包方式
+            name: 'upload',//包名称
+            sourcemap: false//是否有sourcemarp
+        }))
+        .pipe(rename('upload.js'))
+        .pipe(gulp.dest("src/js/modules"))
+        .pipe(reload({stream: true}));
+})
 //dui框架构建方法
 gulp.task("JavaScript", () => {
     //模块的构建方法
-    gulp.src("src/js/modules/*.js")
+    gulp.src(["src/js/modules/*.js"])
         // .pipe(uglify())
         .pipe(gulp.dest('dist/js/modules'))
 
