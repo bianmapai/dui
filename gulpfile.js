@@ -134,6 +134,7 @@ gulp.task("serve",gulp.series("build", ()=>{
 //监听文件变化
 gulp.task("watch",async()=>{
     //js监听
+    gulp.watch(["./src/js/upload/*.js","./src/js/upload/*/*.js","./src/js/upload/*/*/*.js"],gulp.series("upload"));
     gulp.watch(["./src/js/*.js","./src/js/**/*.js"],gulp.series("JavaScript"));
     gulp.watch(['./src/example/*.html','./src/example/include/*.html'],gulp.series("example"));
     gulp.watch(['./src/scss/*.scss'],gulp.series("sass"));

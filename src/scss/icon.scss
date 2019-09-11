@@ -2,12 +2,12 @@
 @import "./mixins/config.scss";
 @font-face {
     font-family: 'iconfont';  /* project id 1367779 */
-    src: url('//at.alicdn.com/t/font_1367779_zhd41wc9z6i.eot');
-    src: url('//at.alicdn.com/t/font_1367779_zhd41wc9z6i.eot?#iefix') format('embedded-opentype'),
-    url('//at.alicdn.com/t/font_1367779_zhd41wc9z6i.woff2') format('woff2'),
-    url('//at.alicdn.com/t/font_1367779_zhd41wc9z6i.woff') format('woff'),
-    url('//at.alicdn.com/t/font_1367779_zhd41wc9z6i.ttf') format('truetype'),
-    url('//at.alicdn.com/t/font_1367779_zhd41wc9z6i.svg#iconfont') format('svg');
+    src: url('//at.alicdn.com/t/font_1367779_o1q1tdk2uot.eot');
+    src: url('//at.alicdn.com/t/font_1367779_o1q1tdk2uot.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_1367779_o1q1tdk2uot.woff2') format('woff2'),
+    url('//at.alicdn.com/t/font_1367779_o1q1tdk2uot.woff') format('woff'),
+    url('//at.alicdn.com/t/font_1367779_o1q1tdk2uot.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_1367779_o1q1tdk2uot.svg#iconfont') format('svg');
 }
 [class^="#{$namespace}-icon-"], [class*=" #{$namespace}-icon-"] {
     /* use !important to prevent issues with browser extensions that change fonts */
@@ -39,3 +39,5 @@
 .#{$icon-prefix}-warning:before{content: "\e673"}
 .#{$icon-prefix}-error:before{content: "\e62b"}
 .#{$icon-prefix}-question:before{content: "\e680"}
+.#{$icon-prefix}-circle-check:before{content: "\e601"}
+.#{$icon-prefix}-check:before{content: "\e602"}

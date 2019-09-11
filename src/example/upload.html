@@ -21,31 +21,37 @@
             </div>
         </div>
         <div class="dui-card__body">
-            <div id="uploader" class="wu-example">
-                <!--用来存放文件信息-->
-                <div id="thelist" class="uploader-list"></div>
-                <div class="btns">
-                    <div id="picker">选择文件</div>
-                    <button id="ctlBtn" class="btn btn-default">开始上传</button>
-                </div>
+            <div class="upload-demo" id="demo-upload">
+                <div type="button" class="dui-button dui-button--primary dui-button--small">点击上传</div>
+                <button type="button" id="upload" class="dui-button dui-button--success dui-button--small" style="margin-left: 10px;"><!----><!----><span>上传到服务器</span></button>
+                <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </div>
         </div>
     </div>
 </div>
 <script>
 dui.use(['upload','jquery'],function(upload,$){
-    console.log(upload.create);
-    var uploader = upload.create({
+    var uploader = upload.render({
+        el:'#demo-upload',//当前插件容器
+        fileList:[
+            {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
+            {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
+        ],
+        listType:'picture',
+        autoUpload:false,
         // swf文件路径
         // swf: BASE_URL + '/js/Uploader.swf',
         // 文件接收服务端。
-        server: 'http://webuploader.duapp.com/server/fileupload.php',
+        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
         // 选择文件的按钮。可选。
         // 内部根据当前运行是创建，可能是input元素，也可能是flash.
         pick: '#picker',
         // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
         resize: false
     });
+    $('#upload').on('click',function(e){
+        uploader.upload();
+    })
 })
 </script>
 @@include('include/foot.html')
