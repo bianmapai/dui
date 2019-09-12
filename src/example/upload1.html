@@ -263,44 +263,61 @@
         <div class="dui-card__body">
             <form class="dui-form" dui-form method="POST">
                 <div class="dui-form-item">
-                    <label class="dui-form-item__label">活动名称</label>
+                    <label class="dui-form-item__label">普通列表</label>
                     <div class="dui-form-item__content">
                         <div class="upload-demo" id="demo-upload">
                             <button type="button" class="dui-button dui-button--primary dui-button--small">点击上传</button>
                             <button type="button" id="upload" class="dui-button dui-button--success dui-button--small" style="margin-left: 10px;"><!----><!----><span>上传到服务器</span></button>
                             <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-                            <ul class="dui-upload-list dui-upload-list--picture">
-                                <li class="dui-upload-list__item is-success">
-                                    <img src="https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100" alt="food.jpeg" class="dui-upload-list__item-thumbnail"><a class="dui-upload-list__item-name"><i class="dui-icon-document"></i>food.jpeg</a><label class="dui-upload-list__item-status-label"><i class="dui-icon-upload-success dui-icon-check"></i></label><i class="dui-icon-close"></i></li><li class="dui-upload-list__item is-success"><img src="https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100" alt="food2.jpeg" class="dui-upload-list__item-thumbnail"><a class="dui-upload-list__item-name"><i class="dui-icon-document"></i>food2.jpeg</a><label class="dui-upload-list__item-status-label"><i class="dui-icon-upload-success dui-icon-check"></i></label><i class="dui-icon-close"></i></li></ul>
                         </div>
                     </div>
                 </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">图片列表</label>
+                    <div class="dui-form-item__content">
+                        <div class="upload-demo" id="demo-upload1">
+                            <button type="button" class="dui-button dui-button--primary dui-button--small">点击上传</button>
+                            <button type="button" id="upload" class="dui-button dui-button--success dui-button--small" style="margin-left: 10px;"><!----><!----><span>上传到服务器</span></button>
+                            <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">拖拽粘贴</label>
+                    <div class="dui-form-item__content">
+                        <div class="upload-demo" id="demo-upload2">
+                            <div class="dui-upload-dragger">
+                                <i class="dui-icon-upload"></i>
+                                <div class="dui-upload__text">
+                                    将文件拖到此处，或<em>点击上传</em>
+                                </div>
+                            </div>
+                            <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        </div>
+                    </div>
+                </div>           
             </form>
-            
-            <div class="upload-demo" id="demo-upload1">
-                <div class="dui-upload-dragger">
-                    <i class="dui-icon-upload"></i>
-                    <div class="dui-upload__text">
-                        将文件拖到此处，或<em>点击上传</em>
-                    </div>
-                </div>
-                <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </div>
-            <div class="upload-demo" id="demo-upload2">
-                <div class="dui-upload-dragger">
-                    <i class="dui-icon-upload"></i>
-                    <div class="dui-upload__text">
-                        将文件拖到此处，或<em>点击上传</em>
-                    </div>
-                </div>
-                <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </div>
         </div>
     </div>
 </div>
 <script>
     var uploader = duiUpload.render({
         el:'#demo-upload',//当前插件容器
+        fileList:[],
+        listType:'text',
+        autoUpload:false,
+        // swf文件路径
+        // swf: BASE_URL + '/js/Uploader.swf',
+        // 文件接收服务端。
+        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: '#picker',
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false
+    });
+    var uploader1 = duiUpload.render({
+        el:'#demo-upload1',//当前插件容器
         fileList:[],
         listType:'picture',
         autoUpload:false,
@@ -313,15 +330,6 @@
         pick: '#picker',
         // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
         resize: false
-    });
-    $('#upload').on('click',function(e){
-        uploader.upload();
-    })
-    var uploader1 = duiUpload.render({
-        el:'#demo-upload1',
-        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
-        drag: '.dui-upload-dragger',
-        autoUpload:false,
     });
     var uploader2 = duiUpload.render({
         el:'#demo-upload2',
