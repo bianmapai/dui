@@ -4,8 +4,8 @@
 import {Base} from "../base";
 import Mediator from "../mediator";
 import RuntimeClent from "../runtime/client";
+import $ from "jquery";
 
-var $ = Base.$;
 function FilePaste( opts ) {
     opts = this.options = $.extend({}, opts );
     opts.container = $( opts.container || document.body );

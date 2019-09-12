@@ -155,7 +155,7 @@ Dui.defaults = {
         'pagination':'modules/pagination',// 分页
         'tree':'modules/tree', // 树形插件
         'duiDate':'modules/duiDate',// 时间插件
-        'upload':'modules/upload',//上传插件
+        'duiUpload':'modules/duiUpload',//上传插件
         'iconPicker':'modules/iconPicker',//图标选择插件
     },
     //存储回调函数

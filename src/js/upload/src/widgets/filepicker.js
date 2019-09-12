@@ -5,8 +5,7 @@ import { Base } from "../base";
 import { Uploader } from "../uploader";
 import FilePicker from "../lib/FilePicker";
 import "./widget";
-
-var $ = Base.$;
+import $ from "jquery";
 
 $.extend( Uploader.options, {
 

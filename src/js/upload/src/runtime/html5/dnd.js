@@ -2,16 +2,14 @@
  * @fileOverview FilePaste
  */
 import {Base} from "../../base";
-import Html5Runtime from "./runtime";
+import { Html5Runtime } from "./runtime";
 import File from "../../lib/file";
-
-var $ = Base.$,
-    prefix = 'webuploader-dnd-';
+import $ from "jquery";
+var prefix = 'webuploader-dnd-';
 
 export default Html5Runtime.register( 'DragAndDrop', {
     init: function() {
-        var elem = this.elem = this.options.container;
-
+        var elem = this.elem = $(this.options.container);
         this.dragEnterHandler = Base.bindFn( this._dragEnterHandler, this );
         this.dragOverHandler = Base.bindFn( this._dragOverHandler, this );
         this.dragLeaveHandler = Base.bindFn( this._dragLeaveHandler, this );

@@ -19,6 +19,9 @@ gulp.task("upload",()=>{
     //构建upload组件的方法
     return gulp.src(["src/js/upload/index.js"])
         .pipe(rollup({
+            globals: {
+                jquery: 'jQuery'
+            },
             external: ['jquery'],
             paths: {
                 jquery: 'jquery'
@@ -31,11 +34,11 @@ gulp.task("upload",()=>{
                 })
             ]
         }, {
-            format: 'amd',//打包方式
-            name: 'upload',//包名称
+            format: 'umd',//打包方式
+            name: 'duiUpload',//包名称
             sourcemap: false//是否有sourcemarp
         }))
-        .pipe(rename('upload.js'))
+        .pipe(rename('duiUpload.js'))
         .pipe(gulp.dest("src/js/modules"))
         .pipe(reload({stream: true}));
 })

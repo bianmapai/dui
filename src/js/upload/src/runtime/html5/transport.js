@@ -5,10 +5,9 @@
  * 而不需要重头再传一次。另外断点续传也需要用chunked方式。
  */
 import {Base} from "../../base";
-import Html5Runtime from "./runtime";
-
-var noop = Base.noop,
-    $ = Base.$;
+import { Html5Runtime } from "./runtime";
+import $ from "jquery";
+var noop = Base.noop;
 
 export default Html5Runtime.register( 'Transport', {
     init: function() {

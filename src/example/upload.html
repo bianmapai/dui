@@ -28,9 +28,27 @@
             </div>
         </div>
     </div>
+    <div class="dui-card box-card is-never-shadow">
+        <div class="dui-card__header">
+            <div class="clearfix">
+                <span>上传插件</span>
+            </div>
+        </div>
+        <div class="dui-card__body">
+            <div class="upload-demo" id="demo-upload1">
+                <div class="dui-upload-dragger">
+                    <i class="dui-icon-upload"></i>
+                    <div class="dui-upload__text">
+                        将文件拖到此处，或<em>点击上传</em>
+                    </div>
+                </div>
+                <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
-dui.use(['upload','jquery'],function(upload,$){
+dui.use(['duiUpload','jquery'],function(upload,$){
     var uploader = upload.render({
         el:'#demo-upload',//当前插件容器
         fileList:[
@@ -52,6 +70,14 @@ dui.use(['upload','jquery'],function(upload,$){
     $('#upload').on('click',function(e){
         uploader.upload();
     })
+    var uploader1 = upload.render({
+        el:'#demo-upload1',
+        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+        pick: '#picker',
+        drag:true,
+    });
+
+
 })
 </script>
 @@include('include/foot.html')

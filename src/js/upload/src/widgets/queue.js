@@ -8,9 +8,8 @@ import WUFile from "../file";
 import File from "../lib/file";
 import RuntimeClient from "../runtime/client";
 import "./widget";
-
-var $ = Base.$,
-    rExt = /\.\w+$/,
+import $ from "jquery";
+var rExt = /\.\w+$/,
     Status = WUFile.Status;
 
 export default Uploader.register({

@@ -8,14 +8,20 @@
 	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
   clip: rect(1px,1px,1px,1px);
 }
+.webuploader-container{
+  position: relative;
+}
 
 @include b(upload) {
   display: inline-block;
   text-align: center;
-  cursor: pointer;
   outline: none;
   @include e(input) {
     display: none;
+  }
+
+  @include e(pick){
+    display: inline-block;
   }
 
   @include e(tip) {
@@ -41,7 +47,6 @@
     }
   }
 }
-
 @include b(upload-dragger) {
   background-color: #fff;
   border: 1px dashed #d9d9d9;
@@ -50,7 +55,6 @@
   width: 360px;
   height: 180px;
   text-align: center;
-  cursor: pointer;
   position: relative;
   overflow: hidden;
 
@@ -59,10 +63,6 @@
     color: $--color-text-placeholder;
     margin: 40px 0 16px;
     line-height: 50px;
-  }
-
-  + .#{$namespace}-upload__tip {
-    text-align: center;
   }
 
   ~ .#{$namespace}-upload__files {

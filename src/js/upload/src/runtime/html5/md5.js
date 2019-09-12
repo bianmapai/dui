@@ -1,7 +1,7 @@
 /**
  * @fileOverview  Transport flash实现
  */
-import FlashRuntime from "./runtime";
+import { Html5Runtime } from "./runtime";
 /*
     * Fastest md5 implementation around (JKM md5)
     * Credits: Joseph Myers
@@ -572,7 +572,7 @@ SparkMD5.ArrayBuffer.hash = function (arr, raw) {
     return !!raw ? hash : hex(hash);
 };
 
-export default FlashRuntime.register( 'Md5', {
+export default Html5Runtime.register( 'Md5', {
     init: function() {
         // do nothing.
     },

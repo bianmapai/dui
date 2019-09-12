@@ -1,10 +1,8 @@
 /**
  * @fileOverview FilePicker
  */
-import {Base} from "../../base";
-import FlashRuntime from "./runtime";
-
-var $ = Base.$;
+import {FlashRuntime} from "./runtime";
+import $ from "jquery";
 
 export default FlashRuntime.register( 'FilePicker', {
     init: function( opts ) {

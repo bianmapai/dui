@@ -1,11 +1,9 @@
 /**
  * @fileOverview Transport
  */
-import {Base} from "../base";
 import RuntimeClient from "../runtime/client";
 import Mediator from "../mediator";
-
-var $ = Base.$;
+import $ from "jquery";
 
 function Transport( opts ) {
     var me = this;

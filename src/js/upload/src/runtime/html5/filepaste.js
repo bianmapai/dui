@@ -2,7 +2,7 @@
  * @fileOverview FilePaste
  */
 import {Base} from "../../base";
-import Html5Runtime from "./runtime";
+import { Html5Runtime } from "./runtime";
 import File from "../../lib/file";
 
 export default Html5Runtime.register( 'FilePaste', {

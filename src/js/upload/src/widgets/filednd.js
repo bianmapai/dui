@@ -5,8 +5,8 @@ import { Uploader } from "../uploader";
 import { Base } from "../base";
 import Dnd from "../lib/dnd";
 import "./widget";
+import $ from "jquery";
 
-var $ = Base.$;
 Uploader.options.dnd = '';
 /**
  * @property {Selector} [dnd=undefined]  指定Drag And Drop拖拽的容器，如果不指定，则不启动。

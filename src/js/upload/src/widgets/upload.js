@@ -6,8 +6,9 @@ import {Uploader} from "../uploader";
 import WUFile from "../file";
 import Transport from "../lib/transport";
 import "./widget";
-var $ = Base.$,
-    isPromise = Base.isPromise,
+import $ from "jquery";
+
+var isPromise = Base.isPromise,
     Status = WUFile.Status;
 
 // 添加默认配置项

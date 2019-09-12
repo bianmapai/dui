@@ -5,9 +5,8 @@ import { Base } from "../base";
 import { Uploader } from "../uploader";
 import Image from "../lib/image";
 import "./widget";
-
-var $ = Base.$,
-    throttle;
+import $ from "jquery";
+var throttle;
 
 // 根据要处理的文件大小来节流，一次不能处理太多，会卡。
 throttle = (function( max ) {

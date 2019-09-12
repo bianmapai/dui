@@ -1,11 +1,8 @@
 /**
  * @fileOverview FilePicker
  */
-import {Base} from "../../base";
-import Html5Runtime from "./runtime";
-
-var $ = Base.$;
-
+import { Html5Runtime } from "./runtime";
+import $ from "jquery";
 export default Html5Runtime.register( 'FilePicker', {
     init: function() {
         var container = this.getRuntime().getContainer(),
@@ -50,10 +47,8 @@ export default Html5Runtime.register( 'FilePicker', {
 
             input.attr( 'accept', arr.join(',') );
         }
-
         container.append( input );
         container.append( label );
-
         mouseHandler = function( e ) {
             owner.trigger( e.type );
         };

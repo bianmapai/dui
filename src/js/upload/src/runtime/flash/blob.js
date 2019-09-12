@@ -1,7 +1,7 @@
 /**
  * @fileOverview Blob Html实现
  */
-import FlashRuntime from "./runtime";
+import {FlashRuntime} from "./runtime";
 import Blob from "../../lib/blob";
 export default FlashRuntime.register( 'Blob', {
     slice: function( start, end ) {

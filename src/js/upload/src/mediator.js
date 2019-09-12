@@ -2,10 +2,8 @@
  * 事件处理类，可以独立使用，也可以扩展给对象使用。
  * @fileOverview Mediator
  */
-import {Base} from "./base";
-
-var $ = Base.$,
-    slice = [].slice,
+import $ from "jquery";
+var slice = [].slice,
     separator = /\s+/,
     protos;
 

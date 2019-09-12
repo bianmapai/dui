@@ -8,8 +8,9 @@ var upload = function(options){
     var ins = new Class(options);
     return thisUpload.call(ins);
 },
-LIST_ITEM = '.dui-upload-list__item',PROGRESS_INNER='.dui-progress-bar__inner',
-PROGRESS_TEXT='.dui-progress__text',
+LIST_ITEM = '.dui-upload-list__item',UPLOAD_LIST='dui-upload-list',
+PROGRESS_INNER='.dui-progress-bar__inner',PROGRESS_TEXT='.dui-progress__text',
+UPLOAD_DRAG='.dui-upload-dragger',UPLOAD_TEXT='.dui-upload__text',
 /**
  * 全局配置信息
  */
@@ -32,7 +33,7 @@ Class = function(options){
         name:'file',//上传的文件字段名
         data:{},//上传额外带的参数
         method:'post',//上传文件使用的ajax方法
-        drag:true,//是否运行拖拽上传
+        drag:false,//是否运行拖拽上传
         onSuccess:'',//上传成功回调
         onError:'',//上传错误的回调
         onBefore:'',//上传前的回调
@@ -82,22 +83,28 @@ Class.prototype.render = function(){
     // 点击按钮的存储容器
     uploadDom = that.uploadDom = $('<div class="dui-upload dui-upload-'+options.listType+'"></div>'),
     // 选择文件的元素
-    pick = that.pick = el.find(options.pick)[0] ? el.find(options.pick)[0] : el.children()[0];
-    // 如果渲染过则覆盖掉
-    hasRender && el.html(innerHtml);
-    // 设置当前的innerhtml
-    that.innerHtml = innerHtml;
-    // 显示pick容器兵器把pick放入容器中
-    el.prepend(uploadDom),uploadDom.append(pick);
-    // 创建上传类
-    that.webUpload = webUpload.create({
+    pick = that.pick = el.find(options.pick)[0] ? el.find(options.pick)[0] : el.children()[0],
+    uploadOtp = {
         server:options.server,//服务器地址
         pick:{
             id:pick,
             multiple:options.multiple
         },
         resize:options.resize,
-    })
+    };
+    // 如果渲染过则覆盖掉
+    hasRender && el.html(innerHtml);
+    // 设置当前的innerhtml
+    that.innerHtml = innerHtml;
+    // 显示pick容器兵器把pick放入容器中
+    el.prepend(uploadDom),uploadDom.append(pick);
+    // 如果有drag
+    if(options.drag!==false){
+        uploadOtp.dnd = el;
+        uploadOtp.pick.id = el.find(UPLOAD_TEXT).find('em')[0];
+    }
+    // 创建上传类
+    that.webUpload = webUpload.create(uploadOtp);
     // 如果有列表展示
     if(options.showFileList){
         var template = ['<ul class="dui-upload-list dui-upload-list--'+options.listType+'">',
@@ -114,7 +121,7 @@ Class.prototype.render = function(){
                 return '';
             }(),
         '</div>'].join(''),
-        showListDom = that.showListDom = $(template);
+        showListDom = that.showListDom = el.find(UPLOAD_LIST)[0]? el.find(UPLOAD_LIST): $(template);
         el.append(showListDom);
     }
     // 设置事件

@@ -5,9 +5,7 @@ import { Base } from "../base";
 import { Uploader } from "../uploader";
 import FilePaste from "../lib/filepaste";
 import "./widget";
-
-
-var $ = Base.$;
+import $ from "jquery";
 /**
  * @property {Selector} [paste=undefined]  指定监听paste事件的容器，如果不指定，不启用此功能。此功能为通过粘贴来添加截屏的图片。建议设置为`document.body`.
  * @namespace options

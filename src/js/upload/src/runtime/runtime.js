@@ -1,21 +1,21 @@
 /**
  * @fileOverview Runtime管理器，负责Runtime的选择, 连接
  */
+import $ from "jquery";
 import {Base} from "../base";
 import Mediator from "../mediator";
 
-var $ = Base.$,
-    factories = {},
+var factories = {},
 
-    // 获取对象的第一个key
-    getFirstKey = function( obj ) {
-        for ( var key in obj ) {
-            if ( obj.hasOwnProperty( key ) ) {
-                return key;
-            }
+// 获取对象的第一个key
+getFirstKey = function( obj ) {
+    for ( var key in obj ) {
+        if ( obj.hasOwnProperty( key ) ) {
+            return key;
         }
-        return null;
-    };
+    }
+    return null;
+};
 
 // 接口类。
 function Runtime( options ) {
@@ -34,7 +34,6 @@ $.extend( Runtime.prototype, {
         if ( this._container ) {
             return this._container;
         }
-
         parent = $( opts.container || document.body );
         container = $( document.createElement('div') );
 
@@ -47,7 +46,7 @@ $.extend( Runtime.prototype, {
             height: '1px',
             overflow: 'hidden'
         });
-
+        
         parent.append( container );
         parent.addClass('webuploader-container');
         this._container = container;
@@ -66,8 +65,6 @@ $.extend( Runtime.prototype, {
 });
 
 Runtime.orders = 'html5,flash';
-
-
 /**
  * 添加Runtime实现。
  * @param {String} type    类型

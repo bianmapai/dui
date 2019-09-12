@@ -1,6 +1,10 @@
-define('upload', ['jquery'], function ($$p) { 'use strict';
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
+	typeof define === 'function' && define.amd ? define('duiUpload', ['jquery'], factory) :
+	(global = global || self, global.duiUpload = factory(global.jQuery));
+}(this, function ($$1) { 'use strict';
 
-	$$p = $$p && $$p.hasOwnProperty('default') ? $$p['default'] : $$p;
+	$$1 = $$1 && $$1.hasOwnProperty('default') ? $$1['default'] : $$1;
 
 	function createCommonjsModule(fn, module) {
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -468,8 +472,8 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	 * @fileOverview Promise/A+
 	 */
 	var promise = {
-	  Deferred: $$p.Deferred,
-	  when: $$p.when,
+	  Deferred: $$1.Deferred,
+	  when: $$1.when,
 	  isPromise: function isPromise(anything) {
 	    return anything && typeof anything.then === 'function';
 	  }
@@ -519,7 +523,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  /**
 	   * @property {jQuery|Zepto} $ 引用依赖的jQuery或者Zepto对象。
 	   */
-	  $: $$p,
+	  $: $$1,
 	  Deferred: promise.Deferred,
 	  isPromise: promise.isPromise,
 	  when: promise.when,
@@ -621,7 +625,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    } // 复制静态方法
 
 
-	    $$p.extend(true, child, Super, staticProtos || {});
+	    $$1.extend(true, child, Super, staticProtos || {});
 	    /* jshint camelcase: false */
 	    // 让子类的__super__属性指向父类。
 
@@ -629,7 +633,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    // 暂时用Object.create实现。
 
 	    child.prototype = createObject(Super.prototype);
-	    protos && $$p.extend(true, child.prototype, protos);
+	    protos && $$1.extend(true, child.prototype, protos);
 	    return child;
 	  },
 
@@ -751,20 +755,19 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	 * 事件处理类，可以独立使用，也可以扩展给对象使用。
 	 * @fileOverview Mediator
 	 */
-	var $ = Base.$,
-	    slice = [].slice,
+	var slice = [].slice,
 	    separator = /\s+/,
 	    protos; // 根据条件过滤出事件handlers.
 
 	function findHandlers(arr, name, callback, context) {
-	  return $.grep(arr, function (handler) {
+	  return $$1.grep(arr, function (handler) {
 	    return handler && (!name || handler.e === name) && (!callback || handler.cb === callback || handler.cb._cb === callback) && (!context || handler.ctx === context);
 	  });
 	}
 
 	function eachEvent(events, callback, iterator) {
 	  // 不支持对象，只支持多个event用空格隔开
-	  $.each((events || '').split(separator), function (_, key) {
+	  $$1.each((events || '').split(separator), function (_, key) {
 	    iterator(key, callback);
 	  });
 	}
@@ -899,7 +902,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    }
 
 	    eachEvent(name, cb, function (name, cb) {
-	      $.each(findHandlers(events, name, cb, ctx), function () {
+	      $$1.each(findHandlers(events, name, cb, ctx), function () {
 	        delete events[this.id];
 	      });
 	    });
@@ -934,7 +937,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	 * @class Mediator
 	 */
 
-	var Mediator = $.extend({
+	var Mediator = $$1.extend({
 	  /**
 	   * 可以通过这个接口，使任何对象具备事件功能。
 	   * @method installTo
@@ -942,14 +945,14 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	   * @return {Object} 返回obj.
 	   */
 	  installTo: function installTo(obj) {
-	    return $.extend(obj, protos);
+	    return $$1.extend(obj, protos);
 	  }
 	}, protos);
 
 	/**
 	 * @fileOverview Uploader上传类
 	 */
-	var $$1 = Base.$;
+	var $ = Base.$;
 	/**
 	 * 上传入口类。
 	 * @class Uploader
@@ -965,7 +968,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	 */
 
 	function Uploader(opts) {
-	  this.options = $$1.extend(true, {}, Uploader.options, opts);
+	  this.options = $.extend(true, {}, Uploader.options, opts);
 
 	  this._init(this.options);
 	} // default Options
@@ -974,7 +977,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	Uploader.options = {};
 	Mediator.installTo(Uploader.prototype); // 批量添加纯命令式方法。
 
-	$$1.each({
+	$.each({
 	  upload: 'start-upload',
 	  stop: 'stop-upload',
 	  getFile: 'get-file',
@@ -1001,7 +1004,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    return this.request(command, arguments);
 	  };
 	});
-	$$1.extend(Uploader.prototype, {
+	$.extend(Uploader.prototype, {
 	  state: 'pending',
 	  _init: function _init(opts) {
 	    var me = this;
@@ -1033,8 +1036,8 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    var opts = this.options; // setter
 
 	    if (arguments.length > 1) {
-	      if ($$1.isPlainObject(val) && $$1.isPlainObject(opts[key])) {
-	        $$1.extend(opts[key], val);
+	      if ($.isPlainObject(val) && $.isPlainObject(opts[key])) {
+	        $.extend(opts[key], val);
 	      } else {
 	        opts[key] = val;
 	      }
@@ -1081,8 +1084,8 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	    if ( // 调用通过on方法注册的handler.
 	    Mediator.trigger.apply(this, arguments) === false || // 调用opts.onEvent
-	    $$1.isFunction(opts[name]) && opts[name].apply(this, args) === false || // 调用this.onEvent
-	    $$1.isFunction(this[name]) && this[name].apply(this, args) === false || // 广播所有uploader的事件。
+	    $.isFunction(opts[name]) && opts[name].apply(this, args) === false || // 调用this.onEvent
+	    $.isFunction(this[name]) && this[name].apply(this, args) === false || // 广播所有uploader的事件。
 	    Mediator.trigger.apply(Mediator, [this, type].concat(args)) === false) {
 	      return false;
 	    }
@@ -1121,8 +1124,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	 * @fileOverview Runtime管理器，负责Runtime的选择, 连接
 	 */
 
-	var $$2 = Base.$,
-	    factories = {},
+	var factories = {},
 	    // 获取对象的第一个key
 	getFirstKey = function getFirstKey(obj) {
 	  for (var key in obj) {
@@ -1136,13 +1138,13 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 
 	function Runtime(options) {
-	  this.options = $$2.extend({
+	  this.options = $$1.extend({
 	    container: document.body
 	  }, options);
 	  this.uid = Base.guid('rt_');
 	}
 
-	$$2.extend(Runtime.prototype, {
+	$$1.extend(Runtime.prototype, {
 	  getContainer: function getContainer() {
 	    var opts = this.options,
 	        parent,
@@ -1152,8 +1154,8 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      return this._container;
 	    }
 
-	    parent = $$2(opts.container || document.body);
-	    container = $$2(document.createElement('div'));
+	    parent = $$1(opts.container || document.body);
+	    container = $$1(document.createElement('div'));
 	    container.attr('id', 'rt_' + this.uid);
 	    container.css({
 	      position: 'absolute',
@@ -1195,7 +1197,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	Runtime.create = function (opts, orders) {
 	  var type, runtime;
 	  orders = orders || Runtime.orders;
-	  $$2.each(orders.split(/\s*,\s*/g), function () {
+	  $$1.each(orders.split(/\s*,\s*/g), function () {
 	    if (factories[this]) {
 	      type = this;
 	      return false;
@@ -1342,11 +1344,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 错误信息
 	 */
-	var $$3 = Base.$;
 
 	function DragAndDrop(opts) {
-	  opts = this.options = $$3.extend({}, DragAndDrop.options, opts);
-	  opts.container = $$3(opts.container);
+	  opts = this.options = $$1.extend({}, DragAndDrop.options, opts);
+	  opts.container = $$1(opts.container);
 
 	  if (!opts.container.length) {
 	    return;
@@ -1374,8 +1375,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 组件基类。
 	 */
-	var $$4 = Base.$,
-	    _init2 = Uploader.prototype._init,
+	var _init2 = Uploader.prototype._init,
 	    _destroy = Uploader.prototype.destroy,
 	    IGNORE = {},
 	    widgetClass = [];
@@ -1386,7 +1386,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  }
 
 	  var length = obj.length,
-	      type = $$4.type(obj);
+	      type = $$1.type(obj);
 
 	  if (obj.nodeType === 1 && length) {
 	    return true;
@@ -1400,7 +1400,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  this.options = uploader.options;
 	}
 
-	$$4.extend(Widget.prototype, {
+	$$1.extend(Widget.prototype, {
 	  init: Base.noop,
 	  // 类Backbone的事件监听声明，监听uploader实例上的事件
 	  // widget直接无法监听事件，事件只能通过uploader来传递
@@ -1412,7 +1412,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	        */
 	    var map = this.responseMap; // 如果无API响应声明则忽略
 
-	    if (!map || !(apiName in map) || !(map[apiName] in this) || !$$4.isFunction(this[map[apiName]])) {
+	    if (!map || !(apiName in map) || !(map[apiName] in this) || !$$1.isFunction(this[map[apiName]])) {
 	      return IGNORE;
 	    }
 
@@ -1431,7 +1431,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  }
 	}); // 扩展Uploader.
 
-	$$4.extend(Uploader.prototype, {
+	$$1.extend(Uploader.prototype, {
 	  /**
 	   * @property {String | Array} [disableWidgets=undefined]
 	   * @namespace options
@@ -1443,7 +1443,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    var me = this,
 	        widgets = me._widgets = [],
 	        deactives = me.options.disableWidgets || '';
-	    $$4.each(widgetClass, function (_, klass) {
+	    $$1.each(widgetClass, function (_, klass) {
 	      (!deactives || !~deactives.indexOf(klass._name)) && widgets.push(new klass(me));
 	    });
 	    return _init2.apply(me, arguments);
@@ -1537,7 +1537,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  if (arguments.length === 1) {
 	    widgetProto = responseMap; // 自动生成 map 表。
 
-	    $$4.each(widgetProto, function (key) {
+	    $$1.each(widgetProto, function (key) {
 	      if (key[0] === '_' || key === 'name') {
 	        key === 'name' && (map.name = widgetProto.name);
 	        return;
@@ -1546,7 +1546,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      map[key.replace(/[A-Z]/g, '-$&').toLowerCase()] = key;
 	    });
 	  } else {
-	    map = $$4.extend(map, responseMap);
+	    map = $$1.extend(map, responseMap);
 	  }
 
 	  widgetProto.responseMap = map;
@@ -1591,7 +1591,6 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview DragAndDrop Widget。
 	 */
-	var $$5 = Base.$;
 	Uploader.options.dnd = '';
 	/**
 	 * @property {Selector} [dnd=undefined]  指定Drag And Drop拖拽的容器，如果不指定，则不启动。
@@ -1621,7 +1620,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	    var me = this,
 	        deferred = Base.Deferred(),
-	        options = $$5.extend({}, {
+	        options = $$1.extend({}, {
 	      disableGlobalDnd: opts.disableGlobalDnd,
 	      container: opts.dnd,
 	      accept: opts.accept
@@ -1647,11 +1646,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 错误信息
 	 */
-	var $$6 = Base.$;
 
 	function FilePaste(opts) {
-	  opts = this.options = $$6.extend({}, opts);
-	  opts.container = $$6(opts.container || document.body);
+	  opts = this.options = $$1.extend({}, opts);
+	  opts.container = $$1(opts.container || document.body);
 	  RuntimeClient.call(this, 'FilePaste');
 	}
 
@@ -1670,7 +1668,6 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 组件基类。
 	 */
-	var $$7 = Base.$;
 	/**
 	 * @property {Selector} [paste=undefined]  指定监听paste事件的容器，如果不指定，不启用此功能。此功能为通过粘贴来添加截屏的图片。建议设置为`document.body`.
 	 * @namespace options
@@ -1686,7 +1683,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	    var me = this,
 	        deferred = Base.Deferred(),
-	        options = $$7.extend({}, {
+	        options = $$1.extend({}, {
 	      container: opts.paste,
 	      accept: opts.accept
 	    }),
@@ -1767,18 +1764,17 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 错误信息
 	 */
-	var $$8 = Base.$;
 
 	function FilePicker(opts) {
-	  opts = this.options = $$8.extend({}, FilePicker.options, opts);
-	  opts.container = $$8(opts.id);
+	  opts = this.options = $$1.extend({}, FilePicker.options, opts);
+	  opts.container = $$1(opts.id);
 
 	  if (!opts.container.length) {
 	    throw new Error('按钮指定错误');
 	  }
 
 	  opts.innerHTML = opts.innerHTML || opts.label || opts.container.html() || '';
-	  opts.button = $$8(opts.button || document.createElement('div'));
+	  opts.button = $$1(opts.button || document.createElement('div'));
 	  opts.button.html(opts.innerHTML);
 	  opts.container.html(opts.button);
 	  RuntimeClient.call(this, 'FilePicker', true);
@@ -1792,7 +1788,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  multiple: true,
 	  accept: null,
 	  name: 'file',
-	  style: 'webuploader-pick' //pick element class attribute, default is "webuploader-pick"
+	  style: 'dui-upload__pick' //pick element class attribute, default is "dui-upload__pick"
 
 	};
 	Base.inherits(RuntimeClient, {
@@ -1802,22 +1798,22 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	        opts = me.options,
 	        button = opts.button,
 	        style = opts.style;
-	    if (style) button.addClass('webuploader-pick');
+	    if (style) button.addClass(style);
 	    me.on('all', function (type) {
 	      var files;
 
 	      switch (type) {
 	        case 'mouseenter':
-	          if (style) button.addClass('webuploader-pick-hover');
+	          if (style) button.addClass('is-hover');
 	          break;
 
 	        case 'mouseleave':
-	          if (style) button.removeClass('webuploader-pick-hover');
+	          if (style) button.removeClass('is-hover');
 	          break;
 
 	        case 'change':
 	          files = me.exec('getFiles');
-	          me.trigger('select', $$8.map(files, function (file) {
+	          me.trigger('select', $$1.map(files, function (file) {
 	            file = new File$1(me.getRuid(), file); // 记录来源。
 
 	            file._refer = opts.container;
@@ -1832,7 +1828,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      me.trigger('ready');
 	    });
 	    this._resizeHandler = Base.bindFn(this.refresh, this);
-	    $$8(window).on('resize', this._resizeHandler);
+	    $$1(window).on('resize', this._resizeHandler);
 	  },
 	  refresh: function refresh() {
 	    var shimContainer = this.getRuntime().getContainer(),
@@ -1856,7 +1852,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  },
 	  enable: function enable() {
 	    var btn = this.options.button;
-	    btn.removeClass('webuploader-pick-disable');
+	    btn.removeClass('is-disable');
 	    this.refresh();
 	  },
 	  disable: function disable() {
@@ -1864,20 +1860,19 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    this.getRuntime().getContainer().css({
 	      top: '-99999px'
 	    });
-	    btn.addClass('webuploader-pick-disable');
+	    btn.addClass('is-disable');
 	  },
 	  destroy: function destroy() {
 	    var btn = this.options.button;
-	    $$8(window).off('resize', this._resizeHandler);
-	    btn.removeClass('webuploader-pick-disable webuploader-pick-hover ' + 'webuploader-pick');
+	    $$1(window).off('resize', this._resizeHandler);
+	    btn.removeClass('is-disable is-hover ' + this.options.style);
 	  }
 	});
 
 	/**
 	 * @fileOverview 文件选择相关
 	 */
-	var $$9 = Base.$;
-	$$9.extend(Uploader.options, {
+	$$1.extend(Uploader.options, {
 	  /**
 	   * @property {Selector | Object} [pick=undefined]
 	   * @namespace options
@@ -1926,7 +1921,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    return opts.pick && this.addBtn(opts.pick);
 	  },
 	  refresh: function refresh() {
-	    $$9.each(this.pickers, function () {
+	    $$1.each(this.pickers, function () {
 	      this.refresh();
 	    });
 	  },
@@ -1953,14 +1948,14 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      return;
 	    }
 
-	    $$9.isPlainObject(pick) || (pick = {
+	    $$1.isPlainObject(pick) || (pick = {
 	      id: pick
 	    });
-	    $$9(pick.id).each(function () {
+	    $$1(pick.id).each(function () {
 	      var options, picker, deferred;
 	      deferred = Base.Deferred();
-	      options = $$9.extend({}, pick, {
-	        accept: $$9.isPlainObject(accept) ? [accept] : accept,
+	      options = $$1.extend({}, pick, {
+	        accept: $$1.isPlainObject(accept) ? [accept] : accept,
 	        swf: opts.swf,
 	        runtimeOrder: opts.runtimeOrder,
 	        id: this
@@ -1980,17 +1975,17 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    return Base.when.apply(Base, promises);
 	  },
 	  disable: function disable() {
-	    $$9.each(this.pickers, function () {
+	    $$1.each(this.pickers, function () {
 	      this.disable();
 	    });
 	  },
 	  enable: function enable() {
-	    $$9.each(this.pickers, function () {
+	    $$1.each(this.pickers, function () {
 	      this.enable();
 	    });
 	  },
 	  destroy: function destroy() {
-	    $$9.each(this.pickers, function () {
+	    $$1.each(this.pickers, function () {
 	      this.destroy();
 	    });
 	    this.pickers = null;
@@ -2000,10 +1995,9 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview Image
 	 */
-	var $$a = Base.$; // 构造器。
 
 	function Image$1(opts) {
-	  this.options = $$a.extend({}, Image$1.options, opts);
+	  this.options = $$1.extend({}, Image$1.options, opts);
 	  RuntimeClient.call(this, 'Image');
 	  this.on('load', function () {
 	    this._info = this.exec('info');
@@ -2073,8 +2067,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 图片操作, 负责预览图片和上传前压缩图片
 	 */
-	var $$b = Base.$,
-	    throttle; // 根据要处理的文件大小来节流，一次不能处理太多，会卡。
+	var throttle; // 根据要处理的文件大小来节流，一次不能处理太多，会卡。
 
 	throttle = function (max) {
 	  var occupied = 0,
@@ -2099,7 +2092,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  };
 	}(5 * 1024 * 1024);
 
-	$$b.extend(Uploader.options, {
+	$$1.extend(Uploader.options, {
 	  /**
 	   * @property {Object} [thumb]
 	   * @namespace options
@@ -2230,10 +2223,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      return;
 	    }
 
-	    opts = $$b.extend({}, this.options.thumb); // 如果传入的是object.
+	    opts = $$1.extend({}, this.options.thumb); // 如果传入的是object.
 
-	    if ($$b.isPlainObject(width)) {
-	      opts = $$b.extend(opts, width);
+	    if ($$1.isPlainObject(width)) {
+	      opts = $$1.extend(opts, width);
 	      width = null;
 	    }
 
@@ -2285,7 +2278,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      return;
 	    }
 
-	    opts = $$b.extend({}, opts);
+	    opts = $$1.extend({}, opts);
 	    deferred = Base.Deferred();
 	    image = new Image$1(opts);
 	    deferred.always(function () {
@@ -2345,8 +2338,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 文件属性封装
 	 */
-	var $$c = Base.$,
-	    idPrefix = 'WU_FILE_',
+	var idPrefix = 'WU_FILE_',
 	    idSuffix = 0,
 	    rExt$1 = /\.([^.]+)$/,
 	    statusMap = {};
@@ -2424,7 +2416,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  });
 	}
 
-	$$c.extend(WUFile.prototype, {
+	$$1.extend(WUFile.prototype, {
 	  /**
 	   * 设置状态，状态变化时会触发`change`事件。
 	   * @method setStatus
@@ -2522,8 +2514,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 文件队列
 	 */
-	var $$d = Base.$,
-	    STATUS = WUFile.Status;
+	var STATUS = WUFile.Status;
 	/**
 	 * 文件队列, 用来存储各个状态中的文件。
 	 * @class Queue
@@ -2559,7 +2550,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  this._map = {};
 	}
 
-	$$d.extend(Queue.prototype, {
+	$$1.extend(Queue.prototype, {
 	  /**
 	   * 将新文件加入对队列尾部
 	   *
@@ -2655,7 +2646,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    for (; i < len; i++) {
 	      file = this._queue[i];
 
-	      if (sts.length && !~$$d.inArray(file.getStatus(), sts)) {
+	      if (sts.length && !~$$1.inArray(file.getStatus(), sts)) {
 	        continue;
 	      }
 
@@ -2764,8 +2755,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview 队列
 	 */
-	var $$e = Base.$,
-	    rExt$2 = /\.\w+$/,
+	var rExt$2 = /\.\w+$/,
 	    Status = WUFile.Status;
 	Uploader.register({
 	  name: 'queue',
@@ -2779,7 +2769,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	        accept,
 	        runtime;
 
-	    if ($$e.isPlainObject(opts.accept)) {
+	    if ($$1.isPlainObject(opts.accept)) {
 	      opts.accept = [opts.accept];
 	    } // accept中的中生成匹配正则。
 
@@ -2907,7 +2897,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      files = [files];
 	    }
 
-	    files = $$e.map(files, function (file) {
+	    files = $$1.map(files, function (file) {
 	      return me._addFile(file);
 	    });
 
@@ -3780,11 +3770,9 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  module.exports = _typeof;
 	});
 
-	var $$f = Base.$;
-
 	function Transport(opts) {
 	  var me = this;
-	  opts = me.options = $$f.extend(true, {}, Transport.options, opts || {});
+	  opts = me.options = $$1.extend(true, {}, Transport.options, opts || {});
 	  RuntimeClient.call(this, 'Transport');
 	  this._blob = null;
 	  this._formData = opts.formData || {};
@@ -3808,7 +3796,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  headers: {},
 	  sendAsBinary: false
 	};
-	$$f.extend(Transport.prototype, {
+	$$1.extend(Transport.prototype, {
 	  // 添加Blob, 只能添加一次，最后一次有效。
 	  appendBlob: function appendBlob(key, blob, filename) {
 	    var me = this,
@@ -3829,14 +3817,14 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  // 添加其他字段
 	  append: function append(key, value) {
 	    if (_typeof_1(key) === 'object') {
-	      $$f.extend(this._formData, key);
+	      $$1.extend(this._formData, key);
 	    } else {
 	      this._formData[key] = value;
 	    }
 	  },
 	  setRequestHeader: function setRequestHeader(key, value) {
 	    if (_typeof_1(key) === 'object') {
-	      $$f.extend(this._headers, key);
+	      $$1.extend(this._headers, key);
 	    } else {
 	      this._headers[key] = value;
 	    }
@@ -3886,11 +3874,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	Mediator.installTo(Transport.prototype);
 
-	var $$g = Base.$,
-	    isPromise = Base.isPromise,
+	var isPromise = Base.isPromise,
 	    Status$1 = WUFile.Status; // 添加默认配置项
 
-	$$g.extend(Uploader.options, {
+	$$1.extend(Uploader.options, {
 	  /**
 	   * @property {Boolean} [prepareNextFile=false]
 	   * @namespace options
@@ -4037,7 +4024,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	    owner.on('uploadComplete', function (file) {
 	      // 把其他块取消了。
-	      file.blocks && $$g.each(file.blocks, function (_, v) {
+	      file.blocks && $$1.each(file.blocks, function (_, v) {
 	        v.transport && (v.transport.abort(), v.transport.destroy());
 	        delete v.transport;
 	      });
@@ -4074,7 +4061,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  startUpload: function startUpload(file) {
 	    var me = this; // 移出invalid的文件
 
-	    $$g.each(me.request('get-files', Status$1.INVALID), function () {
+	    $$1.each(me.request('get-files', Status$1.INVALID), function () {
 	      me.request('remove-file', this);
 	    }); // 如果指定了开始某个文件，则只开始指定的文件。
 
@@ -4083,7 +4070,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	      if (file.getStatus() === Status$1.INTERRUPT) {
 	        file.setStatus(Status$1.QUEUED);
-	        $$g.each(me.pool, function (_, v) {
+	        $$1.each(me.pool, function (_, v) {
 	          // 之前暂停过。
 	          if (v.file !== file) {
 	            return;
@@ -4096,7 +4083,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	        file.setStatus(Status$1.QUEUED);
 	      }
 	    } else {
-	      $$g.each(me.request('get-files', [Status$1.INITED]), function () {
+	      $$1.each(me.request('get-files', [Status$1.INITED]), function () {
 	        this.setStatus(Status$1.QUEUED);
 	      });
 	    }
@@ -4110,7 +4097,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    me.runing = true;
 	    var files = []; // 如果有暂停的，则续传
 
-	    file || $$g.each(me.pool, function (_, v) {
+	    file || $$1.each(me.pool, function (_, v) {
 	      var file = v.file;
 
 	      if (file.getStatus() === Status$1.INTERRUPT) {
@@ -4125,10 +4112,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	        v.transport ? v.transport.send() : me._doSend(v);
 	      }
 	    });
-	    $$g.each(files, function () {
+	    $$1.each(files, function () {
 	      this.setStatus(Status$1.PROGRESS);
 	    });
-	    file || $$g.each(me.request('get-files', Status$1.INTERRUPT), function () {
+	    file || $$1.each(me.request('get-files', Status$1.INTERRUPT), function () {
 	      this.setStatus(Status$1.PROGRESS);
 	    });
 	    me._trigged = false;
@@ -4173,7 +4160,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      }
 
 	      file.setStatus(Status$1.INTERRUPT);
-	      $$g.each(me.pool, function (_, v) {
+	      $$1.each(me.pool, function (_, v) {
 	        // 只 abort 指定的文件，每一个分片。
 	        if (v.file === file) {
 	          v.transport && v.transport.abort();
@@ -4196,7 +4183,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      this._promise.file.setStatus(Status$1.INTERRUPT);
 	    }
 
-	    interrupt && $$g.each(me.pool, function (_, v) {
+	    interrupt && $$1.each(me.pool, function (_, v) {
 	      v.transport && v.transport.abort();
 	      v.file.setStatus(Status$1.INTERRUPT);
 	    });
@@ -4219,7 +4206,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  cancelFile: function cancelFile(file) {
 	    file = file.id ? file : this.request('get-file', file); // 如果正在上传。
 
-	    file.blocks && $$g.each(file.blocks, function (_, v) {
+	    file.blocks && $$1.each(file.blocks, function (_, v) {
 	      var _tr = v.transport;
 
 	      if (_tr) {
@@ -4258,7 +4245,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    file.setStatus(status || Status$1.COMPLETE);
 	    file.skipped = true; // 如果正在上传。
 
-	    file.blocks && $$g.each(file.blocks, function (_, v) {
+	    file.blocks && $$1.each(file.blocks, function (_, v) {
 	      var _tr = v.transport;
 
 	      if (_tr) {
@@ -4406,7 +4393,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      promise.file = file; // 如果还在pending中，则替换成文件本身。
 
 	      promise.done(function () {
-	        var idx = $$g.inArray(promise, pending);
+	        var idx = $$1.inArray(promise, pending);
 	        ~idx && pending.splice(idx, 1, file);
 	      }); // befeore-send-file的钩子就有错误发生。
 
@@ -4420,7 +4407,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  },
 	  // 让出位置了，可以让其他分片开始上传
 	  _popBlock: function _popBlock(block) {
-	    var idx = $$g.inArray(block, this.pool);
+	    var idx = $$1.inArray(block, this.pool);
 	    this.pool.splice(idx, 1);
 	    block.file.remaning--;
 	    this.remaning--;
@@ -4534,11 +4521,11 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  _doSend: function _doSend(block) {
 	    var me = this,
 	        owner = me.owner,
-	        opts = $$g.extend({}, me.options, block.options),
+	        opts = $$1.extend({}, me.options, block.options),
 	        file = block.file,
 	        tr = new Transport(opts),
-	        data = $$g.extend({}, opts.formData),
-	        headers = $$g.extend({}, opts.headers),
+	        data = $$1.extend({}, opts.formData),
+	        headers = $$1.extend({}, opts.headers),
 	        requestAccept,
 	        ret;
 	    block.transport = tr;
@@ -4618,14 +4605,14 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      }
 	    }); // 配置默认的上传字段。
 
-	    data = $$g.extend(data, {
+	    data = $$1.extend(data, {
 	      id: file.id,
 	      name: file.name,
 	      type: file.type,
 	      lastModifiedDate: file.lastModifiedDate,
 	      size: file.size
 	    });
-	    block.chunks > 1 && $$g.extend(data, {
+	    block.chunks > 1 && $$1.extend(data, {
 	      chunks: block.chunks,
 	      chunk: block.chunk
 	    }); // 在发送之间可以添加字段什么的。。。
@@ -4663,7 +4650,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      return;
 	    }
 
-	    $$g.each(file.blocks, function (_, v) {
+	    $$1.each(file.blocks, function (_, v) {
 	      uploaded += (v.percentage || 0) * (v.end - v.start);
 	    });
 	    totalPercent = uploaded / file.size;
@@ -4691,8 +4678,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	var _parseInt$2 = _parseInt$1;
 
-	var $$h = Base.$,
-	    validators = {},
+	var validators = {},
 	    api;
 	/**
 	 * @event error
@@ -4722,7 +4708,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  init: function init() {
 	    var me = this;
 	    Base.nextTick(function () {
-	      $$h.each(validators, function () {
+	      $$1.each(validators, function () {
 	        this.call(me.owner);
 	      });
 	    });
@@ -5003,8 +4989,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	 */
 	var type = 'html5',
 	    components = {};
-
-	function Html5Runtime() {
+	var Html5Runtime = function Html5Runtime() {
 	  var pool = {},
 	      me = this,
 	      destroy = this.destroy;
@@ -5032,8 +5017,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    // @todo 删除池子中的所有实例
 	    return destroy && destroy.apply(this, arguments);
 	  };
-	}
-
+	};
 	Base.inherits(Runtime, {
 	  constructor: Html5Runtime,
 	  // 不需要连接其他程序，直接执行callback
@@ -5071,11 +5055,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview FilePaste
 	 */
-	var $$i = Base.$,
-	    prefix = 'webuploader-dnd-';
+	var prefix = 'webuploader-dnd-';
 	Html5Runtime.register('DragAndDrop', {
 	  init: function init() {
-	    var elem = this.elem = this.options.container;
+	    var elem = this.elem = $$1(this.options.container);
 	    this.dragEnterHandler = Base.bindFn(this._dragEnterHandler, this);
 	    this.dragOverHandler = Base.bindFn(this._dragOverHandler, this);
 	    this.dragLeaveHandler = Base.bindFn(this._dragLeaveHandler, this);
@@ -5087,8 +5070,8 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    elem.on('drop', this.dropHandler);
 
 	    if (this.options.disableGlobalDnd) {
-	      $$i(document).on('dragover', this.dragOverHandler);
-	      $$i(document).on('drop', this.dropHandler);
+	      $$1(document).on('dragover', this.dragOverHandler);
+	      $$1(document).on('drop', this.dropHandler);
 	    }
 	  },
 	  _dragEnterHandler: function _dragEnterHandler(e) {
@@ -5117,7 +5100,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    // 只处理框内的。
 	    var parentElem = this.elem.parent().get(0);
 
-	    if (parentElem && !$$i.contains(parentElem, e.currentTarget)) {
+	    if (parentElem && !$$1.contains(parentElem, e.currentTarget)) {
 	      return false;
 	    }
 
@@ -5147,7 +5130,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	        dataTransfer,
 	        data; // 只处理框内的。
 
-	    if (parentElem && !$$i.contains(parentElem, e.currentTarget)) {
+	    if (parentElem && !$$1.contains(parentElem, e.currentTarget)) {
 	      return false;
 	    }
 
@@ -5167,7 +5150,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    }
 
 	    me._getTansferFiles(dataTransfer, function (results) {
-	      me.trigger('drop', $$i.map(results, function (file) {
+	      me.trigger('drop', $$1.map(results, function (file) {
 	        return new File$1(ruid, file);
 	      }));
 	    });
@@ -5251,8 +5234,8 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    elem.off('drop', this.dropHandler);
 
 	    if (this.options.disableGlobalDnd) {
-	      $$i(document).off('dragover', this.dragOverHandler);
-	      $$i(document).off('drop', this.dropHandler);
+	      $$1(document).off('dragover', this.dragOverHandler);
+	      $$1(document).off('drop', this.dropHandler);
 	    }
 	  }
 	});
@@ -5324,15 +5307,14 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview FilePicker
 	 */
-	var $$j = Base.$;
 	Html5Runtime.register('FilePicker', {
 	  init: function init() {
 	    var container = this.getRuntime().getContainer(),
 	        me = this,
 	        owner = me.owner,
 	        opts = me.options,
-	        label = this.label = $$j(document.createElement('label')),
-	        input = this.input = $$j(document.createElement('input')),
+	        label = this.label = $$1(document.createElement('label')),
+	        input = this.input = $$1(document.createElement('input')),
 	        arr,
 	        i,
 	        len,
@@ -5393,7 +5375,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      clone.value = null;
 	      this.parentNode.replaceChild(clone, this);
 	      input.off();
-	      input = $$j(clone).on('change', _changeHandler).on('mouseenter mouseleave', mouseHandler);
+	      input = $$1(clone).on('change', _changeHandler).on('mouseenter mouseleave', mouseHandler);
 	      owner.trigger('change');
 	    };
 
@@ -7073,8 +7055,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	 * 可以将大文件分成小块，挨个传输，可以提高大文件成功率，当失败的时候，也只需要重传那小部分，
 	 * 而不需要重头再传一次。另外断点续传也需要用chunked方式。
 	 */
-	var noop$1 = Base.noop,
-	    $$k = Base.$;
+	var noop$1 = Base.noop;
 	Html5Runtime.register('Transport', {
 	  init: function init() {
 	    this._status = 0;
@@ -7091,11 +7072,11 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	        fr;
 
 	    if (opts.sendAsBinary) {
-	      server += opts.attachInfoToQuery !== false ? (/\?/.test(server) ? '&' : '?') + $$k.param(owner._formData) : '';
+	      server += opts.attachInfoToQuery !== false ? (/\?/.test(server) ? '&' : '?') + $$1.param(owner._formData) : '';
 	      binary = blob.getSource();
 	    } else {
 	      formData = new FormData();
-	      $$k.each(owner._formData, function (k, v) {
+	      $$1.each(owner._formData, function (k, v) {
 	        formData.append(k, v);
 	      });
 	      formData.append(opts.fileVal, blob.getSource(), opts.filename || owner._formData.name || '');
@@ -7215,7 +7196,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    return xhr;
 	  },
 	  _setRequestHeader: function _setRequestHeader(xhr, headers) {
-	    $$k.each(headers, function (key, val) {
+	    $$1.each(headers, function (key, val) {
 	      xhr.setRequestHeader(key, val);
 	    });
 	  },
@@ -7843,104 +7824,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  }
 	});
 
-	/**
-	 * @fileOverview Runtime管理器，负责Runtime的选择, 连接
-	 */
-
-	var $$l = Base.$,
-	    factories$1 = {},
-	    // 获取对象的第一个key
-	getFirstKey$1 = function getFirstKey(obj) {
-	  for (var key in obj) {
-	    if (obj.hasOwnProperty(key)) {
-	      return key;
-	    }
-	  }
-
-	  return null;
-	}; // 接口类。
-
-
-	function Runtime$1(options) {
-	  this.options = $$l.extend({
-	    container: document.body
-	  }, options);
-	  this.uid = Base.guid('rt_');
-	}
-
-	$$l.extend(Runtime$1.prototype, {
-	  getContainer: function getContainer() {
-	    var opts = this.options,
-	        parent,
-	        container;
-
-	    if (this._container) {
-	      return this._container;
-	    }
-
-	    parent = $$l(opts.container || document.body);
-	    container = $$l(document.createElement('div'));
-	    container.attr('id', 'rt_' + this.uid);
-	    container.css({
-	      position: 'absolute',
-	      top: '0px',
-	      left: '0px',
-	      width: '1px',
-	      height: '1px',
-	      overflow: 'hidden'
-	    });
-	    parent.append(container);
-	    parent.addClass('webuploader-container');
-	    this._container = container;
-	    this._parent = parent;
-	    return container;
-	  },
-	  init: Base.noop,
-	  exec: Base.noop,
-	  destroy: function destroy() {
-	    this._container && this._container.remove();
-	    this._parent && this._parent.removeClass('webuploader-container');
-	    this.off();
-	  }
-	});
-	Runtime$1.orders = 'html5,flash';
-	/**
-	 * 添加Runtime实现。
-	 * @param {String} type    类型
-	 * @param {Runtime} factory 具体Runtime实现。
-	 */
-
-	Runtime$1.addRuntime = function (type, factory) {
-	  factories$1[type] = factory;
-	};
-
-	Runtime$1.hasRuntime = function (type) {
-	  return !!(type ? factories$1[type] : getFirstKey$1(factories$1));
-	};
-
-	Runtime$1.create = function (opts, orders) {
-	  var type, runtime;
-	  orders = orders || Runtime$1.orders;
-	  $$l.each(orders.split(/\s*,\s*/g), function () {
-	    if (factories$1[this]) {
-	      type = this;
-	      return false;
-	    }
-	  });
-	  type = type || getFirstKey$1(factories$1);
-
-	  if (!type) {
-	    throw new Error('Runtime Error');
-	  }
-
-	  runtime = new factories$1[type](opts);
-	  return runtime;
-	};
-
-	Mediator.installTo(Runtime$1.prototype);
-
-	var $$m = Base.$,
-	    type$1 = 'flash',
+	var type$1 = 'flash',
 	    components$1 = {};
 
 	function getFlashVersion() {
@@ -7961,13 +7845,13 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  return _parseFloat$2(version[0] + '.' + version[1], 10);
 	}
 
-	function FlashRuntime() {
+	var FlashRuntime = function FlashRuntime() {
 	  var pool = {},
 	      clients = {},
 	      destroy = this.destroy,
 	      me = this,
 	      jsreciver = Base.guid('webuploader_');
-	  Runtime$1.apply(me, arguments);
+	  Runtime.apply(me, arguments);
 	  me.type = type$1; // 这个方法的调用者，实际上是RuntimeClient
 
 	  me.exec = function (comp, fn
@@ -8032,9 +7916,8 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    return flash.exec(this.uid, comp, fn, args);
 	  }; // @todo
 
-	}
-
-	Base.inherits(Runtime$1, {
+	};
+	Base.inherits(Runtime, {
 	  constructor: FlashRuntime,
 	  init: function init() {
 	    var container = this.getContainer(),
@@ -8065,13 +7948,13 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      return this._flash;
 	    }
 
-	    this._flash = $$m('#' + this.uid).get(0);
+	    this._flash = $$1('#' + this.uid).get(0);
 	    return this._flash;
 	  }
 	});
 
 	FlashRuntime.register = function (name, component) {
-	  component = components$1[name] = Base.inherits(CompBase, $$m.extend({
+	  component = components$1[name] = Base.inherits(CompBase, $$1.extend({
 	    // @todo fix this later
 	    flashExec: function flashExec() {
 	      var owner = this.owner,
@@ -8083,16 +7966,15 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	};
 
 	if (getFlashVersion() >= 11.4) {
-	  Runtime$1.addRuntime(type$1, FlashRuntime);
+	  Runtime.addRuntime(type$1, FlashRuntime);
 	}
 
 	/**
 	 * @fileOverview FilePicker
 	 */
-	var $$n = Base.$;
 	FlashRuntime.register('FilePicker', {
 	  init: function init(opts) {
-	    var copy = $$n.extend({}, opts),
+	    var copy = $$1.extend({}, opts),
 	        len,
 	        i; // 修复Flash再没有设置title的情况下无法弹出flash文件选择框的bug.
 
@@ -8136,7 +8018,6 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	/**
 	 * @fileOverview  Transport flash实现
 	 */
-	var $$o = Base.$;
 	FlashRuntime.register('Transport', {
 	  init: function init() {
 	    this._status = 0;
@@ -8154,10 +8035,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    xhr.connectRuntime(blob.ruid);
 
 	    if (opts.sendAsBinary) {
-	      server += (/\?/.test(server) ? '&' : '?') + $$o.param(owner._formData);
+	      server += (/\?/.test(server) ? '&' : '?') + $$1.param(owner._formData);
 	      binary = blob.uid;
 	    } else {
-	      $$o.each(owner._formData, function (k, v) {
+	      $$1.each(owner._formData, function (k, v) {
 	        xhr.exec('append', k, v);
 	      });
 	      xhr.exec('appendBlob', opts.fileVal, blob.uid, opts.filename || owner._formData.name || '');
@@ -8259,7 +8140,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    return xhr;
 	  },
 	  _setRequestHeader: function _setRequestHeader(xhr, headers) {
-	    $$o.each(headers, function (key, val) {
+	    $$1.each(headers, function (key, val) {
 	      xhr.exec('setRequestHeader', key, val);
 	    });
 	  }
@@ -8299,8 +8180,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	  return thisUpload.call(ins);
 	},
 	    LIST_ITEM = '.dui-upload-list__item',
+	    UPLOAD_LIST = 'dui-upload-list',
 	    PROGRESS_INNER = '.dui-progress-bar__inner',
 	    PROGRESS_TEXT = '.dui-progress__text',
+	    UPLOAD_TEXT = '.dui-upload__text',
 
 	/**
 	 * 全局配置信息
@@ -8312,7 +8195,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	 */
 	Class = function Class(options) {
 	  var that = this,
-	      config = that.config = $$p.extend(true, {
+	      config = that.config = $$1.extend(true, {
 	    el: '',
 	    accept: 'images',
 	    //允许上传的文件类型：images/file/video/audio
@@ -8337,7 +8220,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	    //上传额外带的参数
 	    method: 'post',
 	    //上传文件使用的ajax方法
-	    drag: true,
+	    drag: false,
 	    //是否运行拖拽上传
 	    onSuccess: '',
 	    //上传成功回调
@@ -8376,7 +8259,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	Class.prototype.render = function () {
 	  var that = this,
 	      options = that.config,
-	      el = that.el = $$p(options.el),
+	      el = that.el = $$1(options.el),
 	      // 获取当前元素的innerHtml
 	  innerHtml = el.html(),
 	      // list_item_template
@@ -8392,18 +8275,10 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      // 是否已经渲染过
 	  hasRender = that.innerHtml ? true : false,
 	      // 点击按钮的存储容器
-	  uploadDom = that.uploadDom = $$p('<div class="dui-upload dui-upload-' + options.listType + '"></div>'),
+	  uploadDom = that.uploadDom = $$1('<div class="dui-upload dui-upload-' + options.listType + '"></div>'),
 	      // 选择文件的元素
-	  pick = that.pick = el.find(options.pick)[0] ? el.find(options.pick)[0] : el.children()[0]; // 如果渲染过则覆盖掉
-
-
-	  hasRender && el.html(innerHtml); // 设置当前的innerhtml
-
-	  that.innerHtml = innerHtml; // 显示pick容器兵器把pick放入容器中
-
-	  el.prepend(uploadDom), uploadDom.append(pick); // 创建上传类
-
-	  that.webUpload = Base.create({
+	  pick = that.pick = el.find(options.pick)[0] ? el.find(options.pick)[0] : el.children()[0],
+	      uploadOtp = {
 	    server: options.server,
 	    //服务器地址
 	    pick: {
@@ -8411,14 +8286,29 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      multiple: options.multiple
 	    },
 	    resize: options.resize
-	  }); // 如果有列表展示
+	  }; // 如果渲染过则覆盖掉
+
+
+	  hasRender && el.html(innerHtml); // 设置当前的innerhtml
+
+	  that.innerHtml = innerHtml; // 显示pick容器兵器把pick放入容器中
+
+	  el.prepend(uploadDom), uploadDom.append(pick); // 如果有drag
+
+	  if (options.drag !== false) {
+	    uploadOtp.dnd = el;
+	    uploadOtp.pick.id = el.find(UPLOAD_TEXT).find('em')[0];
+	  } // 创建上传类
+
+
+	  that.webUpload = Base.create(uploadOtp); // 如果有列表展示
 
 	  if (options.showFileList) {
 	    var template = ['<ul class="dui-upload-list dui-upload-list--' + options.listType + '">', //如果有list
 	    function () {
 	      if (options.fileList && options.fileList.length > 0) {
 	        var res = [];
-	        $$p.each(options.fileList, function (i, item) {
+	        $$1.each(options.fileList, function (i, item) {
 	          var temp = listItemTpl(item, 'success');
 	          res.push(temp);
 	        });
@@ -8427,7 +8317,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	      return '';
 	    }(), '</div>'].join(''),
-	        showListDom = that.showListDom = $$p(template);
+	        showListDom = that.showListDom = el.find(UPLOAD_LIST)[0] ? el.find(UPLOAD_LIST) : $$1(template);
 	    el.append(showListDom);
 	  } // 设置事件
 
@@ -8458,13 +8348,13 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	          item.url = ret;
 	        }
 
-	        var tpl = $$p(that.listItemTpl(item, 'is-ready'));
+	        var tpl = $$1(that.listItemTpl(item, 'is-ready'));
 	        tpl[0].uploadId = file.id; //设置图片的唯一id
 
 	        that.showListDom.append(tpl); // 进度条html
 
 	        var prs = ['<div class="dui-progress dui-progress--line">', '<div class="dui-progress-bar">', '<div class="dui-progress-bar__outer" style="height: 2px;">', '<div class="dui-progress-bar__inner" style="width: 0%;">', '</div>', '</div>', '</div>', '<div class="dui-progress__text" style="font-size: 12.8px;">0%</div>', '</div>'].join(''),
-	            progress = tpl[0].progress = $$p(prs); // 生成一张可以预览的图片
+	            progress = tpl[0].progress = $$1(prs); // 生成一张可以预览的图片
 
 	        if (options.autoUpload) {
 	          var res = true;
@@ -8508,7 +8398,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      // 删除掉显示文件
 	      that.showListDom.find(LIST_ITEM).each(function (i, item) {
 	        if (item.uploadId == file.id) {
-	          $$p(item).removeClass('is-uploading').addClass('is-success');
+	          $$1(item).removeClass('is-uploading').addClass('is-success');
 	          item.progress.remove();
 	        }
 	      });
@@ -8533,8 +8423,8 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	    that.showListDom.find(LIST_ITEM).each(function (i, item) {
 	      if (item.uploadId == file.id) {
-	        $$p(item).append(item.progress);
-	        $$p(item).removeClass('is-ready').addClass('is-uploading');
+	        $$1(item).append(item.progress);
+	        $$1(item).removeClass('is-ready').addClass('is-uploading');
 	      }
 	    });
 	  }); // 显示进度条
@@ -8545,9 +8435,9 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 	      that.showListDom.find(LIST_ITEM).each(function (i, item) {
 	        if (item.uploadId == file.id) {
 	          // 进度条样式
-	          $$p(item).find(PROGRESS_INNER).css('width', percentage + '%'); // 进度条文字
+	          $$1(item).find(PROGRESS_INNER).css('width', percentage + '%'); // 进度条文字
 
-	          $$p(item).find(PROGRESS_TEXT).text(percentage + '%');
+	          $$1(item).find(PROGRESS_TEXT).text(percentage + '%');
 	        }
 	      });
 	    }
@@ -8572,7 +8462,7 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 
 	upload.config = function (options) {
-	  Config = $$p.extend(true, {}, options);
+	  Config = $$1.extend(true, {}, options);
 	  return upload;
 	};
 	/**
@@ -8586,4 +8476,4 @@ define('upload', ['jquery'], function ($$p) { 'use strict';
 
 	return upload;
 
-});
+}));

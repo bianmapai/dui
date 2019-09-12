@@ -4,8 +4,7 @@
 import {Base} from "../base";
 import RuntimeClient from "../runtime/client";
 import Blob from "./blob";
-
-var $ = Base.$;
+import $ from "jquery";
 
 // 构造器。
 function Image( opts ) {

@@ -1,12 +1,12 @@
 /**
  * @fileOverview FlashRuntime
  */
+import $ from "jquery";
 import {Base} from "../../base";
-import Runtime from "../Runtime";
+import Runtime from "../runtime";
 import CompBase from "../compbase";
 
-var $ = Base.$,
-    type = 'flash',
+var type = 'flash',
     components = {};
 
 
@@ -28,7 +28,7 @@ function getFlashVersion() {
     return parseFloat( version[ 0 ] + '.' + version[ 1 ], 10 );
 }
 
-function FlashRuntime() {
+export var FlashRuntime =function() {
     var pool = {},
         clients = {},
         destroy = this.destroy,
@@ -176,5 +176,3 @@ FlashRuntime.register = function( name, component ) {
 if ( getFlashVersion() >= 11.4 ) {
     Runtime.addRuntime( type, FlashRuntime );
 }
-
-export default FlashRuntime;

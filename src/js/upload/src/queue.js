@@ -1,12 +1,10 @@
 /**
  * @fileOverview 文件队列
  */
-import {Base} from "./base";
 import Mediator from "./mediator";
 import WUFile from "./file";
-
-var $ = Base.$,
-    STATUS = WUFile.Status;
+import $ from "jquery";
+var STATUS = WUFile.Status;
 
 /**
  * 文件队列, 用来存储各个状态中的文件。

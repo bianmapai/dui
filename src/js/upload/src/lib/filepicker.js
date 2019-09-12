@@ -4,13 +4,14 @@
 import {Base} from "../base";
 import RuntimeClient from "../runtime/client";
 import File from "./file";
-var $ = Base.$;
+import $ from "jquery";
 
 function FilePicker( opts ) {
     opts = this.options = $.extend({}, FilePicker.options, opts );
 
     opts.container = $( opts.id );
 
+    
     if ( !opts.container.length ) {
         throw new Error('按钮指定错误');
     }
@@ -21,7 +22,6 @@ function FilePicker( opts ) {
     opts.button = $( opts.button || document.createElement('div') );
     opts.button.html( opts.innerHTML );
     opts.container.html( opts.button );
-
     RuntimeClient.call( this, 'FilePicker', true );
 }
 
@@ -33,7 +33,7 @@ FilePicker.options = {
     multiple: true,
     accept: null,
     name: 'file',
-    style: 'webuploader-pick'   //pick element class attribute, default is "webuploader-pick"
+    style: 'dui-upload__pick'   //pick element class attribute, default is "dui-upload__pick"
 };
 
 Base.inherits( RuntimeClient, {
@@ -46,7 +46,7 @@ Base.inherits( RuntimeClient, {
             style = opts.style;
 
         if (style)
-            button.addClass('webuploader-pick');
+            button.addClass(style);
 
         me.on( 'all', function( type ) {
             var files;
@@ -54,12 +54,12 @@ Base.inherits( RuntimeClient, {
             switch ( type ) {
                 case 'mouseenter':
                     if (style)
-                        button.addClass('webuploader-pick-hover');
+                        button.addClass('is-hover');
                     break;
 
                 case 'mouseleave':
                     if (style)
-                        button.removeClass('webuploader-pick-hover');
+                        button.removeClass('is-hover');
                     break;
 
                 case 'change':
@@ -110,7 +110,7 @@ Base.inherits( RuntimeClient, {
     enable: function() {
         var btn = this.options.button;
 
-        btn.removeClass('webuploader-pick-disable');
+        btn.removeClass('is-disable');
         this.refresh();
     },
 
@@ -121,14 +121,14 @@ Base.inherits( RuntimeClient, {
             top: '-99999px'
         });
 
-        btn.addClass('webuploader-pick-disable');
+        btn.addClass('is-disable');
     },
 
     destroy: function() {
         var btn = this.options.button;
         $( window ).off( 'resize', this._resizeHandler );
-        btn.removeClass('webuploader-pick-disable webuploader-pick-hover ' +
-            'webuploader-pick');
+        btn.removeClass('is-disable is-hover ' +
+            this.options.style);
     }
 });
 

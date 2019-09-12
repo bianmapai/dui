@@ -5,9 +5,8 @@ import {Base} from "../base";
 import {Uploader} from "../uploader";
 import WUFile from "../file";
 import "./widget";
-
-var $ = Base.$,
-    validators = {},
+import $ from "jquery";
+var validators = {},
     api;
 
 /**

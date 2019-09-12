@@ -8,11 +8,10 @@ import CompBase from "../compbase";
 var type = 'html5',
     components = {};
 
-function Html5Runtime() {
+export var Html5Runtime = function() {
     var pool = {},
         me = this,
         destroy = this.destroy;
-
     Runtime.apply( me, arguments );
     me.type = type;
 

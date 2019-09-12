@@ -3,9 +3,8 @@
  */
 import {Base} from "../base";
 import {Uploader} from "../uploader";
-
-var $ = Base.$,
-    _init = Uploader.prototype._init,
+import $ from "jquery";
+var _init = Uploader.prototype._init,
     _destroy = Uploader.prototype.destroy,
     IGNORE = {},
     widgetClass = [];

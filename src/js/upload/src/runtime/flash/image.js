@@ -1,7 +1,7 @@
 /**
  * @fileOverview 图片压缩
  */
-import FlashRuntime from "./runtime";
+import {FlashRuntime} from "./runtime";
 
 export default FlashRuntime.register( 'Image', {
     // init: function( options ) {

@@ -4,7 +4,7 @@
 import {Base} from "../base";
 import Mediator from "../mediator";
 import RuntimeClent from "../runtime/client";
-var $ = Base.$;
+import $ from "jquery";
 
 function DragAndDrop( opts ) {
     opts = this.options = $.extend({}, DragAndDrop.options, opts );

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>后台首页</title>
+    <link rel="stylesheet" href="/css/dui.min.css">
+    <link rel="stylesheet" href="/css/admin.min.css">
+    <script src="/js/modules/jquery.js"></script>
+    <script src="/js/modules/duiUpload.js"></script>
+</head>
+<body>
+<div id="dui-app" class="dui-layout dui-layout-admin">
+    <div class="dui-header">
+        <ul class="dui-menu dui-menu--horizontal dui-header-left">
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu dui-icon-shrink-right"></i>
+            </li>
+            <li class="dui-menu-item">首页</li>
+            <li class="dui-menu-item">系统</li>
+            <li class="dui-menu-item">用户</li>
+        </ul>
+        <ul class="dui-menu dui-menu--horizontal dui-header-right">
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu dui-icon-earth"></i>
+            </li>
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu dui-icon-screen-full"></i>
+            </li>
+            <li class="dui-menu-item dui-dropdown" dui-dropDown>
+                <span class="diu-dropdown-link dui-dropdown-toggle" toggle="hover">
+                    <img >
+                    <span>admin</span>
+                    <i class="dui-icon-dropdown-arrow dui-icon-arrow-down"></i>
+                </span>
+                <ul class="dui-dropdown-menu dui-popper" style="display: none">
+                    <li class="dui-dropdown-menu__item">修改密码</li>
+                    <li class="dui-dropdown-menu__item">退出</li>
+                    <div x-arrow="" class="popper__arrow"></div>
+                </ul>
+            </li>
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu dui-icon-more-vertical"></i>
+            </li>
+        </ul>
+    </div>
+    <div class="dui-aside">
+        <div class="dui-aside-inner">
+            <div class="dui-logo" style="background: #409eff">
+                <span>DuiAdmin Pro</span>
+            </div>
+            <ul dui-menubar class="dui-menu" openonly>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-television"></i> 
+                        <span>主页</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="index.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>主页1</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="index1.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>主页2</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-wpforms"></i> 
+                        <span>页面元素</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="icon.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>图标(icon)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="button.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>按钮(button)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="tag.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>标签(tag)</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-wpforms"></i> 
+                        <span>表单</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>开关</span>
+                        </li>
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>单选框</span>
+                        </li>
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>多选框</span>
+                        </li>
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>输入框</span>
+                        </li>
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>选择框</span>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-television"></i> 
+                        <span>弹出层</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="message.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>消息提示</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="notification.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>通知</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="messagebox.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>消息框</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="dialog.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>对话框</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-television"></i> 
+                        <span>数据表格</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="table.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>数据表格</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="treeTable.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>树形表格</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="messagebox.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>消息框</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="dialog.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>对话框</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-television"></i> 
+                        <span>其他模块</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="pagination.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>分页</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="tree.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>树形控件</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="upload.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>上传组件</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="dialog.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>对话框</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="dui-container">
+<div class="dui-breadcrumb">
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner"><a href="/">首页</a></span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">其他模块</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">上传插件</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+</div>
+<style>
+.dui-form-item__label{
+    width: 80px;
+}
+.dui-form-item__content{
+    margin-left: 80px;
+}
+</style>
+<div class="dui-body">
+    <div class="dui-card box-card is-never-shadow">
+        <div class="dui-card__header">
+            <div class="clearfix">
+                <span>上传插件</span>
+            </div>
+        </div>
+        <div class="dui-card__body">
+            <form class="dui-form" dui-form method="POST">
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">活动名称</label>
+                    <div class="dui-form-item__content">
+                        <div class="upload-demo" id="demo-upload">
+                            <button type="button" class="dui-button dui-button--primary dui-button--small">点击上传</button>
+                            <button type="button" id="upload" class="dui-button dui-button--success dui-button--small" style="margin-left: 10px;"><!----><!----><span>上传到服务器</span></button>
+                            <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                            <ul class="dui-upload-list dui-upload-list--picture">
+                                <li class="dui-upload-list__item is-success">
+                                    <img src="https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100" alt="food.jpeg" class="dui-upload-list__item-thumbnail"><a class="dui-upload-list__item-name"><i class="dui-icon-document"></i>food.jpeg</a><label class="dui-upload-list__item-status-label"><i class="dui-icon-upload-success dui-icon-check"></i></label><i class="dui-icon-close"></i></li><li class="dui-upload-list__item is-success"><img src="https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100" alt="food2.jpeg" class="dui-upload-list__item-thumbnail"><a class="dui-upload-list__item-name"><i class="dui-icon-document"></i>food2.jpeg</a><label class="dui-upload-list__item-status-label"><i class="dui-icon-upload-success dui-icon-check"></i></label><i class="dui-icon-close"></i></li></ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="upload-demo" id="demo-upload1">
+                <div class="dui-upload-dragger">
+                    <i class="dui-icon-upload"></i>
+                    <div class="dui-upload__text">
+                        将文件拖到此处，或<em>点击上传</em>
+                    </div>
+                </div>
+                <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </div>
+            <div class="upload-demo" id="demo-upload2">
+                <div class="dui-upload-dragger">
+                    <i class="dui-icon-upload"></i>
+                    <div class="dui-upload__text">
+                        将文件拖到此处，或<em>点击上传</em>
+                    </div>
+                </div>
+                <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var uploader = duiUpload.render({
+        el:'#demo-upload',//当前插件容器
+        fileList:[],
+        listType:'picture',
+        autoUpload:false,
+        // swf文件路径
+        // swf: BASE_URL + '/js/Uploader.swf',
+        // 文件接收服务端。
+        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: '#picker',
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false
+    });
+    $('#upload').on('click',function(e){
+        uploader.upload();
+    })
+    var uploader1 = duiUpload.render({
+        el:'#demo-upload1',
+        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+        drag: '.dui-upload-dragger',
+        autoUpload:false,
+    });
+    var uploader2 = duiUpload.render({
+        el:'#demo-upload2',
+        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+        drag: '.dui-upload-dragger',
+        autoUpload:false,
+    });
+</script>
+    </div>
+</div>
+</html>

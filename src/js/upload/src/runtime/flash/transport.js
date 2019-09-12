@@ -1,10 +1,9 @@
 /**
  * @fileOverview  Transport flash实现
  */
-import {Base} from "../../base";
-import FlashRuntime from "./runtime";
+import {FlashRuntime} from "./runtime";
 import RuntimeClient from "../client";
-var $ = Base.$;
+import $ from "jquery";
 
 export default FlashRuntime.register( 'Transport', {
     init: function() {

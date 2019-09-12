@@ -2,7 +2,7 @@
  * @fileOverview Image
  */
 import {Base} from "../../base";
-import Html5Runtime from "./runtime";
+import { Html5Runtime } from "./runtime";
 import Util from "./util";
 
 var BLANK = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D';

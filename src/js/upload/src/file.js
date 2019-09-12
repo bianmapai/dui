@@ -1,11 +1,10 @@
 /**
  * @fileOverview 文件属性封装
  */
-import {Base} from "./base";
+import $ from "jquery";
 import Mediator from "./mediator";
 
-var $ = Base.$,
-    idPrefix = 'WU_FILE_',
+var idPrefix = 'WU_FILE_',
     idSuffix = 0,
     rExt = /\.([^.]+)$/,
     statusMap = {};
