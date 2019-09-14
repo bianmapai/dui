@@ -1,6 +1,6 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
-	typeof define === 'function' && define.amd ? define('duiUpload', ['jquery'], factory) :
+	typeof dui.define === 'function' && dui.define.amd ? dui.define('duiUpload', ['jquery'], factory) :
 	(global = global || self, global.duiUpload = factory(global.jQuery));
 }(this, function ($$1) { 'use strict';
 
@@ -8,10 +8,6 @@
 
 	function createCommonjsModule(fn, module) {
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
-	}
-
-	function getCjsExportFromNamespace (n) {
-		return n && n['default'] || n;
 	}
 
 	var _global = createCommonjsModule(function (module) {
@@ -3722,17 +3718,9 @@
 
 	_setToStringTag(_global.JSON, 'JSON', true);
 
-
-
-	var es6_object_toString = /*#__PURE__*/Object.freeze({
-
-	});
-
 	_wksDefine('asyncIterator');
 
 	_wksDefine('observable');
-
-	getCjsExportFromNamespace(es6_object_toString);
 
 	var symbol = _core.Symbol;
 

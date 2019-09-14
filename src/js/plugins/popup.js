@@ -21,7 +21,7 @@ import $ from "jquery";
         $dom.css('top','');
       }
     })
-  }
+  },
   resetNotification=function(x,y){
     var pups = [],currenheight=0,type='notify';
     $.each(allPopup,function(i,item){
@@ -96,7 +96,7 @@ import $ from "jquery";
     btn = that.btn = dom.find('.dui-message__closeBtn');
     $('body').append(dom);//添加了元素
     // 获取元素的高度
-    offsetHeight = that.offsetHeight = dom.outerHeight();
+    var offsetHeight = that.offsetHeight = dom.outerHeight();
     // 设置z-index
     dom.css('display','none');//设置元素看不见
     dom.css('z-index',dui.getMaxZIndex()+1);//设置元素为最顶层
@@ -183,7 +183,7 @@ import $ from "jquery";
     btn = that.btn = dom.find('.dui-notification__closeBtn');
     $('body').append(dom);//添加了元素
     // 获取元素的高度
-    offsetHeight = that.offsetHeight = dom.outerHeight();
+    var offsetHeight = that.offsetHeight = dom.outerHeight();
     // 设置z-index
     dom.css('display','none');//设置元素看不见
     dom.css('z-index',dui.getMaxZIndex()+1);//设置元素为最顶层
@@ -244,7 +244,7 @@ import $ from "jquery";
       closed:'',//关闭动画完成后回调
       btns:['确定','取消'],//按钮
       btnAngin:'right',//btn显示的
-    },options);
+    },options),
     btns = that.btns = function(){
       var res = [],thisBtn = $.extend(true,{},config).btns,
       btns = config.btnAngin=='right' ? thisBtn.reverse() : thisBtn;

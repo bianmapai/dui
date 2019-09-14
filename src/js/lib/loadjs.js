@@ -1,21 +1,39 @@
+var class2type = {};
+var toString = class2type.toString;
+var hasOwn = class2type.hasOwnProperty;
+var slice = [].slice;
+var curExecModName = null;//当前执行的模块
+var support = {};
+// 模块容器
+var definedModules ={};
+// 默认配置
+var config = {
+    dir:getPath(),//dui所在目录
+    base:'',//扩展模块地址
+};
+// 默认配置
+Dui.defaluts = {
+    // 内置模块配置
+    plugins:{
+        'jquery':'plugins/jquery', // jquery
+        'template':'plugins/template', // 模板引擎
+        'popup':'plugins/popup', // 弹出层
+        'element':'plugins/element', // 基本元素
+        'form':'plugins/form', // 表单
+        'table':'plugins/table', // 表格
+        'pagination':'plugins/pagination',// 分页
+        'tree':'plugins/tree', // 树形插件
+        'duiDate':'plugins/duiDate',// 时间插件
+        'upload':'plugins/upload',//上传插件
+        'iconPicker':'plugins/iconPicker',//图标选择插件
+    }
+}
 /**
- * 构造函数
+ * 获取当前运行的js
  */
-export var Dui = function(){
-    this.v = '1.0.0';
-    this.DuiPath = getPath();
-    this.modules = {};
-    this.modulesMap = {};
-    this.defined = {};
-},
-doc = document,
-head = doc.head,
-gid = 0,
-slice = [].splice,
-curExecModName = null,
-getCurrent = function(){
-    var jsPath = doc.currentScript ? doc.currentScript.src : function(){
-      var js = doc.scripts
+function getCurrent(){
+    var jsPath = document.currentScript ? document.currentScript.src : function(){
+      var js = document.scripts
       ,last = js.length - 1
       ,src;
       for(var i = last; i > 0; i--){
@@ -27,47 +45,165 @@ getCurrent = function(){
       return src || js[last].src;
     }();
     return jsPath;
-},
-getPath = function(src){
-    return src ? src.substring(0, src.lastIndexOf('/') + 1) :
-    getCurrent().substring(0, getCurrent().lastIndexOf('/') + 1);
-},
-config = {
-    path:getPath()+'/modules/',//模块路径
-};
-var class2type = {},
-hasOwn = class2type.hasOwnProperty,
-support = {},
-error = Dui.prototype.error = function(msg){
-    window.console && console.error && console.error('Dui Error: ' + msg);
-};
-/**
- * 循环函数
- * @param {Object} object 循环对象
- * @param {Function} callback 回调函数
- */
-export function each(obj, callback) {
-    var length, i = 0;
-    if (isArrayLike(obj)) {
-        length = obj.length;
-        for ( ; i < length; i++ ) {
-            if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
-                break;
-            }
-        }
-    } else {
-        for ( i in obj ) {
-            if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
-                break;
-            }
-        }
-    }
-    return obj;
 }
 /**
- * 判断参数是否是一个数组
+ * 判断是否是完整的地址
+ * @param {String} url 网址
  */
-var isArray = Array.isArray || function(object){ return object instanceof Array };
+function isUrl(url) {
+    return url.search(/^(http:\/\/|https:\/\/|\/\/)/) !== -1;
+}
+/**
+ * 补充完整路径
+ * @param {String} url 路径
+ */
+function fixUrl(url) {
+    return url.replace(/([^:])\/+/g, '$1/');
+}
+/**
+ * 获取路径
+ * @param {String} path 需要组合的路径
+ * @param {Object} cfg 配置信息
+ */
+function getUrl(path, cfg) {
+    var url = cfg.base || window.location.href;
+    //绝对网址
+    if (isUrl(path)) {
+        return fixUrl(path);
+    }
+    var rootUrl;
+    //修复url
+    if (rootUrl = url.match(/[^\/]*\/\/[^\/]*\//)) {
+        //http://yanhaijing.com/abc
+        url = url.slice(0, url.lastIndexOf('/') + 1);
+        rootUrl = rootUrl[0];
+    } else {
+        //http://yanhaijing.com
+        rootUrl = url = url + '/';
+    }
+    // /开头
+    if (path.search(/^\//) !== -1) {
+        return fixUrl(rootUrl + path);
+    }
+
+    // ../开头
+    if (path.search(/^\.\.\//) !== -1) {
+        while(path.search(/^\.\.\//) !== -1) {
+            if (url.lastIndexOf('/', url.length - 2) !== -1) {
+                path = path.slice(3);
+                url = url.slice(0, url.lastIndexOf('/', url.length - 2) + 1);
+            } else {
+                throw new Error('lodjs geturl error, cannot find path in url');
+            }
+        }
+
+        return fixUrl(url + path);
+    }
+    // ./
+    path = path.search(/^\.\//) !== -1 ? path.slice(2) : path;
+    return fixUrl(url + path);
+}
+/**
+ * 修正完整的路径
+ * @param {String} url 需要修正的路径
+ * @param {String}} suffix 路径后缀名
+ */
+function fixSuffix(url, suffix) {
+    var reg = new RegExp('\\.' + suffix + '$', 'i');
+    return url.search(reg) !== -1 ? url : url + '.' + suffix;
+}
+/**
+ * 获取当前依赖的完整地址
+ * @param {String} id 模块id
+ * @param {Object} cfg 配置信息
+ */
+function getDepUrl(id, cfg) {
+    // 如果是内部地址
+    if(Dui.defaluts.plugins[id]){
+        return fixSuffix(config.dir + Dui.defaluts.plugins[id],'js');
+    }
+    return fixSuffix(getUrl(id, cfg), 'js');
+}
+/**
+ * 根据模块id获取模块地址
+ * @param {String} id 模块id
+ */
+function getIdUrl(id,cfg){
+    //没有id的情况
+    if (!id) {
+        var temp = getCurrentScript().src;
+        // 获取当前活动的id
+        if(temp){
+            return temp;
+        }else{
+            throw new Error('在页面定义模块需要指定模块id');
+        }
+    }
+    // 如果是内置模块则返回内置模块的url
+    if(Dui.defaluts.plugins[id]){
+        return fixSuffix(config.dir + Dui.defaluts.plugins[id],'js');
+    }
+    //id不能为相对路径,amd规定此处也不能带后缀，此处放宽限制。
+    if (id.search(/^\./) !== -1) {
+        throw new Error('lodjs define id' + id + 'must absolute');
+    }
+    return fixSuffix(getUrl(id, cfg.base), 'js');
+}
+/**
+ * 获取目录地址
+ * @param {String} src 获取目录地址把url转为path
+ */
+function getPath(src){
+    return src ? src.substring(0, src.lastIndexOf('/') + 1) :
+    getCurrent().substring(0, getCurrent().lastIndexOf('/') + 1);
+}
+/**
+ * 判断变量是否是数组
+ * @param {Object=} arr 任意数据
+ */
+function isArray(arr) {
+    return Array.isArray ? Array.isArray(arr) : getType(arr) === 'array';
+}
+/**
+ * 用来判断的是否是对象数据
+ * @param {Object} arr 任意变量
+ */
+function isObject(arr){
+    return type(arr) === "object";
+}
+/**
+ * 判断变量是否是方法
+ * @param {Object=} arr 
+ */
+function isFunction(arr){
+    return typeof arr === "function";
+}
+/**
+ * 获取参数的类型
+ * @param {Object} obj 
+ */
+function type(x) {
+    if(x === null){
+        return 'null';
+    }
+
+    var t= typeof x;
+
+    if(t !== 'object'){
+        return t;
+    }
+
+    var c = toString.call(x).slice(8, -1).toLowerCase();
+    if(c !== 'object'){
+        return c;
+    }
+
+    if(x.constructor==Object){
+        return c;
+    }
+
+    return 'unkonw';
+}
 /**
  * 判断传入的参数是否为window对象
  * @param {Object} obj 
@@ -75,19 +211,318 @@ var isArray = Array.isArray || function(object){ return object instanceof Array 
 function isWindow(obj) {
     return obj != null && obj == obj.window;
 }
-each("Boolean Number String Function Array Date RegExp Object Error Symbol".split(" "),
-    function (i, name) {
-        class2type["[object " + name + "]"] = name.toLowerCase();
+/**
+ * 检查是否是纯对象
+ * @param {Object} obj 
+ */
+function isPlainObject(obj){
+    var key;
+
+    // Must be an Object.
+    // Because of IE, we also have to check the presence of the constructor property.
+    // Make sure that DOM nodes and window objects don't pass through, as well
+    if (
+      !obj ||
+      type(obj) !== "object" ||
+      obj.nodeType ||
+        isWindow(obj)
+    ) {
+      return false;
     }
-);
-function isFunction(obj){
-    return typeof obj === "function";
+    try {
+      // Not own constructor property must be Object
+      if (
+        obj.constructor &&
+        !hasOwn.call(obj, "constructor") &&
+        !hasOwn.call(obj.constructor.prototype, "isPrototypeOf")
+      ) {
+        return false;
+      }
+    } catch (e) {
+      // IE8,9 Will throw exceptions on certain host objects #9897
+      return false;
+    }
+
+    // Support: IE<9
+    // Handle iteration over inherited properties before own properties.
+    if (!support.ownFirst) {
+      for (key in obj) {
+        return hasOwn.call(obj, key);
+      }
+    }
+
+    // Own properties are enumerated firstly, so to speed up,
+    // if last one is own, then all properties are own.
+    for (key in obj) {
+    }
+    return key === undefined || hasOwn.call(obj, key);
+}
+/**
+ * 判断是否是Array
+ * @param {Object} obj 
+ */
+function isArrayLike(obj) {
+	var length = !!obj && "length" in obj && obj.length,
+		thistype = type( obj );
+	if ( thistype === "function" || isWindow( obj ) ) {
+		return false;
+	}
+	return thistype === "array" || length === 0 ||
+		typeof length === "number" && length > 0 && ( length - 1 ) in obj;
+}
+/**
+ * 获取当前script标签
+ */
+var currentlyAddingScript;
+var interactiveScript;
+function getCurrentScript() {
+    if(document.currentScript){
+        return document.currentScript;
+    }
+    if (currentlyAddingScript) {
+        return currentlyAddingScript;
+    }
+    // For IE6-9 browsers, the script onload event may not fire right
+    // after the script is evaluated. Kris Zyp found that it
+    // could query the script nodes and the one that is in "interactive"
+    // mode indicates the current script
+    // ref: http://goo.gl/JHfFW
+    if (interactiveScript && interactiveScript.readyState === "interactive") {
+        return interactiveScript;
+    }
+
+    var scripts = document.head.getElementsByTagName("script");
+    for (var i = scripts.length - 1; i >= 0; i--) {
+        var script = scripts[i];
+        if (script.readyState === "interactive") {
+            interactiveScript = script;
+            return interactiveScript;
+        }
+    }
+    return null;
+}
+/**
+ * 加载器也是主要方法
+ * @param {String} id 模块id
+ * @param {Array} deps 模块依赖
+ * @param {Function} callback 回调地址
+ */
+function Dui(id,deps, factory){
+    //省略模块名
+    if (typeof id !== 'string') {
+        factory = deps;
+        deps = id;
+        id = null;
+    }
+    //无依赖
+    if (!isArray(deps)) {
+        factory = deps;
+        deps = [];
+    }
+    var cfg = extend(true,{},config),
+    url = getIdUrl(id,cfg).split('?')[0];
+    definedModules[url] = definedModules[url] || {};
+    definedModules[url] = {
+        id:id,//模块标识
+        deps:deps,//模块依赖
+        factory:factory,//模块工厂
+        status:'loaded',//模块状态
+        oncomplete:definedModules[url].oncomplete || [],//模块回调参数
+        config:cfg,
+    }
+}
+/**
+ * 使用模块
+ * @param {Array} deps 使用依赖
+ * @param {Function} callback 回调地址
+ */
+function use(deps,callback,options){
+    if (arguments.length < 2) {
+        throw new Error('lodjs.use arguments miss');
+        return 0;
+    }
+    if (typeof deps === 'string') {
+        deps = [deps];
+    }
+    if (!isArray(deps) || !(typeof callback==="function")) {
+        error('lodjs.use arguments type error');
+        return 1;
+    }
+    // 如果没有依赖则直接运行函数
+    if (deps.length === 0) {
+        callback();
+        return 2;
+    }
+    if(!isObject(options)){
+        options = extend(true,config,options)
+    }
+    
+    // 如果页面已经存在jQuery1.7+库且所定义的模块依赖jQuery，则不加载内部jquery模块
+    if(window.jQuery && jQuery.fn.on){
+        each(deps, function(index, item){
+          if(item === 'jquery'){
+            var url = getIdUrl(item).split('?')[0];
+            definedModules[url] = definedModules[url] || {};
+            definedModules[url] = {
+                id:item,//模块标识
+                deps:[],//模块依赖
+                factory:function(){
+                    return window.$;
+                },//模块工厂
+                status:'loaded',//模块状态
+                oncomplete:definedModules[url].oncomplete || [],//模块回调参数
+                config:{}
+            }
+          }
+        });
+    }
+    var depsCount = deps.length;
+    var params = [];
+    each(deps,function(i,mod){
+        (function (j) {
+            loadMod(mod, function (param) {
+                depsCount--;
+                params[j] = param;
+                if (depsCount === 0) {
+                    callback.apply(null, params);
+                }
+            },options);
+        }(i));
+    })
+    return 3;
+}
+/**
+ * 加载模块
+ * @param {String} name 名称
+ * @param {function} callback 回调函数
+ */
+function loadMod(id,callback,options){
+    // 当前的配置信息
+    var cfg = extend(true,config,options),
+    url = getDepUrl(id, cfg);
+    cfg.id = id;
+    // 没有加载
+    if(!definedModules[url]){
+        definedModules[url] = {
+            status: 'loading',
+            exports:{},
+            oncomplete: []
+        };
+        loadjs(url, function () {
+            //如果define的不是函数
+            if (!isFunction(definedModules[url].factory)) {
+                execMod(url, callback);
+                return 0;
+            }
+            //define的是函数
+            use(definedModules[url].deps, function () {
+                execMod(url, callback, slice.call(arguments, 0));
+            }, {base: url});
+            return 1;
+        }, function () {
+            definedModules[url].status === 'error';
+            callback();
+            execComplete(url);//加载失败执行队列
+        },cfg);
+        return 0;
+    }
+    //加载失败
+    if (definedModules[url].status === 'error') {
+        callback();
+        return 1;
+    }
+    //正在加载
+    if (definedModules[url].status === 'loading') {
+        definedModules[url].oncomplete.push(callback);
+        return 1;
+    }
+    //加载完成
+    //尚未执行完成
+    if (!definedModules[url].exports) {
+        //如果define的不是函数
+        if (!isFunction(definedModules[url].factory)) {
+            execMod(url, callback);
+            return 2;
+        } 
+        //define的是函数
+        use(definedModules[url].deps, function () {
+            execMod(url, callback, slice.call(arguments, 0));
+        }, {base: url});
+        return 3;
+    }
+    //已经执行过
+    callback(definedModules[url].exports);
+    return 4;
+}
+/**
+ * 执行模块
+ * @param {String} url 模块的地址
+ * @param {Function} callback 回调地址
+ * @param {Object} params 参数
+ */
+function execMod(url, callback, params) {
+    if(!params){
+        definedModules[url].exports = definedModules[url].factory;
+    }else{
+        curExecModName = url;
+        var exp = definedModules[url].factory.apply(null, params);
+        curExecModName = null;
+        if (exp) {
+            definedModules[url].exports = exp;
+        }
+    }
+    //执行回调函数
+    callback(definedModules[url].exports);
+    // //执行complete队列
+    execComplete(url);
+}
+/**
+ * 函数定义完毕执行load函数
+ * @param {url} url 模块的地址
+ */
+function execComplete(url) {
+    //模块定义完毕 执行load函数,当加载失败时，会不存在module
+    for (var i = 0; i < definedModules[url].oncomplete.length; i++) {
+        definedModules[url].oncomplete[i](definedModules[url] && definedModules[url].exports);
+    }
+    //释放内存
+    definedModules[url].oncomplete = [];
+}
+/**
+ * 
+ * @param {String} src 需要加载的地址
+ * @param {Function} success 成功回调地址
+ * @param {Function} error 错误回调地址
+ * @param {Object}} cfg 配置信息 
+ */
+function loadjs(src, success, error, cfg) {
+    var d = extend({
+        charset: document.charset,
+    }, cfg);
+    var node = document.createElement('script');
+    node.src = src;
+    node.modId = cfg.id;
+    node.setAttribute(Dui.defaluts.plugins[config.id]?'dui-plugin':'dui-modules',cfg.id);
+    node.charset = d.charset;
+    if ('onload' in node) {
+        node.onload = success;
+        node.onerror = error;
+    } else {
+      node.onreadystatechange = function() {
+        if (/loaded|complete/.test(node.readyState)) {
+            success();
+        }
+      }
+    }
+    currentlyAddingScript = node;
+    document.head.appendChild(node);
+    currentlyAddingScript = null;
 }
 /**
  * 深度复制
  * @param {Object} target 属性
  */
-export function extend(target) {
+function extend(target){
     var src,
       copyIsArray,
       copy,
@@ -140,366 +575,42 @@ export function extend(target) {
       }
     }
     return target;
-};
-//继承方法
-Dui.prototype.extend = extend;
-//默认配置文件
-Dui.defaults = {
-    modules:{
-        'jquery':'modules/jquery', // jquery
-        'template':'modules/template', // 模板引擎
-        'popup':'modules/popup', // 弹出层
-        'element':'modules/element', // 基本元素
-        'form':'modules/form', // 表单
-        'table':'modules/table', // 表格
-        'pagination':'modules/pagination',// 分页
-        'tree':'modules/tree', // 树形插件
-        'duiDate':'modules/duiDate',// 时间插件
-        'duiUpload':'modules/duiUpload',//上传插件
-        'iconPicker':'modules/iconPicker',//图标选择插件
-    },
-    //存储回调函数
-    callBack:{},
-};  
-/**
- * 
- * @param {Object} options 配置参数
- */
-Dui.prototype.config = function(options){
-    options = options || {};
-    for(var key in options){
-      config[key] = options[key];
-    }
-    return this;
-}
-/**
- * 获取参数的类型
- * @param {Object} obj 
- */
-export function type(obj) {
-    if (obj == null) {
-        return obj + "";
-    }
-    return typeof obj === "object" || typeof obj === "function"
-        ? class2type[toString.call(obj)] || "object"
-        : typeof obj;
-}
-/**
- * 判断是否是Array
- * @param {Object} obj 
- */
-Dui.prototype.isArrayLike = isArrayLike;
-/**
- * 判断是否是Array
- * @param {Object} obj 
- */
-function isArrayLike( obj ) {
-	var length = !!obj && "length" in obj && obj.length,
-		thistype = type( obj );
-	if ( thistype === "function" || isWindow( obj ) ) {
-		return false;
-	}
-	return thistype === "array" || length === 0 ||
-		typeof length === "number" && length > 0 && ( length - 1 ) in obj;
-}
-/**
- * 检查是否是纯对象
- * @param {Object} obj 
- */
-export function isPlainObject(obj){
-    var key;
-
-    // Must be an Object.
-    // Because of IE, we also have to check the presence of the constructor property.
-    // Make sure that DOM nodes and window objects don't pass through, as well
-    if (
-      !obj ||
-      type(obj) !== "object" ||
-      obj.nodeType ||
-        isWindow(obj)
-    ) {
-      return false;
-    }
-    try {
-      // Not own constructor property must be Object
-      if (
-        obj.constructor &&
-        !hasOwn.call(obj, "constructor") &&
-        !hasOwn.call(obj.constructor.prototype, "isPrototypeOf")
-      ) {
-        return false;
-      }
-    } catch (e) {
-      // IE8,9 Will throw exceptions on certain host objects #9897
-      return false;
-    }
-
-    // Support: IE<9
-    // Handle iteration over inherited properties before own properties.
-    if (!support.ownFirst) {
-      for (key in obj) {
-        return hasOwn.call(obj, key);
-      }
-    }
-
-    // Own properties are enumerated firstly, so to speed up,
-    // if last one is own, then all properties are own.
-    for (key in obj) {
-    }
-    return key === undefined || hasOwn.call(obj, key);
 }
 /**
  * 循环函数
  * @param {Object} object 循环对象
  * @param {Function} callback 回调函数
  */
-Dui.prototype.each = each;
-/**
- * 获取模块路径
- * @param {String} name 模块别名
- */
-function getModName(name){
-    if(!name){
-        var js = getCurrent().substring(getCurrent().lastIndexOf('/')+1,getCurrent().length).split('?')[0];
-        name = js.substring(0,js.lastIndexOf('.'));
-    }
-    return name;
-}
-/**
- * 定义一个模块
- * @param {String} name 模块名
- * @param {Array} deps 依赖
- * @param {function} callback 回调函数
- */
-Dui.prototype.define  = function(name,deps, callback){
-    var that  = dui;
-    //省略模块名
-    if (typeof name !== 'string') {
-        callback = deps;
-        deps = name;
-        name = null;
-    }
-    //无依赖
-    if (!isArray(deps)) {
-        callback = deps;
-        deps = [];
-    }
-    //获取模块别名
-    var modName = getModName(name).split('?')[0];
-    if(!modName) error('请定义模块名称');
-    that.modules[modName] = that.modules[modName] || {};
-    that.modules[modName].deps = deps;
-    that.modules[modName].callback = callback;
-    that.modules[modName].status = 'loaded';
-    that.modules[modName].oncomplete = that.modules[modName].oncomplete || [];
-    that.modulesMap[modName] = {};
-}
-/**
- * 使用模块
- * @param {Array} deps 使用依赖
- * @param {function} callback 回调函数
- */
-Dui.prototype.use = function(deps,callback){
-    var that = this;
-    if (arguments.length < 2) {
-        throw new Error('lodjs.use arguments miss');
-        return 0;
-    }
-    if (typeof deps === 'string') {
-        deps = [deps];
-    }
-    if (!isArray(deps) || !(typeof callback==="function")) {
-        error('lodjs.use arguments type error');
-        return 1;
-    }
-    if (deps.length === 0) {
-        callback();
-        return 2;
-    }
-    //如果页面已经存在jQuery1.7+库且所定义的模块依赖jQuery，则不加载内部jquery模块
-    if(window.jQuery && jQuery.fn.on){
-        that.each(deps, function(index, item){
-          if(item === 'jquery'){
-            that.modules.jquery = {};
-            that.modules.jquery.status = 'loaded';
-            that.modules.jquery.deps = [];
-            that.modules.jquery.callback = function(){
-                return window.$;
+function each(obj, callback) {
+    var length, i = 0;
+    if (isArrayLike(obj)) {
+        length = obj.length;
+        for ( ; i < length; i++ ) {
+            if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
+                break;
             }
-            that.modules.jquery.oncomplete = that.modules.jquery.oncomplete || [];
-            that.modulesMap.jquery = {};
-          }
-        });
-    }
-    var depsCount = deps.length;
-    var params = [];
-    each(deps,function(i,mod){
-        (function (j) {
-            that.loadMod(mod, function (param) {
-                depsCount--;
-                params[j] = param;
-                if (depsCount === 0) {
-                    callback.apply(null, params);
-                }
-            });
-        }(i));
-    })
-    return 3;
-}
-/**
- * 加载模块
- * @param {String} name 名称
- * @param {function} callback 回调函数
- */
-Dui.prototype.loadMod=function(name,callback){
-    var that = this,
-    path = config.path ? config.path : that.path;
-    //未加载
-    if(!that.modules[name]){
-        that.modules[name] = {
-            status:'loading',
-            oncomplete:[],
         }
-        //需要加载的地址
-        var url = getDepUrl(name);
-        that.loadJs(url,function(){
-            
-            //如果define的不是函数
-            if (!isFunction(that.modules[name].callback)) {
-                execMod(name, callback);
-                return 0;
+    } else {
+        for ( i in obj ) {
+            if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
+                break;
             }
-            
-            //define的是函数
-            that.use(that.modules[name].deps, function () {
-                execMod(name, callback, slice.call(arguments, 0));
-            });
-            return 1;
-        },function(){
-            that.modules[name].status = 'error';
-            callback();
-            execComplete(name);//加载失败执行队列
-        },name)
-        return 0;
-    }
-    //加载失败
-    if (that.modules[name].status === 'error') {
-        callback();
-        return 1;
-    }
-    //正在加载
-    if (that.modules[name].status === 'loading') {
-        that.modules[name].oncomplete.push(callback);
-        return 1;
-    }
-    //加载完成
-    //尚未执行完成
-    if (!that.modulesMap[name].exports) {
-        //如果define的不是函数
-        if (!isFunction(that.modules[name].callback)) {
-            that.execMod(name, callback);
-            return 2;
-        }
-        //define的是函数
-        that.use(that.modules[name].deps, function () {                    
-            execMod(name, callback, slice.call(arguments, 0));
-        });
-        return 3;
-    }
-    //已经执行过
-    callback(that.modulesMap[name].exports);
-    return 4;
-}
-/**
- * 执行模块
- * @param {String} modName 模块名称
- * @param {function} callback 回调函数
- * @param {Object} params 参数
- */
-function execMod(modName,callback,params){
-    //判断定义的是函数还是非函数
-    if (!params) {
-        dui.modulesMap[modName].exports = dui.modules[modName].callback;
-    } else {
-        curExecModName = modName;
-        //commonjs
-        var exp = dui.modules[modName].callback.apply(null, params);
-        curExecModName = null;
-        //amd和返回值的commonjs
-        if (exp) {
-            dui.modulesMap[modName].exports = exp;
         }
     }
-    //添加模块
-    dui.defined[modName] = dui.modulesMap[modName].exports;
-    //执行回调函数
-    callback(dui.modulesMap[modName].exports);
-    //执行complete队列
-    execComplete(modName);
+    return obj;
 }
-/**
- * 执行complete队列
- * @param {String} modName 要执行的列名称
- */
-function execComplete(modName){
-    //模块定义完毕 执行load函数,当加载失败时，会不存在module
-    for (var i = 0; i < dui.modules[modName].oncomplete.length; i++) {
-        dui.modules[modName].oncomplete[i](dui.modulesMap[modName] && dui.modulesMap[modName].exports);
+Dui.extend = extend;
+Dui.extend({
+    use:use,
+    define:Dui,
+    each:each
+})
+if(!window.define){
+    window.define = Dui;
+    if(typeof window.require !== 'function'){
+        window.require = Dui.use;
     }
-    //释放内存
-    dui.modules[modName].oncomplete = [];
 }
-/**
- * 加载js
- * @param {String} src 要加载的js地址
- * @param {function} success 成功回调函数
- * @param {function} error 错误回调函数
- * @param {String} name 加载的模块名称
- */
-Dui.prototype.loadJs = function(src,success,error,name){
-    var that=this,
-    node = doc.createElement('script');
-    node.src = src;
-    node.charset = config.charset ? config.charset : doc.charset;
-    node.id = 'dui-modules-'+(name?name:gid++);
-    if ('onload' in node) {
-        node.onload = success;
-        node.onerror = error;
-    } else {
-      node.onreadystatechange = function() {
-        if (/loaded|complete/.test(node.readyState)) {
-            success();
-        }
-      }
-    }
-    head.appendChild(node);
-}
-/**
- * 获取当前活跃的js文件
- */
-Dui.prototype.getCurrent = getCurrent;
-/**
- * 获取需要加载的js路径
- * @param {String} name 模块名
- */
-function getDepUrl(name){
-    //如果是内置模块
-    if(Dui.defaults.modules[name]){
-        return fixSuffix(dui.DuiPath+Dui.defaults.modules[name],'js')
-    }
-    //如果已经加载过了
-
-    return fixSuffix(config.path+name,'js');
-}
-/**
- * 设置完整后缀
- * @param {String} url 地址
- * @param {String} suffix 后缀
- */
-export function fixSuffix(url, suffix) {
-    var reg = new RegExp('\\.' + suffix + '$', 'i');
-    return url.search(reg) !== -1 ? url : url + '.' + suffix;
-}
-export var dui=new Dui();
-Dui.prototype.define.dui = dui.v;
-if(!window.define) window.define = dui.define;
+Dui.amd = {};
+// 返回数据
+export { Dui,extend,isArray,isObject,isPlainObject,isFunction,isArrayLike,each,type }

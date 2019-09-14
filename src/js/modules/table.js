@@ -379,7 +379,6 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
         that.duiFixedL.css('width',fixedLWidth)
         // 设置左侧浮动的宽
         that.duiFixedR.css('width',fixedRWidth)
-        console.log(bodyHeight);
         // 设置浮动内容的高度和距离header的高度
         that.duiFixed.find(FIXED_WRAP).css({
             height:(bodyHeight-scrollHeight),
@@ -581,7 +580,7 @@ dui.define('table',['jquery','template','form','popup','pagination'],function($,
         duiMainTable = that.duiBodyer.children('table');
         scrollWidth = that.getScrollWidth(that.duiBodyer[0]),//大于0则右侧有滚动条
         scrollHeight= that.getScrollHeight(that.duiBodyer[0]);//大于0则底部有滚动条
-        Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth(); 
+        Surplus = that.duiBodyer.prop('offsetWidth')-duiMainTable.outerWidth(),
         patchWidth = Surplus >scrollWidth ? Surplus : scrollWidth;
         // 如果有右侧滚动条
         if(scrollWidth>0){

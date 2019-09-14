@@ -172,7 +172,7 @@ Class.prototype.events = function(){
                 }
             });
         }else{
-            // 生成一张可以预览的图片
+            // 如果有需要自动上传
             if(options.autoUpload){
                 that.webUpload.upload();
             }

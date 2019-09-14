@@ -33,10 +33,6 @@
     define("jquery", [], function() {
       return factory(global);
     });
-  }else if (typeof define === "function" && define.dui) {
-    define("jquery", [], function() {
-      return factory(global);
-    });
   } else {
     factory(global);
   }

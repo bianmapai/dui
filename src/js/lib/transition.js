@@ -1,4 +1,4 @@
-import { dui, extend } from "./loadjs";
+import { Dui, extend } from "./loadjs";
 import { once,setData,nextFrame } from "./util";
 import { addClass, removeClass, setStyle } from "./dom";
 import watcher from "./watcher";
@@ -164,7 +164,7 @@ Class.prototype = Class.fn =  {
         })
         //如果默认为不显示
         if(data.show===false){
-            dui.setStyle(elem,'display','none');
+            setStyle(elem,'display','none');
         }
         return that;
     },

@@ -14,42 +14,8 @@ const fileinclude = require("gulp-file-include");//公共文件头部底部
 const browserSync = require("browser-sync");//服务器
 const reload      = browserSync.reload;//手动刷新
 
-//构建上传组件
-gulp.task("upload",()=>{
-    //构建upload组件的方法
-    return gulp.src(["src/js/upload/index.js"])
-        .pipe(rollup({
-            globals: {
-                jquery: 'jQuery'
-            },
-            external: ['jquery'],
-            paths: {
-                jquery: 'jquery'
-            },
-            plugins: [
-                resolve(),
-                commonjs(),
-                babel({
-                    runtimeHelpers: true
-                })
-            ]
-        }, {
-            format: 'umd',//打包方式
-            name: 'duiUpload',//包名称
-            sourcemap: false//是否有sourcemarp
-        }))
-        .pipe(rename('duiUpload.js'))
-        .pipe(gulp.dest("src/js/modules"))
-        .pipe(reload({stream: true}));
-})
-//dui框架构建方法
-gulp.task("JavaScript", () => {
-    //模块的构建方法
-    gulp.src(["src/js/modules/*.js"])
-        // .pipe(uglify())
-        .pipe(gulp.dest('dist/js/modules'))
-
-    //dui的构建方法
+//dui的构建方法
+gulp.task("dui", () => {
     return gulp.src("src/js/dui.js")
         // .pipe(sourcemaps.init())
         .pipe(rollup({
@@ -71,6 +37,217 @@ gulp.task("JavaScript", () => {
         .pipe(gulp.dest("dist/js"))
         .pipe(reload({stream: true}));
 })
+//上传组件的构建方法
+gulp.task("upload", () => {
+    return gulp.src(["src/js/plugins/upload.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+        },
+        external: ['jquery'],
+        paths: {
+            jquery: 'jquery',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'upload',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename({suffix: ''}))
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));
+})
+//elemnt的构建方法
+gulp.task("element",()=>{
+    return gulp.src(["src/js/plugins/element.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+        },
+        external: ['jquery'],
+        paths: {
+            jquery: 'jquery',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'element',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename({suffix: ''}))
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));
+})
+//form的构建方法
+gulp.task("form",()=>{
+    return gulp.src(["src/js/plugins/form.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+        },
+        external: ['jquery'],
+        paths: {
+            jquery: 'jquery',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'form',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename({suffix: ''}))
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));;
+})
+//popup框架构建方法
+gulp.task("popup", () => {
+    return gulp.src(["src/js/plugins/popup.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+        },
+        external: ['jquery'],
+        paths: {
+            jquery: 'jquery',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'popup',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename({suffix: ''}))
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));
+})
+//pagination的构建方法
+gulp.task("pagination", () => {
+    return gulp.src(["src/js/plugins/pagination.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+            form:'form',
+        },
+        external: ['jquery','form'],
+        paths: {
+            jquery: 'jquery',
+            from:'form',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'pagination',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename({suffix: ''}))
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));
+})
+//tree的构建方法
+gulp.task("tree", () => {
+    return gulp.src(["src/js/plugins/tree.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+            form:'form',
+        },
+        external: ['jquery','form'],
+        paths: {
+            jquery: 'jquery',
+            from:'form',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'tree',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename({suffix: ''}))
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));
+})
+//table的构建方法
+gulp.task("table", () => {
+    return gulp.src(["src/js/plugins/table.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+            form:'form',
+        },
+        external: ['jquery','form'],
+        paths: {
+            jquery: 'jquery',
+            from:'form',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'table',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename({suffix: ''}))
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));
+})
+//template的构建方法
+gulp.task("template", () => {
+    return gulp.src(["src/js/plugins/template.js"])
+    .pipe(rename({suffix: ''}))
+    .pipe(uglify())
+    .pipe(gulp.dest("dist/js/plugins"));
+})
+//jquery的构建方法
+gulp.task("jquery", () => {
+    return gulp.src(["src/js/plugins/jquery.js"])
+    .pipe(rename({suffix: ''}))
+    .pipe(uglify())
+    .pipe(gulp.dest("dist/js/plugins"));
+})
+//dui框架构建方法
+gulp.task("JavaScript", gulp.parallel("dui","element","form","popup","pagination","tree","upload","table","template","jquery"))
 //sass文件编译
 gulp.task("sass",()=>{
     return gulp.src(['./src/scss/*.scss'])   //这是需要转化的sass文件
@@ -137,8 +314,15 @@ gulp.task("serve",gulp.series("build", ()=>{
 //监听文件变化
 gulp.task("watch",async()=>{
     //js监听
-    gulp.watch(["./src/js/upload/*.js","./src/js/upload/*/*.js","./src/js/upload/*/*/*.js"],gulp.series("upload"));
-    gulp.watch(["./src/js/*.js","./src/js/**/*.js"],gulp.series("JavaScript"));
+    gulp.watch(["./src/js/dui.js","./src/js/lib/*.js"],gulp.series("dui"));
+    gulp.watch(["./src/js/plugins/element.js","./src/js/plugins/element/*.js"],gulp.series("element"));
+    gulp.watch(["./src/js/plugins/table.js","./src/js/plugins/table/*.js"],gulp.series("table"));
+    gulp.watch(["./src/js/plugins/form.js","./src/js/fplugins/orm/*.js"],gulp.series("form"));
+    gulp.watch(["./src/js/plugins/upload.js","./src/js/plugins/upload/*.js"],gulp.series("upload"));
+    gulp.watch(["./src/js/plugins/popup.js","./src/js/plugins/popup/*.js"],gulp.series("popup"));
+    gulp.watch(["./src/js/plugins/tree.js","./src/js/plugins/tree/*.js"],gulp.series("tree"));
+
+
     gulp.watch(['./src/example/*.html','./src/example/include/*.html'],gulp.series("example"));
     gulp.watch(['./src/scss/*.scss'],gulp.series("sass"));
     gulp.watch(['./src/json/*.json'],gulp.series("json"));

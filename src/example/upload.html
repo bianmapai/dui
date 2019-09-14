@@ -13,6 +13,14 @@
         <span class="dui-breadcrumb__separator">/</span>
     </span>
 </div>
+<style>
+.dui-form-item__label{
+    width: 80px;
+}
+.dui-form-item__content{
+    margin-left: 80px;
+}
+</style>
 <div class="dui-body">
     <div class="dui-card box-card is-never-shadow">
         <div class="dui-card__header">
@@ -21,63 +29,121 @@
             </div>
         </div>
         <div class="dui-card__body">
-            <div class="upload-demo" id="demo-upload">
-                <div type="button" class="dui-button dui-button--primary dui-button--small">点击上传</div>
-                <button type="button" id="upload" class="dui-button dui-button--success dui-button--small" style="margin-left: 10px;"><!----><!----><span>上传到服务器</span></button>
-                <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </div>
-        </div>
-    </div>
-    <div class="dui-card box-card is-never-shadow">
-        <div class="dui-card__header">
-            <div class="clearfix">
-                <span>上传插件</span>
-            </div>
-        </div>
-        <div class="dui-card__body">
-            <div class="upload-demo" id="demo-upload1">
-                <div class="dui-upload-dragger">
-                    <i class="dui-icon-upload"></i>
-                    <div class="dui-upload__text">
-                        将文件拖到此处，或<em>点击上传</em>
+            <form class="dui-form" dui-form method="POST">
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">普通列表</label>
+                    <div class="dui-form-item__content">
+                        <div class="upload-demo" id="demo-upload">
+                            <button type="button" class="dui-button dui-button--primary dui-button--small">点击上传</button>
+                            <button type="button" id="upload" class="dui-button dui-button--success dui-button--small" style="margin-left: 10px;"><!----><!----><span>上传到服务器</span></button>
+                            <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        </div>
                     </div>
                 </div>
-                <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">图片列表</label>
+                    <div class="dui-form-item__content">
+                        <div class="upload-demo" id="demo-upload1">
+                            <button type="button" class="dui-button dui-button--primary dui-button--small">点击上传</button>
+                            <button type="button" id="upload" class="dui-button dui-button--success dui-button--small" style="margin-left: 10px;"><!----><!----><span>上传到服务器</span></button>
+                            <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">拖拽粘贴</label>
+                    <div class="dui-form-item__content">
+                        <div class="upload-demo" id="demo-upload2">
+                            <div class="dui-upload-dragger">
+                                <i class="dui-icon-upload"></i>
+                                <div class="dui-upload__text">
+                                    将文件拖到此处，或<em>点击上传</em>
+                                </div>
+                            </div>
+                            <div class="dui-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        </div>
+                    </div>
+                </div>           
+            </form>
         </div>
     </div>
 </div>
 <script>
-dui.use(['duiUpload','jquery'],function(upload,$){
-    var uploader = upload.render({
-        el:'#demo-upload',//当前插件容器
-        fileList:[
-            {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
-            {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
-        ],
-        listType:'picture',
-        autoUpload:false,
-        // swf文件路径
-        // swf: BASE_URL + '/js/Uploader.swf',
-        // 文件接收服务端。
-        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
-        // 选择文件的按钮。可选。
-        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
-        pick: '#picker',
-        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
-        resize: false
-    });
-    $('#upload').on('click',function(e){
-        uploader.upload();
+    dui.use(['upload'],function(upload){
+        var uploader = upload.render({
+            el:'#demo-upload',//当前插件容器
+            fileList:[],
+            listType:'text',
+            autoUpload:true,
+            // swf文件路径
+            // swf: BASE_URL + '/js/Uploader.swf',
+            // 文件接收服务端。
+            server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+            // 选择文件的按钮。可选。
+            // 上传按钮
+            pick: '#picker',
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false
+        });
+        var uploader1 = upload.render({
+            el:'#demo-upload1',//当前插件容器
+            fileList:[],
+            listType:'picture',
+            autoUpload:true,
+            // swf文件路径
+            // swf: BASE_URL + '/js/Uploader.swf',
+            // 文件接收服务端。
+            server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#picker',
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false
+        });
+        var uploader2 = upload.render({
+            el:'#demo-upload2',
+            server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+            drag: '.dui-upload-dragger',
+            autoUpload:true,
+        });
     })
-    var uploader1 = upload.render({
-        el:'#demo-upload1',
-        server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
-        pick: '#picker',
-        drag:true,
-    });
-
-
-})
+    // dui.use(['duiUpload'],function(duiUpload){
+    //     var uploader = duiUpload.render({
+    //         el:'#demo-upload',//当前插件容器
+    //         fileList:[],
+    //         listType:'text',
+    //         autoUpload:false,
+    //         // swf文件路径
+    //         // swf: BASE_URL + '/js/Uploader.swf',
+    //         // 文件接收服务端。
+    //         server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+    //         // 选择文件的按钮。可选。
+    //         // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+    //         pick: '#picker',
+    //         // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+    //         resize: false
+    //     });
+    //     var uploader1 = duiUpload.render({
+    //         el:'#demo-upload1',//当前插件容器
+    //         fileList:[],
+    //         listType:'picture',
+    //         autoUpload:false,
+    //         // swf文件路径
+    //         // swf: BASE_URL + '/js/Uploader.swf',
+    //         // 文件接收服务端。
+    //         server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+    //         // 选择文件的按钮。可选。
+    //         // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+    //         pick: '#picker',
+    //         // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+    //         resize: false
+    //     });
+    //     var uploader2 = duiUpload.render({
+    //         el:'#demo-upload2',
+    //         server: 'http://aiadmin.com/admin.php/member/publics/upload.html',
+    //         drag: '.dui-upload-dragger',
+    //         autoUpload:false,
+    //     });
+    // })
 </script>
 @@include('include/foot.html')

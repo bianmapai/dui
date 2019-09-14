@@ -2,19 +2,10 @@
 @import "progress";
 @import "common/var";
 @import "./mixins/config.scss";
-//隐藏原始
-.webuploader-element-invisible {
-	position: absolute !important;
-	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-  clip: rect(1px,1px,1px,1px);
-}
-.webuploader-container{
-  position: relative;
-}
-
 @include b(upload) {
   display: inline-block;
   text-align: center;
+  cursor: pointer;
   outline: none;
   @include e(input) {
     display: none;
