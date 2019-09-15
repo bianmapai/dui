@@ -1,4 +1,5 @@
 import marked from './marked';
+import {splitCells} from "./marked";
 import hljs from './highlight'
 
 const customRules = {

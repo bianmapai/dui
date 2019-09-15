@@ -1450,7 +1450,7 @@ function merge(obj) {
   return obj;
 }
 
-function splitCells(tableRow, count) {
+export function splitCells(tableRow, count) {
   // ensure that every cell-delimiting pipe has a space
   // before it to distinguish it from an escaped pipe
   var row = tableRow.replace(/\|/g, function(match, offset, str) {
