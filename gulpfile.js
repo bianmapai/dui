@@ -37,6 +37,33 @@ gulp.task("dui", () => {
         .pipe(gulp.dest("dist/js"))
         .pipe(reload({stream: true}));
 })
+//markdown编辑器的构建方法
+gulp.task("mdEditor", () => {
+    return gulp.src(["src/js/plugins/mdEditor/index.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+        },
+        external: ['jquery'],
+        paths: {
+            jquery: 'jquery',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'mdEditor',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename('mdEditor.js'))
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));
+})
 //上传组件的构建方法
 gulp.task("upload", () => {
     return gulp.src(["src/js/plugins/upload.js"])
@@ -247,7 +274,7 @@ gulp.task("jquery", () => {
     .pipe(gulp.dest("dist/js/plugins"));
 })
 //dui框架构建方法
-gulp.task("JavaScript", gulp.parallel("dui","element","form","popup","pagination","tree","upload","table","template","jquery"))
+gulp.task("JavaScript", gulp.parallel("dui","element","form","popup","pagination","tree","upload","table","template","jquery",'mdEditor'))
 //sass文件编译
 gulp.task("sass",()=>{
     return gulp.src(['./src/scss/*.scss'])   //这是需要转化的sass文件
@@ -321,7 +348,7 @@ gulp.task("watch",async()=>{
     gulp.watch(["./src/js/plugins/upload.js","./src/js/plugins/upload/*.js"],gulp.series("upload"));
     gulp.watch(["./src/js/plugins/popup.js","./src/js/plugins/popup/*.js"],gulp.series("popup"));
     gulp.watch(["./src/js/plugins/tree.js","./src/js/plugins/tree/*.js"],gulp.series("tree"));
-
+    gulp.watch(["./src/js/plugins/mdEditor/index.js","./src/js/plugins/mdEditor/**/index.js"],gulp.series("mdEditor"));
 
     gulp.watch(['./src/example/*.html','./src/example/include/*.html'],gulp.series("example"));
     gulp.watch(['./src/scss/*.scss'],gulp.series("sass"));
