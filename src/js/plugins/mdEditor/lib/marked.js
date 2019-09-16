@@ -531,6 +531,7 @@ var inline = {
   reflink: /^!?\[(label)\]\[(?!\s*\])((?:\\[\[\]]?|[^\[\]\\])+)\]/,
   nolink: /^!?\[(?!\s*\])((?:\[[^\[\]]*\]|\\[\[\]]|[^\[\]])*)\](?:\[\])?/,
   strong: /^__([^\s_])__(?!_)|^\*\*([^\s*])\*\*(?!\*)|^__([^\s][\s\S]*?[^\s])__(?!_)|^\*\*([^\s][\s\S]*?[^\s])\*\*(?!\*)/,
+  mark: /^__([^\s_])__(?!_)|^==([^\s*])==(?!\*)|^__([^\s][\s\S]*?[^\s])__(?!_)|^==([^\s][\s\S]*?[^\s])==(?!\*)/,
   em: /^_([^\s_])_(?!_)|^\*([^\s*<\[])\*(?!\*)|^_([^\s<][\s\S]*?[^\s_])_(?!_|[^\spunctuation])|^_([^\s_<][\s\S]*?[^\s])_(?!_|[^\spunctuation])|^\*([^\s<"][\s\S]*?[^\s\*])\*(?!\*|[^\spunctuation])|^\*([^\s*"<\[][\s\S]*?[^\s])\*(?!\*)/,
   code: /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,
   br: /^( {2,}|\\)\n(?!\s*$)/,
@@ -585,6 +586,7 @@ inline.normal = merge({}, inline);
 
 inline.pedantic = merge({}, inline.normal, {
   strong: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
+  mark: /^__(?=\S)([\s\S]*?\S)__(?!_)|^==(?=\S)([\s\S]*?\S)==(?!\*)/,
   em: /^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,
   link: edit(/^!?\[(label)\]\((.*?)\)/)
     .replace('label', inline._label)
@@ -760,6 +762,13 @@ InlineLexer.prototype.output = function(src) {
     if (cap = this.rules.strong.exec(src)) {
       src = src.substring(cap[0].length);
       out += this.renderer.strong(this.output(cap[4] || cap[3] || cap[2] || cap[1]));
+      continue;
+    }
+
+    // mark
+    if (cap = this.rules.mark.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.mark(this.output(cap[4] || cap[3] || cap[2] || cap[1]));
       continue;
     }
 
@@ -1020,6 +1029,11 @@ Renderer.prototype.strong = function(text) {
   return '<strong>' + text + '</strong>';
 };
 
+// span level renderer
+Renderer.prototype.mark = function(text) {
+  return '<mark>' + text + '</mark>';
+};
+
 Renderer.prototype.em = function(text) {
   return '<em>' + text + '</em>';
 };
@@ -1077,6 +1091,7 @@ function TextRenderer() {}
 // no need for block level renderers
 
 TextRenderer.prototype.strong =
+TextRenderer.prototype.mark =
 TextRenderer.prototype.em =
 TextRenderer.prototype.codespan =
 TextRenderer.prototype.del =

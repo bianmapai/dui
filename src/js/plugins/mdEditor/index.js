@@ -919,9 +919,7 @@ Class.prototype = {
         var renderer         = new marked.Renderer()
         // 自定义语法的渲染函数
         renderer.mark = (text) => {
-            return `<p>
-                        <mark>${text}</mark>
-                    </p>`
+            return `<mark>${text}</mark>`
         }
         renderer.textAlign = (align,text) => {
             return `<div class="hljs-${align}">

@@ -3,7 +3,7 @@ import {splitCells,rtrim} from "./marked";
 import hljs from './highlight'
 
 const customRules = {
-  mark:/(?<!=)==([\S]+)==(?!=)/,
+  // mark:/(?<!=)==([\S]+)==(?!=)/,
   textAlign:/::: align-([a-z]+)\n+(\S+)\n+:::/
 }
 
@@ -53,16 +53,16 @@ marked.Lexer.prototype.token = function (src, top) {
       }
     }
 
-    // mark
-    if (cap = this.rules.mark.exec(src)) {
-      var lastToken = this.tokens[this.tokens.length - 1];
-      src = src.substring(cap[0].length);
-      this.tokens.push({
-        type: 'mark',
-        text:cap[1],
-      });
-      continue;
-    }
+    // // mark
+    // if (cap = this.rules.mark.exec(src)) {
+    //   var lastToken = this.tokens[this.tokens.length - 1];
+    //   src = src.substring(cap[0].length);
+    //   this.tokens.push({
+    //     type: 'mark',
+    //     text:cap[1],
+    //   });
+    //   continue;
+    // }
     // textAlign
     if (cap = this.rules.textAlign.exec(src)) {
       var lastToken = this.tokens[this.tokens.length - 1];
@@ -399,9 +399,9 @@ marked.Parser.prototype.tok = function() {
     case 'space': {
       return '';
     }
-    case 'mark':{
-      return this.renderer.mark(this.token.text);
-    }
+    // case 'mark':{
+    //   return this.renderer.mark(this.token.text);
+    // }
     case 'textAlign':{
       return this.renderer.textAlign(this.token.align,this.token.text);
     }
