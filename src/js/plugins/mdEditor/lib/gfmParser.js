@@ -1,9 +1,9 @@
 import marked from './marked';
-import {splitCells} from "./marked";
+import {splitCells,rtrim} from "./marked";
 import hljs from './highlight'
 
 const customRules = {
-  mark:/==([\S]+)==/,
+  mark:/(?<!=)==([\S]+)==(?!=)/,
   textAlign:/::: align-([a-z]+)\n+(\S+)\n+:::/
 }
 

@@ -1485,7 +1485,7 @@ export function splitCells(tableRow, count) {
 // Remove trailing 'c's. Equivalent to str.replace(/c*$/, '').
 // /c*$/ is vulnerable to REDOS.
 // invert: Remove suffix of non-c chars instead. Default falsey.
-function rtrim(str, c, invert) {
+export function rtrim(str, c, invert) {
   if (str.length === 0) {
     return '';
   }
