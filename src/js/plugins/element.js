@@ -15,7 +15,7 @@ Selector = {
     dropDownMenu:".dui-dropdown-menu",
 },
 className={
-    isOpen:'is-open',
+    isOpen:'is-opened',
     isActive:'is-active',
 };
 element.Items = element.prototype = {
@@ -26,8 +26,17 @@ element.Items = element.prototype = {
         var submenus = $(that.elem).children(Selector.submenus),
         $jump = $(that.elem).find(Selector.jump),
         itemClick = function(e){
+
+            // 移除当前菜单跳转高亮
             $(that.elem).find(Selector.jump).removeClass(className.isActive);
-            $(this).addClass(className.isActive);
+            // 移除当前菜单的子菜单高亮
+            $(that.elem).find(Selector.submenusTitles).removeClass(className.isActive);
+            // 移除同一个组的菜单
+            $(that.elem).siblings().find(Selector.jump).removeClass(className.isActive);
+            // 移除同一个组的子菜单
+            $(that.elem).siblings().find(Selector.submenusTitles).removeClass(className.isActive);
+            // 添加当前选中高亮
+            addCurrenMenuHeight($(this)[0]);
         }
         var data = el.vnode.data.navMenu;
         /**
@@ -93,7 +102,15 @@ element.Items = element.prototype = {
         menuRender(submenus,1,data.openonly);
         //设置高亮事件
         $jump.off('click',itemClick).on('click',itemClick);
-        
+        //整体切换上级
+        function addCurrenMenuHeight(el){
+            $(el).addClass(className.isActive);
+            var submenus = $(el).parents(Selector.menus).prev(Selector.submenusTitles);
+            if(submenus[0]){
+                submenus.addClass(className.isActive);
+            }
+        }
+        el.inited = true;
     },
     dropDown:function(el,options){
         var that = this;that.options = $.extend(true,{},options);
@@ -148,6 +165,7 @@ element.Items = element.prototype = {
                 }
             })
         }
+        el.inited = true;
     }
 }
 element.render = function(type,filter){
@@ -157,6 +175,7 @@ element.render = function(type,filter){
     Items = {
         navMenu:function(){
             $(Selector.navMenus+filter).each(function(i,el){
+                if(el.inited) return;
                 element('navMenu',el,{
                     openonly:(typeof $(el).attr('openonly')==="undefined"?false:true)
                 });
@@ -164,6 +183,7 @@ element.render = function(type,filter){
         },
         dropDown:function(){
             $(Selector.dropDown+filter).each(function(i,el){
+                if(el.inited) return;
                 element('dropDown',el,{
                     
                 });

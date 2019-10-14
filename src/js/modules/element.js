@@ -26,8 +26,16 @@ dui.define('element',['jquery'],function(){
             var submenus = $(that.elem).children(Selector.submenus),
             $jump = $(that.elem).find(Selector.jump),
             itemClick = function(e){
+                // 移除当前菜单跳转高亮
                 $(that.elem).find(Selector.jump).removeClass(className.isActive);
-                $(this).addClass(className.isActive);
+                // 移除当前菜单的子菜单高亮
+                $(that.elem).find(Selector.submenusTitles).removeClass(className.isActive);
+                // 移除同一个组的菜单
+                $(that.elem).siblings().find(Selector.jump).removeClass(className.isActive);
+                // 移除同一个组的子菜单
+                $(that.elem).siblings().find(Selector.submenusTitles).removeClass(className.isActive);
+                // 添加当前选中高亮
+                addCurrenMenuHeight($(this)[0]);
             }
             data = el.vnode.data.navMenu;
             /**
@@ -93,7 +101,13 @@ dui.define('element',['jquery'],function(){
             menuRender(submenus,1,data.openonly);
             //设置高亮事件
             $jump.off('click',itemClick).on('click',itemClick);
-            
+            /**
+             * 设置当前选中菜单高亮
+             * @param {HTMLLIElement} el 当前选中菜单
+             */
+            function addCurrenMenuHeight(el){
+                console.log(el);
+            }
         },
         dropDown:function(el,options){
             var that = this;that.options = $.extend(true,{},options);

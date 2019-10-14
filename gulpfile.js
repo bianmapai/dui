@@ -288,7 +288,7 @@ gulp.task("pjax", () => {
         ]
     }, {
         format: 'umd',//打包方式
-        name:'table',
+        name:'pjax',
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))

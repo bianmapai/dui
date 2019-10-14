@@ -402,7 +402,6 @@ function loadMod(id,callback,options){
     var cfg = extend(true,config,options),
     url = getDepUrl(id, cfg);
     cfg.id = id;
-    console.log(definedModules);
     // 没有加载
     if(!definedModules[url]){
         definedModules[url] = {

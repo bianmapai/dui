@@ -9,6 +9,7 @@
   line-height: 56px;
   font-size: $--menu-item-font-size;
   color: $--menu-item-font-color;
+  font-weight: 500;
   padding: 0 20px;
   list-style: none;
   cursor: pointer;
@@ -22,8 +23,7 @@
     vertical-align: middle;
   }
 
-  &:hover,
-  &:focus {
+  &:hover{
     outline: none;
     background-color: $--menu-item-hover-fill;
   }
@@ -225,6 +225,9 @@
 
     &:hover {
       background-color: $--menu-item-hover-fill;
+    }
+    &.is-active{
+      color: #fff;
     }
   }
   & .#{$namespace}-menu {
