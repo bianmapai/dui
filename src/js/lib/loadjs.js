@@ -26,6 +26,7 @@ Dui.defaluts = {
         'duiDate':'plugins/duiDate',// 时间插件
         'upload':'plugins/upload',//上传插件
         'iconPicker':'plugins/iconPicker',//图标选择插件
+        'pjax':'plugins/pjax',//pjax插件
     }
 }
 /**
@@ -147,7 +148,7 @@ function getIdUrl(id,cfg){
     if (id.search(/^\./) !== -1) {
         throw new Error('lodjs define id' + id + 'must absolute');
     }
-    return fixSuffix(getUrl(id, cfg.base), 'js');
+    return fixSuffix(getUrl(id, cfg), 'js');
 }
 /**
  * 获取目录地址
@@ -401,6 +402,7 @@ function loadMod(id,callback,options){
     var cfg = extend(true,config,options),
     url = getDepUrl(id, cfg);
     cfg.id = id;
+    console.log(definedModules);
     // 没有加载
     if(!definedModules[url]){
         definedModules[url] = {
@@ -600,11 +602,30 @@ function each(obj, callback) {
     return obj;
 }
 Dui.extend = extend;
-Dui.extend({
-    use:use,
-    define:Dui,
-    each:each
-})
+Dui.define = Dui;
+Dui.use = use;
+Dui.each = each;
+Dui.config = function(options){
+    // 如果给与的base不是带域名的路径
+    if(!isUrl(options.base)){
+        //修复base
+        var base = location.origin;
+        if(options.base.search(/^\//) !== -1){
+            // 以/开头
+            options.base = base+options.base;
+        }else if(options.base.search(/^\.\//)!==-1){
+            base = location.href.slice(0, location.href.lastIndexOf('/') + 1);
+            // 删除./
+            options.base = options.base.slice(2,options.base.length)
+            // 组装
+            options.base = base+options.base;
+        }else{
+            throw new Error('参数base不能以../开头');
+        }
+    }
+    config = extend(true,{},config,options);
+    return Dui;
+}
 if(!window.define){
     window.define = Dui;
     if(typeof window.require !== 'function'){
@@ -612,5 +633,23 @@ if(!window.define){
     }
 }
 Dui.amd = {};
+// 增加<script src="__DUI__/js/dui.min.js" data-base="__ADMIN_JS__/" data-plugin="admin"></script>的用法
+var thisScript = getCurrentScript();
+if(thisScript.attributes['config-base']){
+    var base = thisScript.attributes['config-base'].nodeValue;
+    if(base){
+        Dui.config({
+            base:base
+        })
+    }
+}
+if(thisScript.attributes['exec-plugin']){
+    var plugin = thisScript.attributes['exec-plugin'].nodeValue;
+    if(plugin){
+        Dui.use([plugin],function(plugin){
+
+        })
+    }
+}
 // 返回数据
 export { Dui,extend,isArray,isObject,isPlainObject,isFunction,isArrayLike,each,type }

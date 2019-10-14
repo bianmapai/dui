@@ -134,3 +134,46 @@ body{
     text-align: center;
     color: #ffffff;
 }
+
+@include b(admin){
+    //提示页面
+    @include e(tips){
+        height: 100%;
+        width: 100%;
+        display: table;
+    }
+    @include e(tips-centerbox){
+        text-align: center;
+        display: table-cell;
+        vertical-align: middle;
+    }
+    @include e(tips-icon){
+        font-size: 200px;
+    }
+    @include e(tips-text){
+        width: 500px;
+        margin: 30px auto;
+        padding-top: 20px;
+        border-top: 5px solid transparent;
+        color: $--color-text-regular;
+        font-size: 30px;
+        @include when(error){
+            border-top-color: $--color-danger;
+        }
+        @include when(success){
+            border-top-color: $--color-success;
+        }
+    }
+    @include e(tips-jump){
+        margin-top: 15px;
+        font-size: 16px;
+    }
+    @include e(tips-url){
+        text-decoration: none;
+        transition: color .2s cubic-bezier(.645,.045,.355,1);
+        color: $--color-text-primary;
+        &:hover{
+            color: $--color-primary;
+        }
+    }
+}

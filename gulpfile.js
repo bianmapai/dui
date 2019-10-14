@@ -31,7 +31,7 @@ gulp.task("dui", () => {
             name: 'dui',//包名称
             sourcemap: false//是否有sourcemarp
         }))
-        // .pipe(uglify())
+        .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
         // .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest("dist/js"))
@@ -88,6 +88,7 @@ gulp.task("upload", () => {
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))
+    .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"))
     .pipe(reload({stream: true}));
 })
@@ -115,6 +116,7 @@ gulp.task("element",()=>{
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))
+    .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"))
     .pipe(reload({stream: true}));
 })
@@ -142,6 +144,7 @@ gulp.task("form",()=>{
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))
+    .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"))
     .pipe(reload({stream: true}));;
 })
@@ -169,6 +172,7 @@ gulp.task("popup", () => {
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))
+    .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"))
     .pipe(reload({stream: true}));
 })
@@ -198,6 +202,7 @@ gulp.task("pagination", () => {
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))
+    .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"))
     .pipe(reload({stream: true}));
 })
@@ -227,6 +232,7 @@ gulp.task("tree", () => {
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))
+    .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"))
     .pipe(reload({stream: true}));
 })
@@ -256,6 +262,37 @@ gulp.task("table", () => {
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))
+    .pipe(uglify())
+    .pipe(gulp.dest("dist/js/plugins"))
+    .pipe(reload({stream: true}));
+})
+//table的构建方法
+gulp.task("pjax", () => {
+    return gulp.src(["src/js/plugins/pjax.js"])
+    .pipe(rollup({
+        globals: {
+            jquery: 'jQuery',
+            form:'form',
+        },
+        external: ['jquery','form'],
+        paths: {
+            jquery: 'jquery',
+            from:'form',
+        },
+        plugins: [
+            resolve(),
+            commonjs(),
+            babel({
+                exclude: 'node_modules/**' // 只编译我们的源代码
+            })
+        ]
+    }, {
+        format: 'umd',//打包方式
+        name:'table',
+        sourcemap: false//是否有sourcemarp
+    }))
+    .pipe(rename({suffix: ''}))
+    .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"))
     .pipe(reload({stream: true}));
 })
@@ -274,7 +311,7 @@ gulp.task("jquery", () => {
     .pipe(gulp.dest("dist/js/plugins"));
 })
 //dui框架构建方法
-gulp.task("JavaScript", gulp.parallel("dui","element","form","popup","pagination","tree","upload","table","template","jquery",'mdEditor'))
+gulp.task("JavaScript", gulp.parallel("dui","element","form","popup","pagination","tree","upload","table","template","jquery",'mdEditor','pjax'))
 //sass文件编译
 gulp.task("sass",()=>{
     return gulp.src(['./src/scss/*.scss'])   //这是需要转化的sass文件

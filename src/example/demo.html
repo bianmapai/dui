@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="/js/plugins/jquery.js"></script>
-    <script src="/js/dui.min.js"></script>
+    <script src="/js/dui.min.js" config-base="/static/admin/js/" exec-plugin="admin"></script>
     <!-- <script src="/js/plugins/test.js"></script> -->
     <!-- <script src="/js/modules/esl.js"></script> -->
     <title>测试amd加载器</title>
@@ -18,9 +18,11 @@
     // dui('a',function(){
     //     console.log('a');
     // })
-    dui.use(['popup','jquery','template'],function(a,$,c,d){
-        console.log(a,$);
-    })
+    // dui.config({
+    //     base:'/asdasdasd'
+    // }).use(['popup','jquery','template','aaaaa'],function(a,$,c,d){
+    //     console.log(a,$);
+    // })
 // lodjs.use(['a','a'],function($,b){
 //     console.log($,b);
 // })

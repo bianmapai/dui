@@ -21,6 +21,9 @@
   margin: 0;
   transition: .1s;
   font-weight: $--button-font-weight;
+  @include when(fluid){
+    width: 100%;
+  }
   @include utils-user-select(none);
   & + & {
     margin-left: 10px;
