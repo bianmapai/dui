@@ -310,8 +310,17 @@ gulp.task("jquery", () => {
     .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"));
 })
+//扩展的构建方法
+gulp.task("extend", () => {
+    return gulp.src(["src/js/extend/*.js"])
+    .pipe(rename({suffix: ''}))
+    // .pipe(uglify())
+    .pipe(gulp.dest("dist/js/extend"))
+    .pipe(reload({stream: true}));;
+})
+
 //dui框架构建方法
-gulp.task("JavaScript", gulp.parallel("dui","element","form","popup","pagination","tree","upload","table","template","jquery",'mdEditor','pjax'))
+gulp.task("JavaScript", gulp.parallel("dui","element","form","popup","pagination","tree","upload","table","template","jquery",'mdEditor','pjax','extend'))
 //sass文件编译
 gulp.task("sass",()=>{
     return gulp.src(['./src/scss/*.scss'])   //这是需要转化的sass文件
@@ -378,6 +387,7 @@ gulp.task("serve",gulp.series("build", ()=>{
 //监听文件变化
 gulp.task("watch",async()=>{
     //js监听
+    gulp.watch(["./src/js/extend/*.js"],gulp.series("extend"));
     gulp.watch(["./src/js/dui.js","./src/js/lib/*.js"],gulp.series("dui"));
     gulp.watch(["./src/js/plugins/element.js","./src/js/plugins/element/*.js"],gulp.series("element"));
     gulp.watch(["./src/js/plugins/table.js","./src/js/plugins/table/*.js"],gulp.series("table"));

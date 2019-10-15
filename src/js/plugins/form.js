@@ -540,6 +540,11 @@ Select = function(el,options){
     }
     // 给docment设置点击的时候关闭
     dui.on(document,'click',function(e){
+        var othis = $(e.target);
+        //不是当前元素
+        if(elements.optDom.find(othis)[0] || elements.optDom[0]==othis[0]){
+            return false;
+        }
         hide();
     })
 },

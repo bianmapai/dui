@@ -184,6 +184,11 @@ body{
             color: $--color-primary;
         }
     }
+    // 搜索框宽度
+    @include e(search){
+        float:right;
+        width: 380px;
+    }
     // 设置自适应和收缩展开样式
     @include when(shrink){
         //大屏幕下的收缩
@@ -269,7 +274,7 @@ body{
             left: 64px;
         }
     }
-
+    
     // 设置全局动画
     .#{$namespace}-admin__logo,
     .#{$namespace}-admin__logo>span,
@@ -280,5 +285,46 @@ body{
     .#{$namespace}-admin__aside .#{$namespace}-menu
     {
         transition: all .3s;
+    }
+}
+/*
+*手机页的样式
+*/
+@media screen and (max-width: 992px){
+    @include b(admin){
+        .#{$namespace}-admin__aside{
+            transform: translate3d(-220px,0,0);
+        }
+        .#{$namespace}-admin__header{
+            left: 0px;
+        }
+        .#{$namespace}-admin__container{
+            left: 0px;
+        }
+        @include e(search){
+            width: 100%;
+        }
+        .#{$namespace}-admin__table-toolbar{
+            &:after{
+                content: '';
+                display: block;
+                clear: both;
+            }
+            .#{$namespace}-col-md6+
+            .#{$namespace}-col-md6{
+                margin-top:8px;
+            }
+        }
+        @include when(open){
+            .#{$namespace}-admin__aside{
+                transform: translate3d(0,0,0);
+            }
+            .#{$namespace}-admin__header{
+                transform: translate3d(220px,0,0);
+            }
+            .#{$namespace}-admin__container{
+                transform: translate3d(220px,0,0);
+            }
+        }
     }
 }

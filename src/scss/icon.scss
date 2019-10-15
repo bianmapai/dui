@@ -2,12 +2,12 @@
 @import "./mixins/config.scss";
 @font-face {
     font-family: 'iconfont';  /* project id 1367779 */
-    src: url('//at.alicdn.com/t/font_1367779_9arwwj1i78c.eot');
-    src: url('//at.alicdn.com/t/font_1367779_9arwwj1i78c.eot?#iefix') format('embedded-opentype'),
-    url('//at.alicdn.com/t/font_1367779_9arwwj1i78c.woff2') format('woff2'),
-    url('//at.alicdn.com/t/font_1367779_9arwwj1i78c.woff') format('woff'),
-    url('//at.alicdn.com/t/font_1367779_9arwwj1i78c.ttf') format('truetype'),
-    url('//at.alicdn.com/t/font_1367779_9arwwj1i78c.svg#iconfont') format('svg');
+    src: url('//at.alicdn.com/t/font_1367779_obphuqe4iu.eot');
+    src: url('//at.alicdn.com/t/font_1367779_obphuqe4iu.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_1367779_obphuqe4iu.woff2') format('woff2'),
+    url('//at.alicdn.com/t/font_1367779_obphuqe4iu.woff') format('woff'),
+    url('//at.alicdn.com/t/font_1367779_obphuqe4iu.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_1367779_obphuqe4iu.svg#iconfont') format('svg');
 }
 [class^="#{$namespace}-icon-"], [class*=" #{$namespace}-icon-"] {
     /* use !important to prevent issues with browser extensions that change fonts */
@@ -42,7 +42,8 @@
 .#{$icon-prefix}-circle-check:before{content: "\e601"}
 .#{$icon-prefix}-check:before{content: "\e602"}
 .#{$icon-prefix}-upload:before{content: "\e6d2"}
-.#{$icon-prefix}-search:before{content: "\e61b"}
+.#{$icon-prefix}-search:before{content: "\e61b"}//搜索
+.#{$icon-prefix}-apps:before{content: "\e627"}//应用
 .#{$icon-prefix}-sad:before{content: "\e60b"} // 哭
 .#{$icon-prefix}-laugh:before{content: "\e608"} // 笑
 .#{$icon-prefix}-bold:before{content: "\e637"}//加粗

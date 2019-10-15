@@ -238,6 +238,7 @@ import $ from "jquery";
       modalClose:false,//点击modal是否关闭
       customClass:'',
       showClose:true,
+      move:true,
       moveOut:false,
       center:false,
       close:'',//关闭的回调函数
@@ -266,7 +267,7 @@ import $ from "jquery";
           '</div>',
           config.showClose ? '<button type="button" class="dui-popup__headerbtn"><i class="dui-popup__close dui-icon-close"></i></button>':'',
         '</div>',
-        '<div class="dui-popup__content"><span>'+config.content+'</span></div>',
+        '<div class="dui-popup__content"></div>',
         config.showFooter?'<div class="dui-popup__btns"'+((config.btnAngin!='right')?'style=" text-align:'+config.btnAngin+';"':'')+'>'+btns+'</div>':'',
       '</div>',
       config.modal?'<div class="dui-modal"></div>':''
@@ -279,6 +280,8 @@ import $ from "jquery";
     footer = that.footer = dom.find('.dui-popup__btns'),
     closeBtn = that.closeBtn = header.find('.dui-popup__headerbtn'),
     clickbtns = footer.find('button');
+    // 添加元素
+    content.append(config.content);
     // 给元素设置z-index
     $(dom[0]).css('z-index',dui.getMaxZIndex()+2);//dialog元素
     config.modal && $(dom[1]).css('z-index',dui.getMaxZIndex()+1);//modal元素
@@ -401,7 +404,8 @@ import $ from "jquery";
         }
       }else if(typeof config.offset==="number"){
         return {
-          top:config.offset
+          top:config.offset,
+          left:($(window).width()-parseFloat($(dom).css('width')))/2
         }
       }
     },
@@ -467,15 +471,18 @@ import $ from "jquery";
     docmouseup = function(e){
       delete move.moveStart;
     };
-    header.on('mousedown',function(e){
-      e.preventDefault();
-      move.moveStart =true;
-      move.start = {
-        left:(e.clientX - parseFloat($(dom[0]).css('left'))),
-        top:(e.clientY - parseFloat($(dom[0]).css('top')))
-      }
-    })
-    _doc.on('mousemove',docmousemove).on('mouseup',docmouseup)
+    // 如果配置允许移动才移动
+    if(config.move){
+      header.on('mousedown',function(e){
+        e.preventDefault();
+        move.moveStart =true;
+        move.start = {
+          left:(e.clientX - parseFloat($(dom[0]).css('left'))),
+          top:(e.clientY - parseFloat($(dom[0]).css('top')))
+        }
+      })
+      _doc.on('mousemove',docmousemove).on('mouseup',docmouseup)
+    }
     // 设置点击按钮事件
     clickbtns.each(function(i,item){
       $(item).on('click',function(e){
