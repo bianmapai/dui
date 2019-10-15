@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>后台首页</title>
+    <link rel="stylesheet" href="/css/dui.min.css">
+    <link rel="stylesheet" href="/css/adminnew.min.css">
+    <script src="/js/dui.min.js"></script>
+</head>
+<body>
+<div class="dui-admin is-shrink">
+    <div class="dui-admin__header">
+        <ul class="dui-menu dui-menu--horizontal dui-header-left">
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu dui-icon-shrink-right"></i>
+            </li>
+            <li class="dui-menu-item">首页</li>
+            <li class="dui-menu-item">系统</li>
+            <li class="dui-menu-item">用户</li>
+        </ul>
+        <ul class="dui-menu dui-menu--horizontal dui-header-right">
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu dui-icon-earth"></i>
+            </li>
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu dui-icon-screen-full"></i>
+            </li>
+            <li class="dui-menu-item dui-dropdown" dui-dropDown>
+                <span class="diu-dropdown-link dui-dropdown-toggle" toggle="hover">
+                    <img >
+                    <span>admin</span>
+                    <i class="dui-icon-dropdown-arrow dui-icon-arrow-down"></i>
+                </span>
+                <ul class="dui-dropdown-menu dui-popper" style="display: none">
+                    <li class="dui-dropdown-menu__item">修改密码</li>
+                    <li class="dui-dropdown-menu__item">退出</li>
+                    <div x-arrow="" class="popper__arrow"></div>
+                </ul>
+            </li>
+            <li class="dui-menu-item">
+                <i class="dui-icon-menu dui-icon-more-vertical"></i>
+            </li>
+        </ul>
+    </div>
+    <div class="dui-admin__aside">
+        <div class="dui-admin__aside-inner">
+            <div class="dui-admin__logo" style="background: #409eff">
+                <span class="dui-admin__logo-large">DuiAdmin Pro</span>
+                <span class="dui-admin__logo-mini">DAP</span>
+            </div>
+            <ul dui-menubar class="dui-menu" openonly>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-link"></i> 
+                        <span>主页</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="index.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>主页1</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="index1.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>主页2</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-link"></i> 
+                        <span>页面元素</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="icon.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>图标(icon)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="button.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>按钮(button)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="tag.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>标签(tag)</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-link"></i> 
+                        <span>表单</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>开关</span>
+                        </li>
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>单选框</span>
+                        </li>
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>多选框</span>
+                        </li>
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>输入框</span>
+                        </li>
+                        <li  class="dui-menu-item" style="padding-left: 40px;">
+                            <i class="dui-icon-menu"></i> 
+                            <span>选择框</span>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-link"></i> 
+                        <span>弹出层</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="message.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>消息提示</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="notification.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>通知</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="messagebox.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>消息框</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="dialog.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>对话框</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-link"></i> 
+                        <span>数据表格</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="table.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>数据表格</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="treeTable.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>树形表格</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="messagebox.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>消息框</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="dialog.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>对话框</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dui-submenu">
+                    <div class="dui-submenu__title" style="padding-left: 20px;">
+                        <i class="dui-icon-link"></i> 
+                        <span>其他模块</span>
+                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
+                    </div>
+                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="pagination.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>分页</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="tree.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>树形控件</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="upload.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>上传组件</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="markdown.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>编辑器</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dui-menu-item" style="padding-left: 40px;" href="markdown.html">
+                                <i class="dui-icon-menu"></i> 
+                                <span>富文本</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="dui-admin__container">

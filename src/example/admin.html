@@ -1,111 +1,99 @@
-@@include('include/head.html')
-<div id="dui-app" class="dui-layout dui-layout-admin">
-    <div class="dui-header">
-
-    </div>
-    <div class="dui-aside">
-        <div class="dui-aside-inner">
-            <div class="dui-logo" style="background: #409eff">
-                <span>DuiAdmin Pro</span>
+@@include('include/headnew.html')
+<div class="dui-breadcrumb">
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner"><a href="/">首页</a></span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">表单</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+    <span class="dui-breadcrumb__item">
+        <span class="dui-breadcrumb__inner">表单集合</span>
+        <span class="dui-breadcrumb__separator">/</span>
+    </span>
+</div>
+<div class="dui-admin__body">
+    <div class="dui-tabs dui-tabs__card" dui-tabs>
+        <div class="dui-tabs__header">
+            <div class="dui-tabs__nav">
+                <div class="dui-tabs__item is-active">数据表格</div>
+                <div class="dui-tabs__item">数据表格2</div>
+                <div class="dui-tabs__item">数据表格3</div>
+                <div class="dui-tabs__item">数据表格4</div>
             </div>
-            <ul dui-menubar class="dui-menu" openonly>
-                <li class="dui-submenu">
-                    <div class="dui-submenu__title" style="padding-left: 20px;">
-                        <i class="dui-icon-location"></i> 
-                        <span>导航一1</span>
-                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
-                    </div>
-                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                    </ul>
-                </li>
-                <li class="dui-submenu">
-                    <div class="dui-submenu__title" style="padding-left: 20px;">
-                        <i class="dui-icon-location"></i> 
-                        <span>导航一1</span>
-                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
-                    </div>
-                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                    </ul>
-                </li>
-                <li class="dui-submenu">
-                    <div class="dui-submenu__title" style="padding-left: 20px;">
-                        <i class="dui-icon-location"></i> 
-                        <span>导航一1</span>
-                        <i class="dui-submenu__icon-arrow dui-icon-arrow-down"></i>
-                    </div>
-                    <ul role="menu" class="dui-menu dui-menu--inline" style="display: none;">
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                        <li  class="dui-menu-item" style="padding-left: 40px;">
-                            <i class="dui-icon-menu"></i> 
-                            <span>导航一2</span>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
         </div>
-    </div>
-    <div class="dui-container">
-
+        <div class="dui-tabs__content">
+            <div class="dui-col-md12 dui-admin__table-toolbar">
+                <div class="dui-col-xs12 dui-col-md6">
+                    <div class="dui-button-group">
+                        <button class="dui-button dui-button--primary">添加</button>
+                        <button class="dui-button dui-button--success">启用</button>
+                        <button class="dui-button dui-button--warning">禁用</button>
+                        <button class="dui-button dui-button--danger">删除</button>
+                    </div>
+                </div>
+                <div class="dui-col-xs12 dui-col-md6 algin-right">
+                    <div class="dui-admin__search" style="float:right;width: 380px;">
+                        <div class="dui-input dui-input-group dui-input-group--append dui-input-group--prepend">
+                            <div class="dui-input-group__prepend">
+                                <select name="" id="">
+                                    <option value="field">字段</option>
+                                </select>
+                            </div>
+                            <input type="text" placeholder="请输入内容" class="dui-input__inner">
+                            <div class="dui-input-group__append">
+                                <button class="dui-button dui-button--default"><i class="dui-icon-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table dui-table id="ceshi"></table>
+        </div>
     </div>
 </div>
 <script>
-dui.use(['element'],function(){
-
+dui.use(['table','jquery'],function(table,$){
+    var thisTable = table.render({
+        el:'#ceshi',
+        height:'full-265',
+        page:{
+            show:true
+        },
+        data:{
+            url:'/json/table.json',
+            type:'get',
+            dataType:'json'
+        },
+        columns:[[
+            {
+                type:'checkbox',//类型，normal，checkbox，numbers,space中的任意值,如果type为checkbox则隐藏标题
+                fixed:true,//浮动列
+            }
+            ,{field:'username', width:80, title: '用户名'}
+            ,{field:'sex', width:80, title: '性别', sort: true}
+            ,{field:'city', width:80, title: '城市'}
+            ,{field:'sign', title: '签名', width: '30%', minWidth: 100} //部定义当前单元格的最小宽度
+            ,{field:'experience', title: '积分', sort: true}
+            ,{field:'score', title: '评分', sort: true}
+            ,{field:'classify', width:80,title: '职业'}
+            ,{field:'wealth', width:137, title: '财富', sort: true}
+            ,{
+                field:'',
+                fixed:'right', 
+                width:150, 
+                title: '操作'}
+        ]]
+    });
+    $('#getData').on('click',function(e){
+        var data = thisTable.getCheckedData();
+        popup.dialog({
+            title:'选中数据',
+            content:JSON.stringify(data)
+        })
+        console.log(data);
+    })
 })
 </script>
-@@include('include/foot.html')
+@@include('include/footnew.html')

@@ -136,6 +136,10 @@ body{
 }
 
 @include b(admin){
+    //table页面
+    @include e(table-toolbar){
+        margin-bottom: 15px;
+    }
     //提示页面
     @include e(tips){
         height: 100%;

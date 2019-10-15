@@ -26,7 +26,6 @@ element.Items = element.prototype = {
         var submenus = $(that.elem).children(Selector.submenus),
         $jump = $(that.elem).find(Selector.jump),
         itemClick = function(e){
-
             // 移除当前菜单跳转高亮
             $(that.elem).find(Selector.jump).removeClass(className.isActive);
             // 移除当前菜单的子菜单高亮
@@ -78,6 +77,9 @@ element.Items = element.prototype = {
                     e.preventDefault();
                     var that = this,open = that.isOpen,
                     Others = $(that).parent().siblings().find(Selector.submenusTitles);
+                    if($('body').find('is-shrink').find(that)[0]){
+                        return false;
+                    }
                     if(open){
                         //关闭
                         that.hide();

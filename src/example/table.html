@@ -14,16 +14,41 @@
     </span>
 </div>
 <div class="dui-body">
-    <div class="dui-card box-card is-never-shadow dui-tab">
-        <div class="dui-card__header">
-            <div class="clearfix">
-                <ul class="dui-tab__header">
-                    <li class="dui-tab__item">数据表格</li>
-                </ul>
+    <div class="dui-tabs dui-tabs__card" dui-tabs>
+        <div class="dui-tabs__header">
+            <div class="dui-tabs__nav">
+                <div class="dui-tabs__item is-active">数据表格</div>
+                <div class="dui-tabs__item">数据表格2</div>
+                <div class="dui-tabs__item">数据表格3</div>
+                <div class="dui-tabs__item">数据表格4</div>
             </div>
         </div>
-        <div class="dui-card__body">
-            
+        <div class="dui-tabs__content">
+            <div class="dui-col-md12 dui-admin__table-toolbar">
+                <div class="dui-col-xs12 dui-col-md6">
+                    <div class="dui-button-group">
+                        <button class="dui-button dui-button--primary">添加</button>
+                        <button class="dui-button dui-button--success">启用</button>
+                        <button class="dui-button dui-button--warning">禁用</button>
+                        <button class="dui-button dui-button--danger">删除</button>
+                    </div>
+                </div>
+                <div class="dui-col-xs12 dui-col-md6 algin-right">
+                    <div class="dui-admin__search" style="float:right;width: 380px;">
+                        <div class="dui-input dui-input-group dui-input-group--append dui-input-group--prepend">
+                            <div class="dui-input-group__prepend">
+                                <select name="" id="">
+                                    <option value="field">字段</option>
+                                </select>
+                            </div>
+                            <input type="text" placeholder="请输入内容" class="dui-input__inner">
+                            <div class="dui-input-group__append">
+                                <button class="dui-button dui-button--default"><i class="dui-icon-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <table dui-table id="ceshi"></table>
         </div>
     </div>
@@ -32,7 +57,7 @@
 dui.use(['table','jquery'],function(table,$){
     var thisTable = table.render({
         el:'#ceshi',
-        height:'full-215',
+        height:'full-265',
         page:{
             show:true
         },

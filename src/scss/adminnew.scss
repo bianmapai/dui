@@ -1,0 +1,284 @@
+@import "./mixins/config.scss";
+@import "./common/var.scss";
+@import "mixins/mixins";
+@import "mixins/utils";
+//后台布局
+//通用
+body{
+    margin: 0;
+    padding: 0;
+}
+// 构建后台布局样式
+@include b(admin){
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    // 头部
+    @include e(header){
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: $--admin-aside-width;
+        z-index: 1030;
+        box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+        height:$--admin-header-height;
+        & .#{$namespace}-header-left{
+            left: 0;
+            top: 0;
+            padding-left:10px; 
+            position: absolute!important;
+            margin-right: auto!important;
+            border: none !important;
+        }
+        & .#{$namespace}-header-right{
+            right: 0;
+            top: 0;
+            position: absolute!important;
+            border: none !important;
+            & .#{$namespace}-icon-dropdown-arrow{
+                position: absolute;
+                top: 20px;
+                margin-left: 5px;
+                margin-right: 0px;
+            }
+        }
+        & .#{$namespace}-menu-item{
+            height: 50px;
+            line-height: 50px;
+            border-bottom:none;
+            padding: 0  15px;
+            & [class^="dui-icon-"], [class*=" dui-icon-"]{
+                vertical-align: initial;
+                width: auto;
+                font-size: 12px;
+            }
+            & *{
+                vertical-align: initial;
+            }
+        }
+    }
+    // 左侧菜单
+    @include e(aside){
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1020;
+        width:$--admin-aside-width;
+        background-color: $--color-white;
+        overflow: hidden;
+        &-inner{
+            position: relative;
+            width: ($--admin-aside-width)+20;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #344058;
+            >.#{$namespace}-menu{
+                border-right: none;
+                width: $--admin-aside-width;
+                margin-top: $--admin-header-height;
+                &.#{$namespace}-menu--collapse{
+                    width: 64px;
+                }
+            }
+            & .#{$namespace}-submenu__title{
+                height: 50px;
+                line-height: 50px;
+            }
+        }
+    }
+    // 内容显示
+    @include e(container){
+        position: fixed;
+        top: $--admin-header-height;
+        left: $--admin-aside-width;
+        bottom: 0;
+        right: 0;
+        z-index: 998;
+        width: auto;
+        overflow: hidden;
+        overflow-y: auto;
+        box-sizing: border-box;
+        background-color: #f1f4f5;
+        & .#{$namespace}-breadcrumb{
+            height: 50px;
+            line-height:50px;
+            background:#fff;
+            padding:0 15px;
+            background-color: #fff;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+            .#{$namespace}-breadcrumb__item:last-child .#{$namespace}-breadcrumb__separator {
+                display: none;
+            }
+        }
+    }
+    // logo
+    @include e(logo){
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1002;
+        width: $--admin-aside-width;
+        height: $--admin-header-height;
+        padding: 0 15px;
+        box-sizing: border-box;
+        overflow: hidden;
+        font-weight: 400;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background: $--color-primary;
+        box-shadow: 0 1px 2px 0 rgba(0,0,0,.15);
+        line-height: 50px;
+        text-align: center;
+        color: #ffffff;
+        // 不显示小标题
+        &>span.#{$namespace}-admin__logo-mini{
+            display: none;
+        }
+    }
+    // 后台主要显示
+    @include e(body){
+        padding: 15px;
+    }
+    //table页面
+    @include e(table-toolbar){
+        margin-bottom: 15px;
+    }
+    //提示页面
+    @include e(tips){
+        height: 100%;
+        width: 100%;
+        display: table;
+    }
+    @include e(tips-centerbox){
+        text-align: center;
+        display: table-cell;
+        vertical-align: middle;
+    }
+    @include e(tips-icon){
+        font-size: 200px;
+    }
+    @include e(tips-text){
+        width: 500px;
+        margin: 30px auto;
+        padding-top: 20px;
+        border-top: 5px solid transparent;
+        color: $--color-text-regular;
+        font-size: 30px;
+        @include when(error){
+            border-top-color: $--color-danger;
+        }
+        @include when(success){
+            border-top-color: $--color-success;
+        }
+    }
+    @include e(tips-jump){
+        margin-top: 15px;
+        font-size: 16px;
+    }
+    @include e(tips-url){
+        text-decoration: none;
+        transition: color .2s cubic-bezier(.645,.045,.355,1);
+        color: $--color-text-primary;
+        &:hover{
+            color: $--color-primary;
+        }
+    }
+    // 设置自适应和收缩展开样式
+    @include when(shrink){
+        //大屏幕下的收缩
+        // 收缩侧边菜单
+        & .#{$namespace}-admin__aside{
+            width: 64px;
+        }
+        // 动画
+        .#{$namespace}-submenu__title .#{$namespace}-submenu__icon-arrow {
+            transition: .2s;
+            opacity: 0;
+        }
+        // 滚动
+        & .#{$namespace}-admin__aside-inner{
+            width: 64px;
+        }
+        // 收缩菜单
+        & .#{$namespace}-admin__aside .#{$namespace}-menu{
+            width: 64px;
+            > .#{$namespace}-menu-item,
+            > .#{$namespace}-submenu > .#{$namespace}-submenu__title {
+              [class^="#{$namespace}-icon-"] {
+                margin: 0;
+                vertical-align: middle;
+                width: 24px;
+                text-align: center;
+              }
+              .#{$namespace}-submenu__icon-arrow {
+                display: none;
+              }
+              span {
+                height: 0;
+                width: 0;
+                overflow: hidden;
+                visibility: hidden;
+                display: inline-block;
+              }
+            }
+        
+            > .#{$namespace}-menu-item.is-active i {
+              color: inherit;
+            }
+        
+            .#{$namespace}-menu .#{$namespace}-submenu {
+              min-width: 200px;
+            }
+        
+            .#{$namespace}-submenu {
+              position: relative;
+              & .#{$namespace}-menu {
+                position: absolute;
+                margin-left: 5px;
+                top: 0;
+                left: 100%;
+                z-index: 10;
+                border: 1px solid $--border-color-light;
+                border-radius: $--border-radius-small;
+                box-shadow: $--box-shadow-light;
+              }
+        
+              &.is-opened {
+                > .#{$namespace}-submenu__title .#{$namespace}-submenu__icon-arrow {
+                  transform: none;
+                }
+              }
+            }
+        }
+        // 收缩logo
+        & .#{$namespace}-admin__logo{
+            width: 64px;
+            &>span.#{$namespace}-admin__logo-mini{
+                display: inline-block;
+            }
+            &>span.#{$namespace}-admin__logo-large{
+                display: none;
+            }
+        }
+        // 头部
+        & .#{$namespace}-admin__header{
+            left: 64px;
+        }
+        & .#{$namespace}-admin__container{
+            left: 64px;
+        }
+    }
+
+    // 设置全局动画
+    .#{$namespace}-admin__logo,
+    .#{$namespace}-admin__logo>span,
+    .#{$namespace}-admin__header,
+    .#{$namespace}-admin__container,
+    .#{$namespace}-admin__aside,
+    .#{$namespace}-admin__aside-inner,
+    .#{$namespace}-admin__aside .#{$namespace}-menu
+    {
+        transition: all .3s;
+    }
+}
