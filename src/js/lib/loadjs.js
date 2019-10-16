@@ -7,11 +7,6 @@ var support = {};
 // 模块容器
 var definedModules ={};
 // 默认配置
-var config = {
-    dir:getPath(),//dui所在目录
-    base:'',//扩展模块地址
-};
-// 默认配置
 Dui.defaluts = {
     // 内置模块配置
     plugins:{
@@ -27,6 +22,10 @@ Dui.defaluts = {
         'upload':'plugins/upload',//上传插件
         'iconPicker':'plugins/iconPicker',//图标选择插件
         'pjax':'plugins/pjax',//pjax插件
+    },
+    config:{
+        dir:getPath(),//dui所在目录
+        base:'',//扩展模块地址
     }
 }
 /**
@@ -121,7 +120,7 @@ function fixSuffix(url, suffix) {
 function getDepUrl(id, cfg) {
     // 如果是内部地址
     if(Dui.defaluts.plugins[id]){
-        return fixSuffix(config.dir + Dui.defaluts.plugins[id],'js');
+        return fixSuffix(Dui.defaluts.config.dir + Dui.defaluts.plugins[id],'js');
     }
     return fixSuffix(getUrl(id, cfg), 'js');
 }
@@ -142,7 +141,7 @@ function getIdUrl(id,cfg){
     }
     // 如果是内置模块则返回内置模块的url
     if(Dui.defaluts.plugins[id]){
-        return fixSuffix(config.dir + Dui.defaluts.plugins[id],'js');
+        return fixSuffix(Dui.defaluts.config.dir + Dui.defaluts.plugins[id],'js');
     }
     //id不能为相对路径,amd规定此处也不能带后缀，此处放宽限制。
     if (id.search(/^\./) !== -1) {
@@ -320,7 +319,7 @@ function Dui(id,deps, factory){
         factory = deps;
         deps = [];
     }
-    var cfg = extend(true,{},config),
+    var cfg = extend(true,{},Dui.defaluts.config),
     url = getIdUrl(id,cfg).split('?')[0];
     definedModules[url] = definedModules[url] || {};
     definedModules[url] = {
@@ -355,7 +354,7 @@ function use(deps,callback,options){
         return 2;
     }
     if(!isObject(options)){
-        options = extend(true,config,options)
+        options = extend(true,Dui.defaluts.config,options)
     }
     
     // 如果页面已经存在jQuery1.7+库且所定义的模块依赖jQuery，则不加载内部jquery模块
@@ -399,7 +398,7 @@ function use(deps,callback,options){
  */
 function loadMod(id,callback,options){
     // 当前的配置信息
-    var cfg = extend(true,config,options),
+    var cfg = extend(true,{},Dui.defaluts.config,options),
     url = getDepUrl(id, cfg);
     cfg.id = id;
     // 没有加载
@@ -503,7 +502,7 @@ function loadjs(src, success, error, cfg) {
     var node = document.createElement('script');
     node.src = src;
     node.modId = cfg.id;
-    node.setAttribute(Dui.defaluts.plugins[config.id]?'dui-plugin':'dui-modules',cfg.id);
+    node.setAttribute(Dui.defaluts.plugins[cfg.id]?'dui-plugin':'dui-modules',cfg.id);
     node.charset = d.charset;
     if ('onload' in node) {
         node.onload = success;
@@ -622,7 +621,7 @@ Dui.config = function(options){
             throw new Error('参数base不能以../开头');
         }
     }
-    config = extend(true,{},config,options);
+    Dui.defaluts.config = extend(true,{},Dui.defaluts.config,options);
     return Dui;
 }
 if(!window.define){

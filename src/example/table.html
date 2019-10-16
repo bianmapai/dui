@@ -54,7 +54,9 @@
     </div>
 </div>
 <script>
-dui.use(['table','jquery'],function(table,$){
+    // console.log(dui.defaluts.config);
+dui.use(['table','builTable'],function(table,builTable){
+    console.log(builTable);
     var thisTable = table.render({
         el:'#ceshi',
         height:'full-265',
