@@ -335,9 +335,9 @@ body{
             left: 64px;
         }
     }
-
-    
-    
+    & a{
+        text-decoration: none;
+    }
     // 设置全局动画
     .#{$namespace}-admin__logo,
     .#{$namespace}-admin__logo>span,
@@ -348,6 +348,87 @@ body{
     .#{$namespace}-admin__aside .#{$namespace}-menu
     {
         transition: all .3s;
+    }
+    & .#{$namespace}-tabs__content{
+        padding-right: 55px;
+    }
+}
+
+//高级查询
+@include b(query){
+    display: block;
+    background: $--color-white;
+    position: absolute;
+    height: 100%;
+    width: 300px;
+    right: 0;
+    top: 0;
+    z-index: 2001;
+    transition: all .3s;
+    transform: translate3d(300px,0,0);
+    box-shadow: 0 0 10px rgba(0,0,0,.12);
+    @include when(open){
+        transform: translate3d(0,0,0);
+    }
+    @include e(show){
+        display: block;
+        position:absolute;
+        height: 50px;
+        width: 35px;
+        left: -35px;
+        top: 50%;
+        border-radius: 4px 0 0 4px;
+        line-height: 50px;
+        text-align: center;
+        background: $--color-primary;
+        color: $--color-white;
+        cursor: pointer;
+        z-index: 2003;
+    }
+    @include e(header){
+        position: relative;
+        padding: 15px;
+        background: $--color-primary;
+        font-size: 14px;
+        color: $--color-white;
+    }
+    @include e(closebtn){
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 0;
+        border: none;
+        outline: 0;
+        background: 0 0;
+        font-size: 14px;
+        color: $--color-white;
+        cursor: pointer;
+        &:hover{
+            opacity: 0.9;
+        }
+    }
+    @include e(condition){
+        height: 36px;
+        line-height: 36px;
+        border: 1px solid #ebeef5;
+        border-top: none;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+    @include e(condition-label){
+        position: relative;
+        display: inline-block;
+        padding: 0 15px;
+        color: $--color-text-regular;
+        &::before{
+            content: "";
+            width: 1px;
+            position: absolute;
+            height: 23px;
+            right:  0;
+            top: 5px;
+            background: #ebeef5;
+        }
     }
 }
 // 修复搜索和操作按钮重合

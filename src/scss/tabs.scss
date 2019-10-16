@@ -2,6 +2,7 @@
 @import "common/var";
 @import "mixins/config.scss";
 @include b(tabs){
+    position: relative;
     overflow: hidden;
     @include e(header){
         position: relative;

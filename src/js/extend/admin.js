@@ -7,6 +7,9 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
         aside:'.dui-admin__aside',
         header:'.dui-admin__header',
         popper:'.dui-popper',
+        menubar:'[dui-menubar]',
+        menus:'.dui-menu',
+        submenusTitles:'.dui-submenu__title',
         menuItem:'.dui-menu-item',
         moreappContent:'.dui-admin__moreapps-content',
         moreappItem:'.dui-admin__moreapps-item',
@@ -33,20 +36,27 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
             // 初始化url跳转事件
             $(document).delegate('[jump]','click',function(e){
                 var othis       = $(this),
-                    url         = othis.attr('href') || othis.attr('jump-url'),
-                    type        = othis.attr('type'),//检测是否是提交
-                    target      = othis.attr('jump-target') || '_pjax',//跳转方式
-                    form_name   = othis.attr('jump-form'),//form名称
-                    text        = othis.attr('jump-text'),//跳转提示信息
-                    title       = othis.attr('jump-title'),//跳转提示标题
-                    form        = $('form[name="'+form_name+'"]');//表单
-                if(type=='submit'){// 表单提交
-    
-                }else if(url){//其他跳转方式
-                    if(target=='_pjax'){//pjax方式
-                        if(location.pathname==url) return false;
-                        $.pjax({url:url,container: SELECTOR.pjax_container});
-                    }    
+                    url         = othis.attr('href') || othis.attr('jump-url'),     //跳转以及
+                    type        = othis.attr('type') || othis.attr('jump'),         //检测是否是提交
+                    mode        = othis.attr('jump-mode') || '_pjax',               //跳转方式
+                    target      = othis.attr('jump-target'),                        //跳转目标
+                    method      = othis.attr('jump-method') || 'get',               //提交方式，post还是get
+                    form_name   = othis.attr('jump-form'),                          //提交数据所在的form表单
+                    text        = othis.attr('jump-text'),                          //跳转提示信息
+                    title       = othis.attr('jump-title'),                         //跳转提示标题
+                    form        = $('form[name="'+form_name+'"]');                  //表单
+                // 不管是什么操作必须得有url
+                if(url){
+                    if(type=='submit'){// 表单提交
+                        
+                    }else{//其他链接跳转
+                        if(mode=='_pjax'){//pjax方式
+                            if(location.pathname==url) return false;
+                            $.pjax({url:url,container: SELECTOR.pjax_container});
+                        }else if(target=='_ajax'){
+
+                        }
+                    }
                 }
                 return false;
             })
@@ -58,6 +68,15 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
             });
             // 设置pjax结束监听
             $(document).on('pjax:end',   function() { nprogress.done();  });
+            // 初始化设置和表格条件展开事件
+            $(document).on('click','.show-parent',function(e){
+                var parent = $(this).parent();
+                if(parent.hasClass(CLASS.open)){
+                    parent.removeClass(CLASS.open);
+                }else{
+                    parent.addClass(CLASS.open);
+                }
+            })
             // 窗口大小发生变化事件
             $(window).on('resize',function(e){
                 $(SELECTOR.adminbox).removeClass(CLASS.open).removeClass(CLASS.shrink);
@@ -75,36 +94,6 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
          * 事件管理
          */
         events:{
-            // 切换app菜单
-            changeApp:function(e){
-                var othis = $(this),
-                id = othis.data('id'),
-                menus=$(SELECTOR.aside).find('[dui-menubar][data-id="'+id+'"]');
-                // 判断当前是弹窗的模块还是页面的模块点击
-                if(othis.parents(SELECTOR.moreappContent)[0]){//弹窗出来的
-                    // 如果当前app已经选中直接返回
-                    if(othis.hasClass(CLASS.active)) return;
-                    // 当前App选中
-                    othis.addClass(CLASS.active).parents(SELECTOR.moreappItem).siblings().find(SELECTOR.moreappCard).removeClass(CLASS.active);
-                    // 找到顶部菜单
-                    var topMenu = $(SELECTOR.header).find(SELECTOR.menuItem+'[data-id="'+id+'"]');
-                    topMenu.addClass(CLASS.active).siblings().removeClass(CLASS.active);
-                    // 隐藏其他应用菜单，显示当前选中菜单
-                    menus.siblings('[dui-menubar]').hide();
-                    menus.show();
-                }else{//页面的按钮
-                    // 如果当前app已经选中直接返回
-                    if(othis.hasClass('is-active')) return;
-                    // 当前应用选中，其他应用不选中
-                    othis.addClass('is-active').siblings().removeClass('is-active');
-                    // 更多app里面更改样式
-                    var currenCard = $(SELECTOR.moreappContent).find(SELECTOR.moreappCard+'[data-id="'+id+'"]');
-                    currenCard.addClass(CLASS.active).parents(SELECTOR.moreappItem).siblings().find(SELECTOR.moreappCard).removeClass(CLASS.active);
-                    // 隐藏其他应用菜单，显示当前选中菜单
-                    menus.siblings('[dui-menubar]').hide();
-                    menus.show();
-                }
-            },
             // 伸缩菜单
             flexible:function(e){
                 //如果当前是手机
@@ -162,6 +151,44 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
                 var currentAsideMenu = $(SELECTOR.aside).find(SELECTOR.menuItem+'[href="'+url+'"]');
                 // 如果当前元素有class为is-active，则直接返回
                 if(currentAsideMenu.hasClass(CLASS.active)) return;
+                // 移除当前菜单跳转高亮
+                $(SELECTOR.aside).find(SELECTOR.menuItem).removeClass(CLASS.active);
+                // 移除当前菜单的子菜单高亮
+                $(SELECTOR.aside).find(SELECTOR.submenusTitles).removeClass(CLASS.active);
+                // 添加当前选中高亮
+                // 当前菜单高亮
+                addCurrenMenuHeight(currentAsideMenu);
+                // 如果是弹窗进入
+                moreAppDialog && moreAppDialog.close && moreAppDialog.close();
+                /**
+                 * 根据指定菜单高亮其他父节点
+                 * @param {Element} el 菜单元素
+                 */
+                function addCurrenMenuHeight(el){
+                    // 当前节点高亮
+                    $(el).addClass(CLASS.active);
+                    // 找到所有的父节点
+                    var submenus = $(el).parents(SELECTOR.menus).prev(SELECTOR.submenusTitles);
+                    // 设置高亮
+                    submenus.addClass(CLASS.active);
+                    // 循环检测父元素是否打开
+                    submenus.each(function(i,item){
+                        // 如果父元素是没有打开状态,则手动触发
+                        if(!$(item).parent().hasClass('is-opened')){
+                            console.log('进来了');
+                            $(item).trigger("click");
+                        }
+                    })
+                    var id = $(el).parents(SELECTOR.menubar).data('id');
+                    // 显示当前应用下的菜单
+                    $(el).parents(SELECTOR.menubar).show().siblings(SELECTOR.menubar).hide();
+                    // 找到顶部菜单
+                    var topMenu = $(SELECTOR.header).find(SELECTOR.menuItem+'[data-id="'+id+'"]');
+                    topMenu.addClass(CLASS.active).siblings().removeClass(CLASS.active);
+                    // 找到更多应用
+                    var currenCard = $(SELECTOR.moreappContent).find(SELECTOR.moreappCard+'[data-id="'+id+'"]');
+                    currenCard.addClass(CLASS.active).parents(SELECTOR.moreappItem).siblings().find(SELECTOR.moreappCard).removeClass(CLASS.active);
+                }
             }
         }
     }

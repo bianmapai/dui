@@ -50,6 +50,28 @@
                 </div>
             </div>
             <table dui-table id="ceshi"></table>
+            <div class="dui-query__condition">
+                <div class="dui-query__condition-label">
+                    筛选条件
+                </div>
+                <div class="dui-query__condition-body">
+
+                </div>
+            </div>
+        </div>
+        <div class="dui-query">
+            <div class="dui-query__show show-parent" title="高级查询">
+                <i class="dui-icon-search"></i>
+            </div>
+            <div class="dui-query__header">
+                <div class="dui-query__title">
+                    <span>高级查询</span>
+                </div>
+                <button type="button" class="dui-query__closebtn"><i class="dui-query__close dui-icon-circle-close"></i></button>
+            </div>
+            <div class="dui-query__body">
+
+            </div>
         </div>
     </div>
 </div>
@@ -59,7 +81,7 @@ dui.use(['table','builTable'],function(table,builTable){
     console.log(builTable);
     var thisTable = table.render({
         el:'#ceshi',
-        height:'full-265',
+        height:'full-305',
         page:{
             show:true
         },
@@ -94,7 +116,6 @@ dui.use(['table','builTable'],function(table,builTable){
             title:'选中数据',
             content:JSON.stringify(data)
         })
-        console.log(data);
     })
 })
 </script>
