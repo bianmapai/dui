@@ -349,9 +349,6 @@ body{
     {
         transition: all .3s;
     }
-    & .#{$namespace}-tabs__content{
-        padding-right: 55px;
-    }
 }
 
 //高级查询
@@ -360,12 +357,12 @@ body{
     background: $--color-white;
     position: absolute;
     height: 100%;
-    width: 300px;
+    width: 360px;
     right: 0;
     top: 0;
     z-index: 2001;
     transition: all .3s;
-    transform: translate3d(300px,0,0);
+    transform: translate3d(360px,0,0);
     box-shadow: 0 0 10px rgba(0,0,0,.12);
     @include when(open){
         transform: translate3d(0,0,0);
@@ -374,12 +371,12 @@ body{
         display: block;
         position:absolute;
         height: 50px;
-        width: 35px;
-        left: -35px;
-        top: 50%;
+        width: 45px;
+        left: -45px;
         border-radius: 4px 0 0 4px;
         line-height: 50px;
         text-align: center;
+        box-shadow: 0 0 10px rgba(0,0,0,.12);
         background: $--color-primary;
         color: $--color-white;
         cursor: pointer;
