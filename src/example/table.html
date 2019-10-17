@@ -37,9 +37,22 @@
                     <div class="dui-admin__search">
                         <div class="dui-input dui-input-group dui-input-group--append dui-input-group--prepend">
                             <div class="dui-input-group__prepend">
-                                <select name="" id="">
-                                    <option value="field">字段</option>
-                                </select>
+                                <input type="hidden" class="dui-search__field-hide" name="field">
+                                <div class="dui-search__field">
+                                    <span class="dui-search__field-show">不限</span>
+                                    <i class="dui-icon-arrow-down"></i>
+                                </div>
+                                <ul class="dui-search__field-popper dui-popper dui-dropdown-menu" style="display: none;">
+                                    <li class="dui-dropdown-menu__item" data-field="name">
+                                        配置名称
+                                    </li>
+                                    <li class="dui-dropdown-menu__item" data-field="name">
+                                        配置标题
+                                    </li>
+                                    <li class="dui-dropdown-menu__item" data-field="name">
+                                        配置分组
+                                    </li>
+                                </ul>
                             </div>
                             <input type="text" placeholder="请输入内容" class="dui-input__inner">
                             <div class="dui-input-group__append">
@@ -69,7 +82,7 @@
                     <button type="button" class="dui-query__closebtn"><i class="dui-query__close dui-icon-circle-close"></i></button>
                 </div>
                 <div class="dui-query__body">
-
+                    
                 </div>
             </div>
         </div>
