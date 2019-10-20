@@ -17,6 +17,10 @@ Switch = function(el,options){
             type:[Boolean, String, Number],
             default:false
         },
+        skin:{
+            type:[String],
+            default:'label-out'
+        },
         value:{
             type:[Boolean, String, Number],
             default:false
@@ -25,12 +29,10 @@ Switch = function(el,options){
             type:Boolean,
             default:false
         },//禁用
-        multiple:{
-            type:Boolean,
-            default:false
-        },//多选
         activeText: String,
         inactiveText: String,
+        activeColor:String,
+        inactiveColor:String,
         clearable:{
             type:Boolean,
             default:false
@@ -47,17 +49,33 @@ Switch = function(el,options){
     var config = that.config = $.extend(true,{},el.vnode.props.switch);
     that.template = ['<div class="dui-switch'+function(){
         return config.activeValue==config.value ? ' is-checked':'';
-    }()+'">',
+    }()+' '+config.skin+'">',
         function(){
-            return that.config.inactiveText ? '<span class="dui-switch__label dui-switch__label--left'+function(){
-                return config.inactiveValue==config.value ? " is-active":'';
-            }()+'"><span>'+config.inactiveText+'</span></span>':'';
+            if(config.skin=='label-out'){
+                return that.config.inactiveText ? '<span class="dui-switch__label dui-switch__label--left'+function(){
+                    return config.inactiveValue==config.value ? " is-active":'';
+                }()+'"><span>'+config.inactiveText+'</span></span>':'';
+            }
+            return '';
         }(),
-        '<span class="dui-switch__core" style="width: '+config.width+'px;"></span>',
+        '<span class="dui-switch__core" style="width: '+config.width+'px;'+function(){
+            return config.activeValue==config.value ? 'border-color:'+config.activeColor+';'+'background-color:'+config.activeColor+';' : 
+            'border-color:'+config.inactiveColor+';'+'background-color:'+config.inactiveColor+';';
+        }()+'">'+function(){
+            if(config.skin=='label-in'){
+                return '<em>'+function(){
+                    return config.activeValue==config.value ? config.activeText : config.inactiveText;
+                }()+'</em>';
+            }
+            return '';
+        }()+'</span>',
         function(){
-            return that.config.activeText ? '<span class="dui-switch__label dui-switch__label--right'+function(){
-                return config.activeValue==config.value ? " is-active":'';
-            }()+'"><span>'+config.activeText+'</span></span>' : '';
+            if(config.skin=='label-out'){
+                return that.config.activeText ? '<span class="dui-switch__label dui-switch__label--right'+function(){
+                    return config.activeValue==config.value ? " is-active":'';
+                }()+'"><span>'+config.activeText+'</span></span>' : '';
+            }
+            return '';
         }(),
     '</div>'].join('');
     //设置checkbox选中
@@ -76,17 +94,32 @@ Switch = function(el,options){
         //获取当前值
         var othis = $(that.el),value = othis.val();
         if(dui.convertProp(value,props.value.type)==that.config.activeValue){
-            //当前是选中
+            //设置当前是选中
             othis.val(that.config.inactiveValue);
+            //设置当前没有选中
             $dom.removeClass('is-checked');//移除选中样式
             $dom.find('.'+ClassName.switchLabelLeft).addClass('is-active');
             $dom.find('.'+ClassName.switchLabelRight).removeClass('is-active');
+            if(config.skin=='label-in'){
+                $dom.find('.'+ClassName.switchCore).find('em').text(config.inactiveText);
+            }
+            //颜色
+            $dom.find('.'+ClassName.switchCore).css('background',config.inactiveColor);
+            //颜色
+            $dom.find('.'+ClassName.switchCore).css('border-color',config.inactiveColor);
         }else{
-            //当前没有选中
+            //设置当前是选中
             othis.val(that.config.activeValue);
             $dom.addClass('is-checked');//移除选中样式
             $dom.find('.'+ClassName.switchLabelLeft).removeClass('is-active');
             $dom.find('.'+ClassName.switchLabelRight).addClass('is-active');
+            if(config.skin=='label-in'){
+                $dom.find('.'+ClassName.switchCore).find('em').text(config.activeText);
+            }
+            //颜色
+            $dom.find('.'+ClassName.switchCore).css('background',config.activeColor);
+            //颜色
+            $dom.find('.'+ClassName.switchCore).css('border-color',config.activeColor);
         }
         //手动回调一下
         othis[0] && othis.change && othis.change()
@@ -545,7 +578,7 @@ Select = function(el,options){
         if(elements.optDom.find(othis)[0] || elements.optDom[0]==othis[0]){
             return false;
         }
-        hide();
+        elements.optDom.css('display')!='none' && hide();
     })
 },
 Selector={
@@ -557,6 +590,7 @@ Selector={
 },
 ClassName={
     switch:'dui-switch',
+    switchCore:'dui-switch__core',
     switchLabelLeft:'dui-switch__label--left',
     switchLabelRight:'dui-switch__label--right',
     checkbox:'dui-checkbox',

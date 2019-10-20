@@ -9,6 +9,7 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
         popper:'.dui-popper',
         menubar:'[dui-menubar]',
         menus:'.dui-menu',
+        submenu:'.dui-submenu',
         submenusTitles:'.dui-submenu__title',
         menuItem:'.dui-menu-item',
         moreappContent:'.dui-admin__moreapps-content',
@@ -63,24 +64,19 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
             // 设置pjax开始监听
             $(document).on('pjax:start', function(e){ 
                 nprogress.start();
-                var goUrl = location.pathname;
-                that.custonEvent.changeUrlHander.call(this,goUrl);
             });
             // 设置pjax结束监听
-            $(document).on('pjax:end',   function() { nprogress.done();  });
-            // 初始化设置和表格条件展开事件
-            $(document).on('click','.show-parent',function(e){
-                var parent = $(this).parent();
-                if(parent.hasClass(CLASS.open)){
-                    parent.removeClass(CLASS.open);
-                }else{
-                    parent.addClass(CLASS.open);
-                }
-            })
+            $(document).on('pjax:end',   function() { 
+                nprogress.done();
+                var menuId = window.duiRoute;
+                that.custonEvent.changeUrlHander.call(this,menuId);
+                window.currenLocation = null;
+            });
             // 窗口大小发生变化事件
             $(window).on('resize',function(e){
                 $(SELECTOR.adminbox).removeClass(CLASS.open).removeClass(CLASS.shrink);
             })
+            
         },
         /**
          * 添加事件
@@ -146,9 +142,9 @@ define('admin',['jquery','element','pjax','nprogress','popup'],function($,elemen
             }
         },
         custonEvent:{
-            changeUrlHander:function(url){
+            changeUrlHander:function(id){
                 // 找到url所属的侧边栏元素
-                var currentAsideMenu = $(SELECTOR.aside).find(SELECTOR.menuItem+'[href="'+url+'"]');
+                var currentAsideMenu = $(SELECTOR.aside).find(SELECTOR.menuItem+'[data-id="'+id+'"]');
                 // 如果当前元素有class为is-active，则直接返回
                 if(currentAsideMenu.hasClass(CLASS.active)) return;
                 // 移除当前菜单跳转高亮

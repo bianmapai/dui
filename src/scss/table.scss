@@ -3,6 +3,10 @@
 @import "common/var";
 
 @include b(table) {
+  table{
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
@@ -12,7 +16,15 @@
   background-color: $--color-white;
   font-size: 14px;
   color: $--table-font-color;
-
+  @include e(box){
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    flex: 1;
+    width: 100%;
+    max-width: 100%;
+    font-size: 14px;
+  }
   // 数据为空
   @include e(empty-block) {
     min-height: 60px;
@@ -80,10 +92,6 @@
   @include m(fit) {
     border-right: 0;
     border-bottom: 0;
-
-    th.gutter, td.gutter {
-      border-right-width: 1px;
-    }
   }
 
   thead {
@@ -117,13 +125,6 @@
     @include when(right) {
       text-align: right;
     }
-
-    &.gutter {
-      width: 15px;
-      border-right-width: 0;
-      border-bottom-width: 0;
-    }
-
     &.is-hidden {
       visibility: hidden;
     }
@@ -167,10 +168,6 @@
   td {
     div {
       box-sizing: border-box;
-    }
-
-    &.gutter {
-      width: 0;
     }
   }
 
@@ -318,15 +315,8 @@
     z-index: 3;
   }
 
-  @include e((header-wrapper, body-wrapper, footer-wrapper)) {
+  @include e((header-wrapper, body-wrapper)) {
     width: 100%;
-  }
-
-  @include e(footer-wrapper) {
-    margin-top: -1px;
-    td {
-      border-top: $--table-border;
-    }
   }
 
   @include e((header, body, footer)) {
@@ -334,7 +324,7 @@
     border-collapse: separate;
   }
 
-  @include e((header-wrapper, footer-wrapper)) {
+  @include e((header-wrapper)) {
     overflow: hidden;
 
     & tbody td {

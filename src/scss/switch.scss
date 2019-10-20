@@ -80,7 +80,16 @@
       height: $--switch-button-size;
       background-color: $--color-white;
     }
+
+    & em{
+      position: absolute;
+      color: #999;
+      font-style: normal!important;
+      font-size: 12px;
+      right: 5px;
+    }
   }
+  
 
   @include when(checked) {
     .#{$namespace}-switch__core {
@@ -89,6 +98,11 @@
       &::after {
         left: 100%;
         margin-left: -$--switch-button-size - 1px;
+      }
+    }
+    .#{$namespace}-switch__core{
+      & em{
+        left:  5px;
       }
     }
   }

@@ -34,27 +34,26 @@
                     </div>
                 </div>
                 <div class="dui-col-xs12 dui-col-sm6 algin-right">
-                    <div class="dui-admin__search">
+                    <div class="dui-search dui-admin__search">
                         <div class="dui-input dui-input-group dui-input-group--append dui-input-group--prepend">
                             <div class="dui-input-group__prepend">
-                                <input type="hidden" class="dui-search__field-hide" name="field">
+                                <input type="hidden" class="dui-search__field-hide" name="field" value="name|title">
                                 <div class="dui-search__field">
                                     <span class="dui-search__field-show">不限</span>
                                     <i class="dui-icon-arrow-down"></i>
                                 </div>
                                 <ul class="dui-search__field-popper dui-popper dui-dropdown-menu" style="display: none;">
-                                    <li class="dui-dropdown-menu__item" data-field="name">
-                                        配置名称
+                                    <li class="dui-dropdown-menu__item" data-field="name|title">
+                                        不限
                                     </li>
-                                    <li class="dui-dropdown-menu__item" data-field="name">
-                                        配置标题
-                                    </li>
-                                    <li class="dui-dropdown-menu__item" data-field="name">
-                                        配置分组
-                                    </li>
-                                </ul>
+                                                                    <li class="dui-dropdown-menu__item" data-field="name">
+                                        配置名称                                </li>
+                                                                    <li class="dui-dropdown-menu__item" data-field="title">
+                                        配置标题                                </li>
+                                        <div x-arrow="" class="popper__arrow"></div>
+                                                                </ul>
                             </div>
-                            <input type="text" placeholder="请输入内容" class="dui-input__inner">
+                            <input type="text" class="dui-input__inner" name="keyword" placeholder="请输入配置名称/配置标题">
                             <div class="dui-input-group__append">
                                 <button class="dui-button dui-button--default"><i class="dui-icon-search"></i></button>
                             </div>
@@ -67,7 +66,7 @@
                 <div class="dui-query__condition-label">
                     筛选条件
                 </div>
-                <div class="dui-query__condition-body">
+                <div class="dui-query__condition-show">
 
                 </div>
             </div>
@@ -81,8 +80,26 @@
                     </div>
                     <button type="button" class="dui-query__closebtn"><i class="dui-query__close dui-icon-circle-close"></i></button>
                 </div>
-                <div class="dui-query__body">
-                    
+                <div class="dui-query__body" dui-form>
+                    <div class="dui-query__toolbar">
+                        <div class="dui-col-xs6">
+                            <div class="dui-button-group">
+                                <button class="dui-button dui-button--primary dui-button--small" query-event="addCondition">添加条件</button>
+                                <button class="dui-button dui-button--primary dui-button--small" query-event="addGroup">添加分组</button>
+                            </div>
+                        </div>
+                        <div class="dui-col-xs6" style="text-align: right;">
+                            <span>
+                                <input type="checkbox" dui-checkbox id="auto_search" bordered="true" label="实时更新">
+                            </span>
+                            <button class="dui-button dui-button--primary dui-button--small" style="float: right;">查询</button>
+                        </div>
+                    </div>
+                    <div class="dui-query__body-inner">
+                        <ul>
+                            
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -90,8 +107,7 @@
 </div>
 <script>
     // console.log(dui.defaluts.config);
-dui.use(['table','builTable'],function(table,builTable){
-    console.log(builTable);
+dui.use(['table','buildtable'],function(table,buildtable){
     var thisTable = table.render({
         el:'#ceshi',
         height:'full-305',
@@ -123,13 +139,16 @@ dui.use(['table','builTable'],function(table,builTable){
                 title: '操作'}
         ]]
     });
-    $('#getData').on('click',function(e){
-        var data = thisTable.getCheckedData();
-        popup.dialog({
-            title:'选中数据',
-            content:JSON.stringify(data)
-        })
-    })
+    buildtable.render(thisTable,[
+
+    ]);
+    // $('#getData').on('click',function(e){
+    //     var data = thisTable.getCheckedData();
+    //     popup.dialog({
+    //         title:'选中数据',
+    //         content:JSON.stringify(data)
+    //     })
+    // })
 })
 </script>
 @@include('include/foot.html')

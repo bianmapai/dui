@@ -142,6 +142,7 @@ element.Items = element.prototype = {
                 return;
             }else{
                 that.timerout = setTimeout(function(){
+                    that.visible =false;
                     that.popper.updatePopper();
                     that.transition.show();
                 },(that.toggle==='hover'?that.showTimeout:0))
@@ -150,6 +151,7 @@ element.Items = element.prototype = {
         var hide = function(){
             clearTimeout(that.timerout);
             that.timerout = setTimeout(function(){
+                that.visible =true;
                 that.transition.hide();
             },(that.toggle==='hover'?that.hideTimeout:0))
         };
@@ -159,10 +161,8 @@ element.Items = element.prototype = {
         }else{
             ref.on('click',function(e){
                 if(that.visible){
-                    that.visible =false;
                     show();
                 }else{
-                    that.visible =true;
                     hide();
                 }
             })
