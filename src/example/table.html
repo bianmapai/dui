@@ -62,46 +62,6 @@
                 </div>
             </div>
             <table dui-table id="ceshi"></table>
-            <div class="dui-query__condition">
-                <div class="dui-query__condition-label">
-                    筛选条件
-                </div>
-                <div class="dui-query__condition-show">
-
-                </div>
-            </div>
-            <div class="dui-query">
-                <div class="dui-query__show show-parent" title="高级查询">
-                    <i class="dui-icon-search"></i>
-                </div>
-                <div class="dui-query__header">
-                    <div class="dui-query__title">
-                        <span>高级查询</span>
-                    </div>
-                    <button type="button" class="dui-query__closebtn"><i class="dui-query__close dui-icon-circle-close"></i></button>
-                </div>
-                <div class="dui-query__body" dui-form>
-                    <div class="dui-query__toolbar">
-                        <div class="dui-col-xs6">
-                            <div class="dui-button-group">
-                                <button class="dui-button dui-button--primary dui-button--small" query-event="addCondition">添加条件</button>
-                                <button class="dui-button dui-button--primary dui-button--small" query-event="addGroup">添加分组</button>
-                            </div>
-                        </div>
-                        <div class="dui-col-xs6" style="text-align: right;">
-                            <span>
-                                <input type="checkbox" dui-checkbox id="auto_search" bordered="true" label="实时更新">
-                            </span>
-                            <button class="dui-button dui-button--primary dui-button--small" style="float: right;">查询</button>
-                        </div>
-                    </div>
-                    <div class="dui-query__body-inner">
-                        <ul>
-                            
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -110,7 +70,7 @@
 dui.use(['table','buildtable'],function(table,buildtable){
     var thisTable = table.render({
         el:'#ceshi',
-        height:'full-305',
+        height:'full-265',
         page:{
             show:true
         },
@@ -125,7 +85,14 @@ dui.use(['table','buildtable'],function(table,buildtable){
                 fixed:true,//浮动列
             }
             ,{field:'username', width:80, title: '用户名'}
-            ,{field:'sex', width:80, title: '性别', sort: true}
+            ,{field:'sex', width:80, title: '性别', sort: true,filter:{
+                type:'enum',
+                options:{
+                    1:'男',
+                    2:'女',
+                    0:'未知'
+                }
+            }}
             ,{field:'city', width:80, title: '城市'}
             ,{field:'sign', title: '签名', width: '30%', minWidth: 100} //部定义当前单元格的最小宽度
             ,{field:'experience', title: '积分', sort: true}
@@ -139,16 +106,16 @@ dui.use(['table','buildtable'],function(table,buildtable){
                 title: '操作'}
         ]]
     });
-    buildtable.render(thisTable,[
+    // buildtable.render(thisTable,[
 
-    ]);
-    // $('#getData').on('click',function(e){
-    //     var data = thisTable.getCheckedData();
-    //     popup.dialog({
-    //         title:'选中数据',
-    //         content:JSON.stringify(data)
-    //     })
-    // })
+    // ]);
+    // // $('#getData').on('click',function(e){
+    // //     var data = thisTable.getCheckedData();
+    // //     popup.dialog({
+    // //         title:'选中数据',
+    // //         content:JSON.stringify(data)
+    // //     })
+    // // })
 })
 </script>
 @@include('include/foot.html')

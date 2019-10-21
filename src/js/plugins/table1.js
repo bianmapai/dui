@@ -9,7 +9,7 @@ import pagination from "pagination";
 var _WIN = $(window),
 _DOC = $(document),
 // 常量定义
-ELEM = '.dui-table',HEADER='.dui-table__header-wrapper',BODYER='.dui-table__body-wrapper',
+ELEM = '.dui-table',TABLEBOX='.dui-table__box',HEADER='.dui-table__header-wrapper',BODYER='.dui-table__body-wrapper',
 FIXED = '.dui-table__fixed',FIXED_LEFT='.dui-table__fixed-left',FIXED_RIGHT='.dui-table__fixed-right',
 PAGE = '.dui-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
 TABLEBODY='.dui-table__body',ROWHOVER='.dui-table__body tr',FIXED_HEAD='.dui-table__fixed-header-wrapper',
@@ -78,6 +78,7 @@ TMPL_MAIN = function(){
     ' dui-filter="dui-table-{{index}}-form"',
     // 设置table的宽高
     ' style="{{if height}}height:{{height}}px{{/if}}">',
+        '<div class="dui-table__box">',
         '<div class="dui-table__header-wrapper">',
             TMPL_HEAD(),
         '</div>',
@@ -102,12 +103,13 @@ TMPL_MAIN = function(){
             '</div>',
         '</div>',
         '{{/if}}',
+        // 补丁
+        '<div class="dui-table__fixed-right-patch"></div>',
+        '</div>',
         '{{if page.show}}',
         '<div class="dui-table__page">',
         '</div>',
         '{{/if}}',
-        // 补丁
-        '<div class="dui-table__fixed-right-patch"></div>',
         // 设置样式
         '<style>',
             '{{each columns  item1 i1}}',
@@ -246,6 +248,7 @@ Class.prototype.init = function(){
     // 插入显示元素
     var str = template.render(TMPL_MAIN(),config),
     reElem = that.reElem = $(str),
+    duiTableBox   = that.duiTableBox   = reElem.find(TABLEBOX),
     duiHeader     = that.duiHeader     = reElem.find(HEADER),
     duiBodyer     = that.duiBodyer     = reElem.find(BODYER),
     duiFixed      = that.duiFixed      = reElem.find(FIXED),
@@ -265,8 +268,8 @@ Class.prototype.init = function(){
     // 同步header高度
     duiHeader.find('th').each(function(i,item){
         var key = $(item).data('key');
-        duiFixedL.find('th[data-key="'+key+'"]').css('height',$(item).outerHeight());
-        duiFixedR.find('th[data-key="'+key+'"]').css('height',$(item).outerHeight());
+        duiFixedL.find('th[data-key="'+key+'"]').css('height',($(item).outerHeight()+1));
+        duiFixedR.find('th[data-key="'+key+'"]').css('height',($(item).outerHeight()+1));
     })
     // 渲染form
     that.renderForm();
@@ -360,14 +363,12 @@ Class.prototype.fullSize = function(){
         if(height < 135) height = 135;
         that.reElem.css('height', height);
     }
-    that.fixedHeight = that.reElem.height();
+    that.fixedHeight = that.duiTableBox.height();
     if(!height) return;
     bodyHeight = parseFloat(height) - (that.duiHeader.outerHeight() || 48);
-    
     //减去分页栏的高度
     if(options.page.show){
         bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
-        that.fixedHeight = that.reElem.height()-(that.duiPage.outerHeight() || 41);
     }
     //设置bodyWrap高度
     that.duiBodyer.css('height',bodyHeight);
@@ -392,7 +393,7 @@ Class.prototype.setFixedStyle = function(){
     // 设置浮动内容的高度和距离header的高度
     that.duiFixed.find(FIXED_WRAP).css({
         height:(bodyHeight-scrollHeight),
-        top:headerHeight
+        top:(headerHeight+1)
     });
     // 如果没有横向滚动条则隐藏
     if(scrollHeight==0){
@@ -602,10 +603,9 @@ Class.prototype.setScrollPatch = function(){
         that.duiFixedR.css({
             'right':(scrollWidth),//减1是为了遮住滚动条的边框
         });
-        
         that.duiPatch.css({
             width:scrollWidth,
-            height:that.duiHeader.height()
+            height:(that.duiHeader.height())
         })
     }else{
         that.duiFixedR.css({

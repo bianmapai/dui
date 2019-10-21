@@ -89,11 +89,6 @@
     overflow: hidden;
   }
 
-  @include m(fit) {
-    border-right: 0;
-    border-bottom: 0;
-  }
-
   thead {
     color: $--table-header-font-color;
     font-weight: 500;
@@ -461,6 +456,33 @@
       margin-right: 3px;
     }
   }
+
+  // 高级查询
+  @include e(condition){
+    height: 40px;
+    line-height: 40px;
+    box-sizing: border-box;
+    border-top: $--table-border;
+    @include e(condition-label){
+      position: relative;
+      display: inline-block;
+      padding: 0 15px;
+      color: #606266;
+      cursor: pointer;
+      &::before{
+        content: "";
+        width: 1px;
+        position: absolute;
+        height: 24px;
+        right: 0;
+        top: 8px;
+        background: $--table-border-color;
+      }
+    }
+  }
+
+
+
 }
 
 

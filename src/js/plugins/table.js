@@ -11,7 +11,7 @@ _DOC = $(document),
 // 常量定义
 ELEM = '.dui-table',TABLEBOX='.dui-table__box',HEADER='.dui-table__header-wrapper',BODYER='.dui-table__body-wrapper',
 FIXED = '.dui-table__fixed',FIXED_LEFT='.dui-table__fixed-left',FIXED_RIGHT='.dui-table__fixed-right',
-PAGE = '.dui-table__page',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
+PAGE = '.dui-table__page',CONDITION='.dui-table__condition',PATCH = '.dui-table__fixed-right-patch',FIXED_WRAP='.dui-table__fixed-body-wrapper',
 TABLEBODY='.dui-table__body',ROWHOVER='.dui-table__body tr',FIXED_HEAD='.dui-table__fixed-header-wrapper',
 TABLEHEADER = '.dui-table__header',HEADER_TH = TABLEHEADER+' th',HEADER_SORT='.caret-wrapper',TREETABLE_EXPAND='dui-table__expand-icon',
 TREETABLE_EXPANDED='dui-table__expand-icon--expanded',
@@ -47,7 +47,7 @@ TMPL_HEAD=function(options){
                             '{{if item2.type=="checkbox"}}',
                                 '<input type="checkbox" dui-checkbox indeterminate="true"{{if checkAll}} checked="checked"{{/if}} dui-filter="checkAll">',
                             '{{else}}',
-                                '{{item2.title}}',
+                                '{{item2.title||item2.field}}',
                             '{{/if}}',
                             // 排序
                             '{{if item2.sort && item2.colspan==1 && item2.type!=="checkbox" && item2.type!=="numbers"}}',
@@ -108,6 +108,14 @@ TMPL_MAIN = function(){
         '</div>',
         '{{if page.show}}',
         '<div class="dui-table__page">',
+        '</div>',
+        '{{/if}}',
+        '{{if filterArr.length>0}}',
+        '<div class="dui-table__condition">',
+            '<div class="dui-table__condition-label">编辑筛选条件</div>',
+            '<div class="dui-table__condition-body">',
+                '<div class="dui-table__condition-body-inner"></div>',
+            '</div>',
         '</div>',
         '{{/if}}',
         // 设置样式
@@ -259,7 +267,10 @@ Class.prototype.init = function(){
     duiPage       = that.duiPage       = reElem.find(PAGE),
     duiGutter     = that.duiGutter     = $('<th class="gutter"><div class="cell"></div></th>'),
     duiPatch      = that.duiPatch      = reElem.find(PATCH),
-    duiLoading    = that.duiLoading    = popup.loading({target:reElem[0]});
+    duiLoading    = that.duiLoading    = popup.loading({target:reElem[0]}),
+    duiCondition  = that.duiCondition  = reElem.find(CONDITION);
+    // 如果有条件显示元素则初始化
+    duiCondition[0] && that.initFilter();
     // 如果已经渲染过了则移除
     hasRender[0] && hasRender.remove();
     el.after(reElem);
@@ -285,12 +296,16 @@ Class.prototype.init = function(){
         }
     }, 50);
 }
+Class.prototype.initFilter = function(){
+    var that = this,options = that.config;
+
+}
 /**
  * 初始化列
  */
 Class.prototype.initColumns = function(){
     var that = this,config = that.config,
-    columns = config.columns,
+    columns = config.columns,filterObj={},filterArr=[],
     initColWidthWithType = function(item){
         var initWidth = {
             checkbox: 48
@@ -324,9 +339,19 @@ Class.prototype.initColumns = function(){
                 })
                 col.colGroup = true; //标注是组合列
             }
+            // 初始化筛选列
+            if(col.filter){
+                var temp = $.extend(true,{},col.filter);
+                if(!temp.type) temp.type='string';
+                if(!temp.title) temp.title = col.title || col.field;
+                temp.field = col.field;
+                filterObj[col.field] = temp,filterArr.push(temp);
+            }
             initColWidthWithType(col);
         })
     })
+    // 设置过滤条件
+    config.filterObj = filterObj,config.filterArr = filterArr;
     // 初始化列宽度
     that.initColumnsWidth();
 }
@@ -368,6 +393,10 @@ Class.prototype.fullSize = function(){
     bodyHeight = parseFloat(height) - (that.duiHeader.outerHeight() || 48);
     //减去分页栏的高度
     if(options.page.show){
+        bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
+    }
+    // 如果有过滤条件,在减去过滤条件的高度
+    if(options.filterArr.length>0){
         bodyHeight = that.bodyHeight = (bodyHeight - (that.duiPage.outerHeight() || 41) - 2);
     }
     //设置bodyWrap高度
