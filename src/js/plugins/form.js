@@ -87,7 +87,7 @@ Switch = function(el,options){
     hasRender[0] && (el.value = that.originalValue) && hasRender.remove();
     $(el).after($dom);
     //设置点击事件
-    $dom.off('click').on('click',function(e){
+    dui.on($dom[0],'click',function(e){
         if(config.disabled){
             return;
         }
@@ -196,7 +196,7 @@ Checkbox=function(el,options){
     if(config.disabled){
         return;
     }
-    $showDom.off('click').on('click',function(e){
+    dui.on($showDom[0],'click',function(e){
         // 当前被点击的对象
         var othis = $showDom,
         // 当前被点击的checkbox

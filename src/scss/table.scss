@@ -1,7 +1,15 @@
 @import "mixins/mixins";
 @import "./mixins/config.scss";
 @import "common/var";
-
+@include b(firebrick){
+  color: firebrick;
+}
+@include b(deeppink){
+  color: deeppink;
+}
+@include b(blueviolet){
+  color: blueviolet;
+}
 @include b(table) {
   table{
     border-collapse: collapse;
@@ -480,8 +488,100 @@
       }
     }
   }
+  @include e(filterForm-toolbar){
+    padding-bottom: 10px;
+    position: relative;
+    &:after{
+      content: '';
+      clear: both;
+      display: block;
+    }
+    &:before{
+      content: "";
+      height: 1px;
+      width: 100%;
+      background: $--border-color-lighter;
+      position: absolute;
+      bottom: 0;
+    }
+    & .#{$namespace}-checkbox{
+      padding: 5px 20px 5px 10px;
+      height: 32px;
+    }
+  }
+  @include e(filterFrom-toolbar-op){
+    text-align: right;
+    &>.#{$namespace}-checkbox{
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
+  @include e(filterForm-body){
+    padding-top: 10px;
+  }
+  @include e(filter-item){
+    line-height: 28px;
+    padding-left: 15px;
+    position: relative;
+    &::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      border-left: 1px dotted #c0c4cc;
+    }
+    &:last-child::before{
+      height: 14px;
+    }
+    &::after{
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 0;
+      width: 15px;
+      height: 0;
+      border-top: 1px dotted #c0c4cc;
+    }
+    & .dui-switch{
+      em{
+        color: $--color-white;
+      }
+    }
+    @include e(filter-item-content){
+      &>div{
+        display: inline-block;
+      }
+      &>div+div{
+        margin-left: 8px;
+      }
+      & label[filter-event]{
+        cursor: pointer;
+        &:hover{
+          text-decoration: underline;
+        }
+      }
+      &:hover{
+        &>.#{$namespace}-table__filter-item-delete{
+          display: inline-block !important;
+        }
+      }
+      @include e(filter-item-delete){
+        color: red;
+        display: none !important;
+      }
+    }
+    @include e(popver){
+      margin: 5px 0;
+      background-color: #fff;
+      border: 1px solid #ebeef5;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    }
 
-
+  }
+  // 高级查询结束
 
 }
 

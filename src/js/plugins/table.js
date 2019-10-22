@@ -112,7 +112,7 @@ TMPL_MAIN = function(){
         '{{/if}}',
         '{{if filterArr.length>0}}',
         '<div class="dui-table__condition">',
-            '<div class="dui-table__condition-label">编辑筛选条件</div>',
+            '<div class="dui-table__condition-label">高级查询</div>',
             '<div class="dui-table__condition-body">',
                 '<div class="dui-table__condition-body-inner"></div>',
             '</div>',
@@ -296,9 +296,209 @@ Class.prototype.init = function(){
         }
     }, 50);
 }
+/**
+ * 初始化筛选器
+ */
 Class.prototype.initFilter = function(){
-    var that = this,options = that.config;
+    var theTable = this,theOption = theTable.config,dataId=0;
+    // 定义条件
+    var Allcondition = {
+        eq:'等于',
+        neq:'不等于',
+        gt:'大于',
+        gte:'大于等于',
+        lt:'小于',
+        lte:'小于等于',
+        contain:'包含',
+        notContain:'不包含',
+        between:'介于'
+    }
+    // 根据类型设置对应拥有的权限
+    var condition = {
+        'integer':['eq','neq','gt','gte','lt','lte','contain','notContain','between'],
+        'float':['eq','neq','gt','gte','lt','lte','contain','notContain','between'],
+        'timestamp':['gt','gte','lt','lte','between'],
+        'boolean':['eq','neq'],
+        'string':['contain','notContain'],
+        'enum':['eq','neq'],
+    }
+    var frist = theOption.filterArr[0];
+    var SELECTOR={
+        toolbar:'.dui-table__filterForm-toolbar',
+        itemContent:'.dui-table__filter-item-content',
+    }
+    var filterForm = function(){
+        var that = this;that.events={
+            // 添加一个条件
+            addCondition:function(e){
+                var othis = $(this),ul;
+                // 顶部的按钮
+                if(othis.parents(SELECTOR.toolbar)[0]){
+                    ul = othis.parents(SELECTOR.toolbar).next().children('ul');
+                }else{
+                    ul = othis.parents(SELECTOR.itemContent).next('ul');
+                }
+                var itemDom = $(['<li class="dui-table__filter-item" data-id="'+(dataId++)+'" data-field="'+frist.field+'" data-mod="condition" data-type="'+frist.type+'" data-condition="'+condition[frist.type][0]+'" data-value="">',
+                    '<div class="dui-table__filter-item-content">',
+                        '<div class="dui-table__filter-item-prefix">',
+                            '<input type="checkbox" dui-switch value="1" active-value="1" inactive-value="0" active-text="且" inactive-text="或" skin="label-in" width="43" inactive-color="#67c23a">',
+                        '</div>',
+                        '<div class="dui-table__filter-item-field">',
+                            '<label filter-event="fieldChange" class="dui-firebrick">'+frist.title+'</label>',
+                        '</div>',
+                        '<div class="dui-table__filter-item-conditio">',
+                            '<label filter-event="conditionChange" class="dui-deeppink">'+Allcondition[condition[frist.type][0]]+'</label>',
+                        '</div>',
+                        '<div class="dui-table__filter-item-value">',
+                            '<label filter-event="valueChange" class="dui-blueviolet">'+((frist.type=='enum')?'请选择...':'请输入...')+'</label>',
+                        '</div>',
+                        '<div class="dui-table__filter-item-delete">',
+                            '<label filter-event="deletItem"><i class="dui-icon-circle-close"></i></label>',
+                        '</div>',
+                    '</div>',
+                '</li>'].join(''));
+                // 渲染dom
+                form.render(itemDom);
+                // 添加元素
+                ul.append(itemDom);
+            },
+            // 添加一个条件组
+            addGroup:function(e){
+                var othis = $(this),ul;
+                // 顶部的按钮
+                if(othis.parents(SELECTOR.toolbar)[0]){
+                    ul = othis.parents(SELECTOR.toolbar).next().children('ul');
+                }else{
+                    ul = othis.parents(SELECTOR.itemContent).next('ul');
+                }
+                var itemDom = $(['<li class="dui-table__filter-item">',
+                    '<div class="dui-table__filter-item-content">',
+                        '<div class="dui-table__filter-item-prefix">',
+                            '<input type="checkbox" dui-switch value="1" active-value="1" inactive-value="0" active-text="且" inactive-text="或" skin="label-in" width="43" inactive-color="#67c23a">',
+                        '</div>',
+                        '<div class="dui-table__filter-item-field">',
+                            '<label class="dui-firebrick">分组</label>',
+                        '</div>',
+                        '<div class="dui-table__filter-item-operation">',
+                            '<div class="dui-button-group">',
+                                '<button class="dui-button dui-button--primary dui-button--mini" filter-event="addCondition">添加条件</button>',
+                                '<button class="dui-button dui-button--primary dui-button--mini" filter-event="addGroup">添加分组</button>',
+                            '</div>',
+                        '</div>',
+                        '<div class="dui-table__filter-item-delete">',
+                            '<label filter-event="deletItem"><i class="dui-icon-circle-close"></i></label>',
+                        '</div>',
+                    '</div>',
+                    '<ul class="dui-table__filter-item-group">',                    
+                    '</ul>',
+                '</li>'].join(''));
+                // 渲染dom
+                form.render(itemDom);
+                // 添加元素
+                ul.append(itemDom);
+            },
+            // 删除一个条件或者条件组
+            deletItem:function(e){
+                var othis = $(this),li=othis.parents(SELECTOR.itemContent).parent();
 
+                li.remove();
+            },
+            // 字段切换事件
+            fieldChange:function(e){
+                var othis = $(this),dataDom=othis.parents(SELECTOR.itemContent).parent('li');
+                if(this.popverDom && $(this.popverDom).css('display')!=='none'){
+                    this.hide();
+                }else{
+                    var currField = dataDom.attr('data-field');
+                    var content = $(['<ul class="dui-select-dropdown__list">',
+                        function(){
+                            var res = '';
+                            $.each(theOption.filterArr,function(i,item){
+                                res  += '<li class="dui-select-dropdown__item'+(currField==item.field ? ' selected':'')+'" dui-value="'+item.field+'"><span>'+item.title+'</span></li>';
+                            })
+                            return res;
+                        }(),
+                    '</ul>'].join(''));
+                    content.on('click','.dui-select-dropdown__item',function(e){
+                        
+                    })
+                    // 内容信息
+                    that.events.showPopover(this,content[0]);
+                }
+            },
+            showPopover:function(ref,content){
+                var popverDom = $(['<div class="dui-popper dui-popver dui-table__popver" style="display:none">',
+                    '<div x-arrow="" class="popper__arrow"></div>',
+                '</div>'].join(''));
+                popverDom.prepend(content);
+                var x = {top:'bottom','bottom':'top'};
+                ref.popverDom = popverDom[0];
+                $('body').append(popverDom);
+                popverDom[0].visible = popverDom.css('display')=='none' ? true : false;
+                popverDom[0].popver = dui.addPopper(ref,popverDom[0],{
+                    onCreate:function(data){
+                        popverDom[0].transition = dui.transition(popverDom[0],{
+                            name:'dui-zoom-in-'+x[data._options.placement],
+                            afterLeave:function(){
+                                popverDom.remove();
+                            }
+                        });
+                    },
+                    onUpdate:function(data){
+                        popverDom[0].transition.data.name = 'dui-zoom-in-'+x[data.placement];
+                    }
+                })
+                popverDom[0].show = function(){
+                    $('body').append(popverDom);
+                    popverDom[0].visible =false;
+                    popverDom[0].popver.updatePopper();
+                    popverDom[0].transition.show();
+                }
+                popverDom[0].hide = ref.hide = function(){
+                    popverDom[0].visible =true;
+                    popverDom[0].transition.hide();
+                }
+                popverDom[0].show();
+            }
+        };
+        var formDom = that.formDom = $(['<div class="dui-table__filterForm">',
+            '<div class="dui-table__filterForm-toolbar">',
+                '<div class="dui-button-group dui-col-xs6">',
+                    '<button class="dui-button dui-button--primary dui-button--small" filter-event="addCondition">添加条件</button>',
+                    '<button class="dui-button dui-button--primary dui-button--small" filter-event="addGroup">添加分组</button>',
+                '</div>',
+                '<div class="dui-col-xs6 dui-table__filterFrom-toolbar-op">',
+                    '<input type="checkbox" dui-checkbox="" id="auto_search" bordered="true" label="实时更新">',
+                    '<button class="dui-button dui-button--primary dui-button--small">查询</button>',
+                '</div>',
+            '</div>',
+            '<div class="dui-table__filterForm-body">',
+                '<ul></ul>',
+            '</div>',
+        '</div>'].join(''));
+        form.render(formDom[0]);
+    }
+    /**
+     * 显示filterFrom的方法
+     */
+    filterForm.prototype.show = function(options){
+        var that =this;
+        // 设置事件
+        $(that.formDom).on('click','[filter-event]',function(e){
+            var othis = $(this),oEnvent = othis.attr('filter-event');
+            console.log(oEnvent);
+            that.events && that.events[oEnvent] && that.events[oEnvent].call(this,e);
+        })
+        popup.dialog({
+            title:'高级查询',
+            content:that.formDom[0],
+            showFooter:false,
+            width:460,
+            height:400,
+        })
+    }
+    // 初始化filterForm并加入到class类
+    theTable.filterForm = new filterForm();
 }
 /**
  * 初始化列
@@ -1222,6 +1422,21 @@ Class.prototype.setEvent = function(){
             })
         }
     })
+    // 编辑高级筛选
+    that.reElem.on('click','.dui-table__condition-label',function(e){
+        that.filterForm.show();
+    })
+    // 增加统一关闭popver事件
+    $(document).on('click',function(e){
+        // 获取所有的popver
+        $('body').find('.dui-table__popver').each(function(i,popver){
+            var $popver = $(popver),$target = $(e.target);
+            if($popver[0]==$target[0] || $popver.find(e.target)[0]){
+                return;
+            }
+            $popver.css('display')!=='none' && $popver[0].hide && $popver[0].hide()
+        })
+    })
 }
 /**
  * 排序方法
@@ -1381,6 +1596,8 @@ Class.prototype.buildRequest = function(){
 table.render = function(options){
     return table(options);
 }
+
+
 /**
  * 自动初始化
  */
