@@ -31,7 +31,6 @@ Class.prototype.updatePopper = function(fn){
     if (popperJS) {
         if(fn){
             popperJS.onUpdate(function(data){
-                console.log('进来了');
                 fn.call(that,data);
                 popperJS.onUpdate(that.updateCallback);
             })

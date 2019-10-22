@@ -424,7 +424,7 @@ import $ from "jquery";
         var bodyHeight = height-hearderHeight-buttonHeight-thisPadding;
         content.css({
           'max-height':bodyHeight,
-          'overflow-y':'scroll'
+          'overflow-y':'auto'
         });
       }
       var offset = getOffset();

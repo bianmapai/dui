@@ -355,3 +355,116 @@
   width: 0;
   height: 0;
 }
+// 范围输入框
+@include b(range-editor){
+  &.dui-input__inner {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+  }
+  .dui-range-input {
+    line-height: 1;
+  }
+
+  @include when(active) {
+    border-color: $--color-primary;
+
+    &:hover {
+      border-color: $--color-primary;
+    }
+  }
+
+  @include m(small){
+    &.#{$namespace}-input__inner {
+      height: $--input-small-height;
+    }
+
+    .#{$namespace}-range-separator {
+      line-height: 24px;
+      font-size: $--input-small-font-size;
+    }
+
+    .#{$namespace}-range-input {
+      font-size: $--input-small-font-size;
+    }
+
+    .#{$namespace}-range__icon,
+    .#{$namespace}-range__close-icon {
+      line-height: 24px;
+    }
+  }
+
+  @include m(mini) {
+    &.#{$namespace}-input__inner {
+      height: $--input-mini-height;
+    }
+
+    .#{$namespace}-range-separator {
+      line-height: 20px;
+      font-size: $--input-mini-font-size;
+    }
+
+    .#{$namespace}-range-input {
+      font-size: $--input-mini-font-size;
+    }
+
+    .#{$namespace}-range__icon,
+    .#{$namespace}-range__close-icon {
+      line-height: 20px;
+    }
+  }
+
+  @include when(disabled) {
+    background-color: $--input-disabled-fill;
+    border-color: $--input-disabled-border;
+    color: $--input-disabled-color;
+    cursor: not-allowed;
+
+    &:hover, &:focus {
+      border-color: $--input-disabled-border;
+    }
+
+    input {
+      background-color: $--input-disabled-fill;
+      color: $--input-disabled-color;
+      cursor: not-allowed;
+      &::placeholder {
+        color: $--input-disabled-placeholder-color;
+      }
+    }
+
+    .#{$namespace}-range-separator {
+      color: $--input-disabled-color;
+    }
+  }
+}
+
+@include b(range-input) {
+  appearance: none;
+  border: none;
+  outline: none;
+  display: inline-block;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 39%;
+  text-align: center;
+  font-size: $--font-size-base;
+  color: $--color-text-regular;
+
+  &::placeholder {
+    color: $--color-text-placeholder;
+  }
+}
+
+@include b(range-separator) {
+  display: inline-block;
+  height: 100%;
+  padding: 0 5px;
+  margin: 0;
+  text-align: center;
+  line-height: 32px;
+  font-size: 14px;
+  width: 5%;
+  color: $--color-text-primary;
+}
