@@ -134,7 +134,9 @@ TMPL_MAIN = function(){
         '<div class="dui-table__condition">',
             '<div class="dui-table__condition-label">高级查询</div>',
             '<div class="dui-table__condition-body">',
-                '<div class="dui-table__condition-body-inner"></div>',
+                '<div class="dui-table__condition-body-inner">',
+                    '<div class="dui-table__condition-items"></div>',
+                '</div>',
             '</div>',
         '</div>',
         '{{/if}}',
@@ -390,7 +392,7 @@ Class.prototype.initFilter = function(){
                 var itemDom = $(['<li class="dui-table__filter-item"  data-id="'+(dataId++)+'" data-mod="group" data-prefix="and">',
                     '<div class="dui-table__filter-item-content">',
                         '<div class="dui-table__filter-item-prefix">',
-                            '<input type="checkbox" dui-switch value="1" active-value="1" inactive-value="0" active-text="且" inactive-text="或" skin="label-in" width="43" inactive-color="#67c23a">',
+                            '<input type="checkbox" dui-switch value="and" active-value="and" inactive-value="or" active-text="且" inactive-text="或" skin="label-in" width="43" inactive-color="#67c23a">',
                         '</div>',
                         '<div class="dui-table__filter-item-field">',
                             '<label class="dui-firebrick">分组</label>',
@@ -537,7 +539,7 @@ Class.prototype.initFilter = function(){
                             function(){
                                     var res = '';
                                     $.each(options,function(val,title){
-                                        res  += '<li class="dui-select-dropdown__item'+(currValue==val ? ' selected':'')+'" dui-value="'+val+'"><span>'+title+'</span></li>';
+                                        res  += '<li class="dui-select-dropdown__item'+(currValue==val && options[currValue] ? ' selected':'')+'" dui-value="'+val+'"><span>'+title+'</span></li>';
                                     })
                                     return res;
                                 }(),
@@ -568,7 +570,7 @@ Class.prototype.initFilter = function(){
                         if(currCondition=='between'){
                             var content = $(['<div class="dui-range-editor dui-input__inner dui-range-editor--mini">',
                                 '<input autocomplete="off" placeholder="开始值" name="" class="dui-range-input" value="'+function(){
-                                    var arr = currValue.split('到');
+                                    var arr = currValue.split(',');
                                     if(arr.length==2){
                                         return arr[0];
                                     }
@@ -576,7 +578,7 @@ Class.prototype.initFilter = function(){
                                 }()+'">',
                                 '<span class="dui-range-separator">到</span>',
                                 '<input autocomplete="off" placeholder="结束值" name="" class="dui-range-input" value="'+function(){
-                                    var arr = currValue.split('到');
+                                    var arr = currValue.split(',');
                                     if(arr.length==2){
                                         return arr[1];
                                     }
@@ -607,11 +609,11 @@ Class.prototype.initFilter = function(){
                                             inputs.eq(1).focus();
                                             return;
                                         }
-                                        var value = inputs.eq(0).val()+' 到 '+inputs.eq(1).val();
+                                        var value = [inputs.eq(0).val(),inputs.eq(1).val()];
                                         // 修改dataDom属性
-                                        dataDom.attr('data-value',value);//设置值
+                                        dataDom.attr('data-value',value.join(','));//设置值
                                         // 设置值的显示
-                                        dataDom.children().find(SELECTOR.itemValue+'>label').text(value||'请输入...');
+                                        dataDom.children().find(SELECTOR.itemValue+'>label').text(((value?value.join(' 到 '):'请输入...')));
                                         othis.show();
                                         content.remove();
                                         // 同步table表格底部条件
@@ -736,6 +738,7 @@ Class.prototype.sysFilterForm= function(genxin){
     var that = this,options = that.config,
     filterFormIns = that.filterForm,formDom = filterFormIns.formDom,
     filterArr = options.filterArr,filterObj=options.filterObj,
+    prefixs ={'and':'且','or':'或'},
     SELECTOR = {
         toolbar:'.dui-table__filterForm-toolbar',
         fristUl:'.dui-table__filterForm-body>ul',
@@ -759,16 +762,17 @@ Class.prototype.sysFilterForm= function(genxin){
                 var temUl = $li.children('ul');
                 if(temUl.children('li').length>0){
                     res += ['<div class="dui-table__condition-item" data-id="'+id+'" data-prefix="'+prefix+'">',
+                        (res!='' ? '<div class="dui-table__condition-prefix dui-red">'+prefixs[prefix]+'</div>':''),
                         getSysHtml(temUl),
                     '</div>'].join('');
                 }
             }else{
                 res += ['<div class="dui-table__condition-item" data-id="'+id+'" data-prefix="'+prefix+'" data-field="'+field+'" ',
                 'data-mod="'+mod+'" data-type="'+type+'" data-condition="'+condition+'" data-value="'+value+'">',
-                    (i==0 ? '<div class="dui-table__condition-prefix">'+prefix+'</div>':''),
-                    '<div class="dui-table__condition-field">'+filterObj[field].title+'</div>',
-                    '<div class="dui-table__condition-condition">'+Allcondition[condition]+'</div>',
-                    '<div class="dui-table__condition-value">'+valueTitle+'</div>',
+                    (res!='' ? '<div class="dui-table__condition-prefix dui-red">'+prefixs[prefix]+'</div>':''),
+                    '<div class="dui-table__condition-field dui-firebrick">'+filterObj[field].title+'</div>',
+                    '<div class="dui-table__condition-condition dui-deeppink">'+Allcondition[condition]+'</div>',
+                    '<div class="dui-table__condition-value dui-blueviolet">'+valueTitle+'</div>',
                 '</div>'].join('');
             }
         })
@@ -820,7 +824,7 @@ Class.prototype.sysFilterForm= function(genxin){
         var template = getSysHtml(ul);
         var filterData = that.filterData = getSysData(ul);
         // 设置显示信息
-        $(that.reElem).find(SELECTOR.conditionItems).html(template);
+        $(that.reElem).find(SELECTOR.conditionItems).children('div').html(template);
         // 拉取数据
         if(filterData.length>0){
             that.pullData(1);

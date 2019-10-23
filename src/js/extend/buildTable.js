@@ -1,135 +1,89 @@
 define('buildtable',['jquery','popup','form'],function($,popup,form){
-    var thisTable,
+    var thisTable,thisSearch;
     SELECTOR={
-        filterContainer:'.dui-tabs__content',
-        conditionContainer:'.dui-tabs__content',
-    },
-    searchArea =function(options){
-        var that = this,
-        config = that.config = $.extend(true,{},options)
-        // 高级搜索条件id不能重复
-        var id = 0;
-        // 定义条件
-        var Allcondition = {
-            eq:'等于',
-            neq:'不等于',
-            gt:'大于',
-            gte:'大于等于',
-            lt:'小于',
-            lte:'小于等于',
-            contain:'包含',
-            notContain:'不包含',
-            between:'介于'
-        }
-        // 根据类型设置对应拥有的权限
-        var condition = {
-            'integer':['eq','neq','gt','gte','lt','lte','contain','notContain','between'],
-            'float':['eq','neq','gt','gte','lt','lte','contain','notContain','between'],
-            'timestamp':['gt','gte','lt','lte','between'],
-            'boolean':['eq','neq'],
-            'string':['contain','notContain'],
-            'enum':['eq','neq'],
-        }
-        var frist = tableFilter[0];
-        // 条件显示元素
-        var $conditionDom = that.conditionDom = $(['<div class="dui-query__condition">',
-            '<div class="dui-query__condition-label">',
-                '筛选条件',
-            '</div>',
-            '<div class="dui-query__condition-show">',
-            '</div>',
-        '</div>'].join(''));
-        // 条件选择元素
-        var $filterDom = that.filterDom = $(['<div class="dui-query">',
-            '<div class="dui-query__show show-parent" title="高级查询">',
-                '<i class="dui-icon-search"></i>',
-            '</div>',
-            '<div class="dui-query__header">',
-                '<div class="dui-query__title">',
-                    '<span>高级查询</span>',
-                '</div>',
-                '<button type="button" class="dui-query__closebtn"><i class="dui-query__close dui-icon-circle-close"></i></button>',
-            '</div>',
-            '<div class="dui-query__body" dui-form>',
-                '<div class="dui-query__toolbar">',
-                    '<div class="dui-col-xs6">',
-                        '<div class="dui-button-group">',
-                            '<button class="dui-button dui-button--primary dui-button--small" query-event="addCondition">添加条件</button>',
-                            '<button class="dui-button dui-button--primary dui-button--small" query-event="addGroup">添加分组</button>',
-                        '</div>',
-                    '</div>',
-                    '<div class="dui-col-xs6" style="text-align: right;">',
-                        '<span>',
-                            '<input type="checkbox" dui-checkbox id="auto_search" bordered="true" label="实时更新">',
-                        '</span>',
-                        '<button class="dui-button dui-button--primary dui-button--small" style="float: right;">查询</button>',
-                    '</div>',
-                '</div>',
-                '<div class="dui-query__body-inner">',
-                    '<ul>',
-                        
-                    '</ul>',
-                '</div>',
-            '</div>',
-        '</div>'].join(''));
-        // 添加条件显示元素
-        $(config.conditionContainer).append($conditionDom);
-        // 添加赛选元素
-        if(config.filterContainer){
-            $(config.filterContainer).append($filterDom);
-        }else{
-            config.useDialog = true
-        }
-
-
-
-
+        search:'.dui-admin__search',
+        searchField:'.dui-search__field',
+        searchPopver:'.dui-search__field-popper',
+        searchPopverItem:'.dui-dropdown-menu__item',
 
     },
-    BuildTable ={
-        render:function(tableParam,filterParam){
-            var that = this;
-            thisTable = tableParam;tableFilter=filterParam;
-            // 假设传入的参数
-            tableFilter = [
-                {
-                    field:'name',
-                    type:'string',
-                    title:'配置名称',
-                },
-                {
-                    field:'title',
-                    type:'string',
-                    title:'配置标题',
-                },
-                {
-                    field:'state',
-                    type:'enum',
-                    title:'状态',
-                    options:{
-                        1:'启用',
-                        0:'禁用'
+    BuildTable={
+        render:function(tableParam){
+            // 设置当前table实例
+            thisTable = tableParam;
+            // 初始化搜索框
+            thisSearch = new searchInput();
+        }
+    },
+    searchInput = function(){
+        var that = this;that.data={};
+        var x = {top:'bottom','bottom':'top'};
+        var ref = $(SELECTOR.search).find(SELECTOR.searchField);
+        var pop = $(SELECTOR.search).find(SELECTOR.searchPopver);
+        if(!pop[0]) return;
+        that.popver = dui.addPopper(ref[0],pop[0],{
+            onCreate:function(data){
+                that.transition = dui.transition(pop[0],{
+                    name:'dui-zoom-in-'+x[data._options.placement],
+                    enter:function(el,done){
+                        that.popver.updatePopper();
+                        setTimeout(function(){
+                            done();
+                        }, 300);
                     }
-                },
-                {
-                    field:'id',
-                    type:'integer',
-                    title:'ID',
-                },
-                {
-                    field:'create_time',
-                    type:'timestamp',
-                    title:'创建时间'
-                }
-            ];
-            // 初始化高级搜索
-            that.searchArea = new searchArea({
-                filterFields:tableFilter,
-                conditionContainer:$('.dui-admin__condition')[0],
-            });
-        }
-    },
-    customDropDown = function(options){
+                });
+            },
+            onUpdate:function(data){
+                that.transition.data.name = 'dui-zoom-in-'+x[data.placement];
+            }
+        })
+        that.visible = pop.css('display')=='none' ? true : false;
+        var show = function(){
+            that.visible =false;
+            that.transition.show();
+        };
+        var hide = function(){
+            that.visible =true;
+            that.transition.hide();
+        };
+        ref.on('click',function(e){
+            if(that.visible){
+                show();
+            }else{
+                hide();
+            }
+        })
+        // 关闭
+        $(document).on('click',function(e){
+            if(ref.find(e.target)[0] || pop.find(e.target)[0] || pop[0]==e.target || ref[0]==e.target){
+                return;
+            }
+            hide();
+        })
+        // 选项点击事件
+        pop.on('click',SELECTOR.searchPopverItem,function(e){
+            var othis = $(this),field=othis.data('field'),
+            placeholder = othis.data('placeholder'),
+            title = othis.text();
+            // 设置当前显示
+            ref.find('span').text(title);
+            // 设置字段
+            $(SELECTOR.search).find('input[name="field"]').attr('value',field).val(field);
+            // 设置提示
+            $(SELECTOR.search).find('input[name="keyword"]').attr('placeholder',placeholder);
+            // 关闭显示
+            hide();
+        })
+        // 点击搜索按钮的时候
+        $(SELECTOR.search).find('#search_btn').on('click',function(e){
+            var field = $(SELECTOR.search).find('input[name="field"]').val();
+            var value = $(SELECTOR.search).find('input[name="keyword"]').val();
+            var where = {
+                field:field,
+                value:value
+            }
+            thisTable.search(where);
+        })
 
     }
     return BuildTable;

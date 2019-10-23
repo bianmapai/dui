@@ -42,16 +42,18 @@
                                     <span class="dui-search__field-show">不限</span>
                                     <i class="dui-icon-arrow-down"></i>
                                 </div>
-                                <ul class="dui-search__field-popper dui-popper dui-dropdown-menu" style="display: none;">
+                                <ul class="dui-dropdown-menu dui-popper dui-search__field-popper" style="display: none;">
                                     <li class="dui-dropdown-menu__item" data-field="name|title">
                                         不限
                                     </li>
-                                                                    <li class="dui-dropdown-menu__item" data-field="name">
-                                        配置名称                                </li>
-                                                                    <li class="dui-dropdown-menu__item" data-field="title">
-                                        配置标题                                </li>
-                                        <div x-arrow="" class="popper__arrow"></div>
-                                                                </ul>
+                                    <li class="dui-dropdown-menu__item" data-field="name">
+                                        配置名称
+                                    </li>
+                                    <li class="dui-dropdown-menu__item" data-field="title">
+                                        配置标题
+                                    </li>
+                                    <div x-arrow="" class="popper__arrow"></div>
+                                </ul>
                             </div>
                             <input type="text" class="dui-input__inner" name="keyword" placeholder="请输入配置名称/配置标题">
                             <div class="dui-input-group__append">
@@ -111,9 +113,9 @@ dui.use(['table','buildtable'],function(table,buildtable){
     $('#aaaaa').on('click',function(e){
         thisTable.showFilterForm();
     })
-    // buildtable.render(thisTable,[
+    buildtable.render(thisTable,[
 
-    // ]);
+    ]);
     // // $('#getData').on('click',function(e){
     // //     var data = thisTable.getCheckedData();
     // //     popup.dialog({

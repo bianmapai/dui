@@ -9,18 +9,6 @@ body,ul{
     padding: 0;
     list-style: none;
 }
-@include b(firebrick){
-    color: firebrick;
-}
-@include b(deeppink){
-    color: deeppink;
-}
-@include b(blueviolet){
-    color: blueviolet;
-}
-@include b(red){
-    color: red;
-}
 // 构建后台布局样式
 @include b(admin){
     position: relative;
@@ -199,8 +187,15 @@ body,ul{
     @include e(search){
         float:right;
         width: 380px;
-        & .dui-input-group__prepend{
+        & .#{$namespace}-input-group__prepend{
             cursor: pointer;
+        }
+        & .#{$namespace}-search__field-popper{
+            margin: 5px 0;
+            background-color: #fff;
+            border: 1px solid #ebeef5;
+            border-radius: 4px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
         }
     }
     // 更多App

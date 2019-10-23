@@ -2,13 +2,16 @@
 @import "./mixins/config.scss";
 @import "common/var";
 @include b(firebrick){
-  color: firebrick;
+  color: #e6a23c;
+}
+@include b(red){
+  color: red;
 }
 @include b(deeppink){
-  color: deeppink;
+  color: #67c23a;
 }
 @include b(blueviolet){
-  color: blueviolet;
+  color: $--color-primary;
 }
 @include b(table) {
   table{
@@ -471,12 +474,14 @@
     line-height: 40px;
     box-sizing: border-box;
     border-top: $--table-border;
+    position: relative;
     @include e(condition-label){
       position: relative;
       display: inline-block;
       padding: 0 15px;
       color: #606266;
       cursor: pointer;
+      position: absolute;
       &::before{
         content: "";
         width: 1px;
@@ -485,6 +490,42 @@
         right: 0;
         top: 8px;
         background: $--table-border-color;
+      }
+    }
+    @include e(condition-body){
+      padding-left: 95px;
+      height: 40px;
+      overflow: hidden;
+    }
+    @include e(condition-body-inner){
+      height: 55px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      .#{$namespace}-table__condition-item+
+      .#{$namespace}-table__condition-item{
+        margin-left: 5px;
+      }
+    }
+    @include e(condition-items){
+      display: inline;
+      white-space: nowrap;
+    }
+    @include e(condition-item){
+      display: inline-block;
+      padding: 0 10px;
+      font-weight: bold;
+      border: $--table-border;
+      border-radius: 8px;
+      height: 28px;
+      line-height: 28px;
+      position: relative;
+      &>div{
+        display: inline-block;
+        height: 28px;
+        line-height: 28px;
+      }
+      &>div+div{
+        margin-left: 5px;
       }
     }
   }
