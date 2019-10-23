@@ -203,7 +203,7 @@ Class = function(options){
         initSort:'',//初始化的排序
         autoSort:false,//是否仅前端排序
         highlight:true,//当前行高亮
-        loading:'',//是否有加载条
+        loading:true,//是否有加载条
         title:'',//导出时的标题
         minColumnWidth:60,//全局设置的列最小宽度
         treeTable:'',//treeTable配置
@@ -215,6 +215,7 @@ Class = function(options){
     },options);
     that.where = config.where || {};
     config.el  = $(config.el);
+    config.original = $(config.el);
     // 如果没有原始元素
     if(!config.el[0]) return that;
     //高度铺满：full-差距值
@@ -1433,7 +1434,7 @@ Class.prototype.renderData = function(res,curr,count){
     }
     // 如果需要显示分页
     if(options.page.show===true){
-        pagination.render($.extend(true,options,{
+        pagination.render($.extend(true,{},options,{
             el:that.duiPage[0],
             total:count,
             size:options.page.size,
@@ -1450,10 +1451,11 @@ Class.prototype.renderData = function(res,curr,count){
         that.duiFixedRWrap.html('');
         that.duiBodyer.html('');
         that.duiBodyer.html(template.render(TMPL_TIP,{text:options.text.empty}));
-        return;
+        that.duiPage.hide();
     }else{
         // 设置body
         setBody();
+        that.duiPage.show();
     }
     // 关闭加载条
     that.duiLoading.close();

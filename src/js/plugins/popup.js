@@ -94,6 +94,7 @@ import $ from "jquery";
       clearTimeout(that.timer);
     },
     btn = that.btn = dom.find('.dui-message__closeBtn');
+    dom.find('.dui-message__content').html('').append(config.message);
     $('body').append(dom);//添加了元素
     // 获取元素的高度
     var offsetHeight = that.offsetHeight = dom.outerHeight();
@@ -646,7 +647,7 @@ import $ from "jquery";
   popup.dialog = function(options){
     return popup('dialog',options);
   }
-  popup.msgbox = function(options){
+  popup.messageBox = function(options){
     var type = options.type,
     message = options.message,
     content = [
@@ -674,7 +675,7 @@ import $ from "jquery";
       }
     })
     options = $.extend(true,options,thisOpt)
-    return popup.msgbox(options);
+    return popup.messageBox(options);
   }
   popup.alert = function(message,options){
     options = options || {};
@@ -693,7 +694,7 @@ import $ from "jquery";
       }
     };
     options = $.extend(true,options,thisOpt);
-    var thisPop = popup.msgbox(options);
+    var thisPop = popup.messageBox(options);
     return thisPop;
   }
   popup.close = function(id){
