@@ -260,7 +260,11 @@ Class = function(options){
         parentColumn:'pid',//上级编号
         expandColumn:'',//展开图标显示的列
         expandAll:false,//是否全部展开
-    },config.treeTable)) : false; 
+    },config.treeTable)) : false;
+    // 如果是treeTable则不显示分页
+    if(config.treeTable){
+        config.page.show = false;
+    }
     // 设置当前页面
     that.currPage = parseInt(config.page.curr) || 1;
     // 设置初始化排序列
@@ -1393,13 +1397,13 @@ Class.prototype.renderData = function(res,curr,count){
             if(options.treeTable){
                 // 两个都不显示
                 if((options.treeTable.expandAll || row.expand) || row[options.treeTable.parentColumn]==0){
-                    tr.css('display','');
-                    tr_left.css('display','');
-                    tr_right.css('display','');
+                    typeof tr.css==="function" && tr.css('display','');
+                    typeof tr_left.css==="function" && tr_left.css('display','');
+                    typeof tr_right.css==="function" && tr_right.css('display','');
                 }else{
-                    tr.css('display','none');
-                    tr_left.css('display','none');
-                    tr_right.css('display','none');
+                    typeof tr.css==="function" && tr.css('display','none');
+                    typeof tr_left.css==="function" && tr_left.css('display','none');
+                    typeof tr_right.css==="function" && tr_right.css('display','none');
                 }
             }
             // 放置元素
