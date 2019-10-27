@@ -182,9 +182,9 @@ Checkbox=function(el,options){
     // 判断是否已经渲染过,已经渲染过就删除掉
     hasRender[0] && 
     // 先把原始元素移动到显示元素的兄弟节点
-    hasRender.parents('.'+ClassName.checkbox).after(el) && 
+    hasRender.parents('.'+ClassName.checkbox+(config.buttoned?'-button':'')).after(el) && 
     // 移除显示元素
-    hasRender.parents('.'+ClassName.checkbox).remove();
+    hasRender.parents('.'+ClassName.checkbox+(config.buttoned?'-button':'')).remove();
     // 插入显示元素
     $(el).after($showDom) && 
     // 隐藏原始元素
@@ -267,7 +267,8 @@ Radio=function(el,options){
     $dom = that.$showDom = $(template),
     hasRenderSelector = '.'+ClassName.radio+(config.buttoned?'-button':'')+'__inner',
     hasRender = $(el).prev(hasRenderSelector);
-    hasRender[0] && hasRender.parents('.'+ClassName.radio).after(el) && hasRender.parents('.'+ClassName.radio).remove();
+    hasRender[0] && hasRender.parents('.'+ClassName.radio+(config.buttoned?'-button':'')).after(el) && 
+    hasRender.parents('.'+ClassName.radio+(config.buttoned?'-button':'')).remove();
     $(el).after($dom) && $dom.find(hasRenderSelector).after(el);
     //设置事件
     $dom.on('click',function(e){
@@ -646,17 +647,17 @@ form.render = function(el,type,filter,options){
             })
         },
         checkbox:function(){
-            $(el).find(Selector.checkbox).each(function(i,cbx){
+            $(el).find(Selector.checkbox+filter).each(function(i,cbx){
                 cbx.checkboxClass = new form.Item.checkbox(cbx,options);
             })
         },
         radio:function(){
-            $(el).find(Selector.radio).each(function(i,rdo){
+            $(el).find(Selector.radio+filter).each(function(i,rdo){
                 rdo.radioClass = new form.Item.radio(rdo,options);
             })
         },
         select:function(){
-            $(el).find(Selector.select).each(function(i,slt){
+            $(el).find(Selector.select+filter).each(function(i,slt){
                 slt.selectClass = new form.Item.select(slt,options);
             })
         }

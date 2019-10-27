@@ -144,7 +144,7 @@ gulp.task("form",()=>{
         sourcemap: false//是否有sourcemarp
     }))
     .pipe(rename({suffix: ''}))
-    .pipe(uglify())
+    // .pipe(uglify())
     .pipe(gulp.dest("dist/js/plugins"))
     .pipe(reload({stream: true}));;
 })

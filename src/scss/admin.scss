@@ -360,6 +360,15 @@ body,ul{
     {
         transition: all .3s;
     }
+    & .#{$namespace}-form-item{
+        width: 50%;
+    }
+}
+.#{$namespace}-form-item__label{
+    width: 120px;
+}
+.#{$namespace}-form-item__content{
+    margin-left: 120px;
 }
 // 修复搜索和操作按钮重合
 @media screen and (max-width: 992px){
@@ -388,6 +397,9 @@ body,ul{
             left: 0px;
         }
         @include e(search){
+            width: 100%;
+        }
+        & .#{$namespace}-form-item{
             width: 100%;
         }
         .#{$namespace}-admin__table-toolbar{

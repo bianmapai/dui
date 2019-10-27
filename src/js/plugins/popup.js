@@ -245,14 +245,14 @@ import $ from "jquery";
       close:'',//关闭的回调函数
       closed:'',//关闭动画完成后回调
       btns:['确定','取消'],//按钮
-      btnAngin:'right',//btn显示的
+      btnAlign:'right',//btn显示的
     },options),
     btns = that.btns = function(){
       var res = [],thisBtn = $.extend(true,{},config).btns,
-      btns = config.btnAngin=='right' ? thisBtn.reverse() : thisBtn;
+      btns = config.btnAlign=='right' ? thisBtn.reverse() : thisBtn;
       $.each(btns,function(i,btn){
         var btnStr = [
-          '<button type="button" class="dui-button dui-button--'+((config.btnAngin=='right'&&i==(btns.length-1)|| (config.btnAngin!='right'&&i==0))?'primary':'default')+' dui-button--small">',
+          '<button type="button" class="dui-button dui-button--'+((config.btnAlign=='right'&&i==(btns.length-1)|| (config.btnAlign!='right'&&i==0))?'primary':'default')+' dui-button--small">',
             '<span>'+btn+'</span>',
           '</button>'
         ].join('');
@@ -269,7 +269,7 @@ import $ from "jquery";
           config.showClose ? '<button type="button" class="dui-popup__headerbtn"><i class="dui-popup__close dui-icon-close"></i></button>':'',
         '</div>',
         '<div class="dui-popup__content"></div>',
-        config.showFooter?'<div class="dui-popup__btns"'+((config.btnAngin!='right')?'style=" text-align:'+config.btnAngin+';"':'')+'>'+btns+'</div>':'',
+        config.showFooter?'<div class="dui-popup__btns"'+((config.btnAlign!='right')?'style=" text-align:'+config.btnAlign+';"':'')+'>'+btns+'</div>':'',
       '</div>',
       config.modal?'<div class="dui-modal"></div>':''
     ].join(''),
@@ -361,40 +361,45 @@ import $ from "jquery";
           }
         }else if(config.offset.indexOf('%')!==-1){
           var warray = config.offset[0].split('%'),
-            num = Number(warray[0]);
+            num = parseFloat(warray[0]);
           return {
             top:($('body').width()*num/100)
           };
         }else if(config.offset.indexOf('px')!==-1){
           var warray = config.offset[0].split('px'),
-            num = Number(warray[0]);
+            num = parseFloat(warray[0]);
           return {
             top:num
           };
-        } 
+        }
       }else if($.isArray(config.offset)){
         var top = function(){
-          if(typeof config.offset[0] === "number"){
+          if(config.offset[0]=='auto'){
+            return (($('body').height()-$(dom[0]).outerHeight())/2);
+          }
+          else if(typeof config.offset[0] === "number"){
             return config.offset[0];
           }else if(config.offset[0].indexOf('%')!==-1){
-            var warray = config.offset[0].split('%'),
-            num = Number(warray[0]);
-            return ($('body').width()*num/100);
+            var num = parseFloat(config.offset[0]);
+            return ($('body').height()*num/100);
           }else if(config.offset[0].indexOf('px')!==-1){
-            return (Number(config.offset[0].split('px')[0]));
+            return (parseFloat(config.offset[0]));
           }else{
-            return ($('body').width()*10/100)
+            return ($('body').height()*10/100)
           }
         }();
         var left = function(){
-          if(typeof config.offset[1] === "number"){
+          if(config.offset[1]=='auto'){
+            return (($('body').width()-$(dom[0]).outerWidth())/2);
+          }
+          else if(typeof config.offset[1] === "number"){
             return config.offset[1];
           }else if(config.offset[1].indexOf('%')!==-1){
             var warray = config.offset[1].split('%'),
-            num = Number(warray[1]);
+            num = parseFloat(warray[1]);
             return ($('body').width()*num/100);
           }else if(config.offset[1].indexOf('px')!==-1){
-            return (Number(config.offset[1].split('px')[0]));
+            return (parseFloat(config.offset[1]));
           }else{
             return ($('body').width()*10/100)
           }
@@ -432,6 +437,9 @@ import $ from "jquery";
       offset.top = offset.top<0 ? 20 : (offset.top);
       $(dom[0]).css('top',offset.top);
       $(dom[0]).css('left',offset.left);
+      if(config.height=='auto'){
+        $(dom[0]).css('margin-bottom','50px');
+      }
     }
     // 重置宽高和position
     setResize();
@@ -483,15 +491,18 @@ import $ from "jquery";
         }
       })
       _doc.on('mousemove',docmousemove).on('mouseup',docmouseup)
+    }else{
+      header.css('cursor','default');
     }
     // 设置点击按钮事件
     clickbtns.each(function(i,item){
       $(item).on('click',function(e){
-        if(config.btnAngin=='right'){
+        if(config.btnAlign=='right'){
           if(typeof config['btn'+((config.btns.length-1)-i)]==="function"){
             config['btn'+((config.btns.length-1)-i)].call(this,e);
           }
         }else{
+          
           if(typeof config['btn'+i]==="function"){
             config['btn'+(config.btns.length-i)].call(this,e);
           }
@@ -674,6 +685,7 @@ import $ from "jquery";
         thisOpt['btn'+(i-2)] = val;
       }
     })
+    console.log(thisOpt);
     options = $.extend(true,options,thisOpt)
     return popup.messageBox(options);
   }

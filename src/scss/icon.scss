@@ -2,12 +2,12 @@
 @import "./mixins/config.scss";
 @font-face {
     font-family: 'iconfont';  /* project id 1367779 */
-    src: url('//at.alicdn.com/t/font_1367779_obphuqe4iu.eot');
-    src: url('//at.alicdn.com/t/font_1367779_obphuqe4iu.eot?#iefix') format('embedded-opentype'),
-    url('//at.alicdn.com/t/font_1367779_obphuqe4iu.woff2') format('woff2'),
-    url('//at.alicdn.com/t/font_1367779_obphuqe4iu.woff') format('woff'),
-    url('//at.alicdn.com/t/font_1367779_obphuqe4iu.ttf') format('truetype'),
-    url('//at.alicdn.com/t/font_1367779_obphuqe4iu.svg#iconfont') format('svg');
+    src: url('//at.alicdn.com/t/font_1367779_vd29md9szd.eot');
+    src: url('//at.alicdn.com/t/font_1367779_vd29md9szd.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_1367779_vd29md9szd.woff2') format('woff2'),
+    url('//at.alicdn.com/t/font_1367779_vd29md9szd.woff') format('woff'),
+    url('//at.alicdn.com/t/font_1367779_vd29md9szd.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_1367779_vd29md9szd.svg#iconfont') format('svg');
 }
 [class^="#{$namespace}-icon-"], [class*=" #{$namespace}-icon-"] {
     /* use !important to prevent issues with browser extensions that change fonts */
@@ -73,3 +73,20 @@
 .#{$icon-prefix}-window-maximize:before{content: "\e606"}//沉浸阅读
 .#{$icon-prefix}-columns:before{content: "\e7f5"}//分栏
 .#{$icon-prefix}-question-circle:before{content: "\e610"}//帮助
+//后台系统使用
+.#{$icon-prefix}-home:before{content: "\e64e"}//首页
+.#{$icon-prefix}-setting:before{content: "\e73e"}//配置
+.#{$icon-prefix}-user-setting:before{content: "\e66b"}//用户设置
+.#{$icon-prefix}-user-list:before{content: "\e62c"}//用户列表
+.#{$icon-prefix}-user-profile:before{content: "\e68e"}//用户资料
+.#{$icon-prefix}-database:before{content: "\e60f"}//用户设置
+.#{$icon-prefix}-article:before{content: "\e60d"}//文章，列表
+.#{$icon-prefix}-log:before{content: "\e675"}//日志
+.#{$icon-prefix}-hook:before{content: "\e60e"}//钩子
+.#{$icon-prefix}-config:before{content: "\e60c"}//配置
+.#{$icon-prefix}-config2:before{content: "\e60a"}//配置
+.#{$icon-prefix}-plugin:before{content: "\e653"}//插件
+.#{$icon-prefix}-users:before{content: "\e62e"}//多用户
+.#{$icon-prefix}-apps2:before{content: "\e6a6"}//配置
+.#{$icon-prefix}-job:before{content: "\e65f"}//配置Folder
+.#{$icon-prefix}-folder-open:before{content: "\e611"}//配置

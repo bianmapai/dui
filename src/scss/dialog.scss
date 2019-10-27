@@ -59,6 +59,7 @@
     padding: 10px $--msgbox-padding-primary;
     color: $--messagebox-content-color;
     font-size: $--messagebox-content-font-size;
+    height: 100%;
   }
 
   @include e(input) {

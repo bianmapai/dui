@@ -44,6 +44,15 @@
     margin-bottom: 0;
   }
 
+  @include e(tips){
+      line-height: 16px;
+      color: $--color-text-placeholder;
+      padding-top: 5px;
+      & code{
+        color: $--color-danger;
+      }
+  }
+
   & .#{$namespace}-input__validateIcon {
     display: none;
   }

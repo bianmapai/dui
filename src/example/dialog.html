@@ -151,7 +151,7 @@ dui.use(['popup','jquery','form'],function(popup,$,form){
             title:'提示',
             content:'这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>这是测试内容<br/>',
             width:800,
-            height:500,
+            height:'auto',
         })
     })
     $('#customWithForm').on('click',function(){
@@ -160,6 +160,13 @@ dui.use(['popup','jquery','form'],function(popup,$,form){
             content:$('#formHtml').html(),
             width:800,
             showFooter:false,
+            offset:['15%','auto'],
+            btn1:function(){
+                console.log('进来了');
+            },
+            btn2:function(){
+                console.log('取消了');
+            }
             // height:300,
             // htmlAppend:function(cnf){
                 
