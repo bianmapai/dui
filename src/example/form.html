@@ -34,7 +34,15 @@
                     <label class="dui-form-item__label">活动名称</label>
                     <div class="dui-form-item__content">
                         <div class="dui-input">
-                            <input type="text" class="dui-input__inner">
+                            <input type="text" class="dui-input__inner" name="aaaaaa">
+                        </div>
+                    </div>
+                </div>
+                <div class="dui-form-item">
+                    <label class="dui-form-item__label">活动名称</label>
+                    <div class="dui-form-item__content">
+                        <div class="dui-input">
+                            <input type="text" class="dui-input__inner" name="aaaaaa">
                         </div>
                     </div>
                 </div>
@@ -104,27 +112,37 @@
 </div>
 <script>
 dui.use(['form','jquery'],function(form,$){
-    console.log(form);
-    dui.bind(document.querySelector('[name="peisong"]'),'switch','change',function(data){
-        console.log(data);
+    form(document.querySelector('.dui-form'));
+
+    // dui.on(document.querySelector('[name="aaaaaa"]'),'change',aaa)
+    // function aaa(a,b,c){
+        
+    // }
+    // $('[name="aaaaaa"]').on('click',function(){
+    //     dui.trigger.call(this,'change','aaaa','bbbb','ccc');
+    // })
+    dui.on($('[name="peisong"]')[0],'beforeChange',function(done){
+        console.log('完成了');
+        done();
     })
-    $('[dui-checkbox]').change(function(e){
-        console.log('进来了');
-    })
-    $('[dui-checkbox]').each(function(i,el){
-        dui.bind(el,'checkbox','change',function(data){
-            console.log(data);
-        })
-    })
-    $('form[dui-form]').on('click','.dui-checkbox',function(e){
-        var othis = $(this),checkbox = othis.find('input[dui-checkbox]');
-        if(checkbox.prop('checked')){
-            checkbox.attr('checked','checked');
-        }else{
-            checkbox.removeAttr('checked');
-        }
-        form.render($('form[dui-form]')[0],'checkbox');
-    })
+
+    // $('[dui-checkbox]').change(function(e){
+    //     console.log('进来了');
+    // })
+    // $('[dui-checkbox]').each(function(i,el){
+    //     dui.bind(el,'checkbox','change',function(data){
+    //         console.log(data);
+    //     })
+    // })
+    // $('form[dui-form]').on('click','.dui-checkbox',function(e){
+    //     var othis = $(this),checkbox = othis.find('input[dui-checkbox]');
+    //     if(checkbox.prop('checked')){
+    //         checkbox.attr('checked','checked');
+    //     }else{
+    //         checkbox.removeAttr('checked');
+    //     }
+    //     form.render($('form[dui-form]')[0],'checkbox');
+    // })
     
 })
 </script>

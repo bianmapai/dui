@@ -21,7 +21,7 @@ export function trim(string) {
  * @param {String} type 时间类型
  * @param {function} fn 回调函数
  */
-export const on = (function() {
+export const bind = (function() {
   if (document.addEventListener) {
     return function(element, event, handler) {
       if (element && event && handler) {
@@ -42,7 +42,7 @@ export const on = (function() {
  * @param {String} type 事件类型
  * @param {function} fn 回调函数
  */
-export const off = (function() {
+export const unbind = (function() {
   if (document.removeEventListener) {
     return function(element, event, handler) {
       if (element && event) {

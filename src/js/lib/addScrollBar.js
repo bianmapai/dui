@@ -1,5 +1,4 @@
-import { setData, } from "./util";
-import { scrollBarWidth, addClass, on, off } from "./dom";
+import { scrollBarWidth, addClass, bind, unbind } from "./dom";
 import { extend, each } from "./loadjs";
 import { addResizeListener } from "./resize-event";
 var ClassName = {
@@ -31,8 +30,7 @@ function scrollbar(el,options){
     //创建根节点
     var that = this;
     that.original = el;//这是需要添加滚动条的元素
-    setData(el,'scrollbar',options);
-    that.data = el.vnode.data.scrollbar;
+    that.data = extend(true,{},options);
     // 创建scroll
     that.scroll = document.createElement('div');
     addClass(that.scroll,ClassName.scroll);
@@ -74,7 +72,7 @@ scrollbar.prototype.init = function(){
     that.wrap.append(that.original);
     that.update();
     // 设置事件
-    on(that.wrap,'scroll',function(e){
+    bind(that.wrap,'scroll',function(e){
         that.moveY = ((that.wrap.scrollTop * 100) / that.wrap.clientHeight);
         that.moveX = ((that.wrap.scrollLeft * 100) / that.wrap.clientWidth);
         that.barY.thumb.style.transform = 'translateY('+that.moveY+'%)';
@@ -118,7 +116,7 @@ function bar(parent,options){
     that.bar.append(that.thumb);
     parent.scroll.append(that.bar);
     // 设置事件
-    on(that.bar,'mousedown',function(e){
+    bind(that.bar,'mousedown',function(e){
         // console.log();
         const offset = Math.abs(e.target.getBoundingClientRect()[bar.direction] - e[bar.client]);
         const thumbHalf = (that.thumb[bar.offset] / 2);
@@ -126,7 +124,7 @@ function bar(parent,options){
         parent.wrap[bar.scroll] = (thumbPositionPercentage * parent.wrap[bar.scrollSize] / 100);
     })
     // 设置滚动条被点击
-    on(that.thumb,'mousedown',function(e){
+    bind(that.thumb,'mousedown',function(e){
         // 防止右键点击
         if (e.ctrlKey || e.button === 2) {
             return;
@@ -137,8 +135,8 @@ function bar(parent,options){
     function startDrag(e){
         e.stopImmediatePropagation();
         that.cursorDown = true;
-        on(document, 'mousemove', mouseMoveDocumentHandler);
-        on(document, 'mouseup', mouseUpDocumentHandler);
+        bind(document, 'mousemove', mouseMoveDocumentHandler);
+        bind(document, 'mouseup', mouseUpDocumentHandler);
         document.onselectstart = () => false;
     }
     function mouseMoveDocumentHandler(e){
@@ -153,7 +151,7 @@ function bar(parent,options){
     function mouseUpDocumentHandler(e){
         that.cursorDown = false;
         that[bar.axis] = 0;
-        off(document, 'mousemove', mouseMoveDocumentHandler);
+        unbind(document, 'mousemove', mouseMoveDocumentHandler);
         document.onselectstart = null;
     }
 };

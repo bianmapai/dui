@@ -1,5 +1,5 @@
 import { Dui, extend } from "./loadjs";
-import { once,setData,nextFrame } from "./util";
+import { once,nextFrame } from "./util";
 import { addClass, removeClass, setStyle } from "./dom";
 import watcher from "./watcher";
 // import { watchJs } from "./watch";
