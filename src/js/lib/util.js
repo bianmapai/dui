@@ -94,6 +94,14 @@ export function unbind(el,name,type,fn){
     el.vnode.event[name] && el.vnode.event[name][type] && delete el.vnode.event[name][type];
 }
 /**
+ * 获取指定元素的Attr属性值
+ * @param {Element} el 要获取的元素
+ * @param {Object} propsCfg 要获取的类型配置
+ */
+export function getProps(el,propsCfg){
+
+}
+/**
  * 给元素设置props
  * @param {Element} el 要设置属性的元素
  * @param {String} name 给哪个组件设置
