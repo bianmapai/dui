@@ -34,7 +34,7 @@ define('buildtable',['jquery','popup','form'],function($,popup,form){
                 });
             },
             onUpdate:function(data){
-                that.transition.data.name = 'dui-zoom-in-'+x[data.placement];
+                that.transition.config.name = 'dui-zoom-in-'+x[data.placement];
             }
         })
         that.visible = pop.css('display')=='none' ? true : false;

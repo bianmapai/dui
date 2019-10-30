@@ -89,7 +89,7 @@ TMPL_HEAD=function(options){
     ].join('')
 },
 TMPL_MAIN = function(){
-    return ['<div class="dui-table',
+    return ['<div class="dui-table dui-checkbox-check-group',
     // 有边框
     '{{if border}} dui-table--border{{/if}}',
     // 行高亮
@@ -281,7 +281,7 @@ Class.prototype.init = function(){
     hasRender = el.next(ELEM),
     columns = config.columns,
     // 每次都加1，保证唯一性
-    index = that.index = config.index = tableIndex++;;
+    index = that.index = config.index = tableIndex++;
     // 初始化columns
     that.initColumns();
     // 插入显示元素
@@ -672,7 +672,7 @@ Class.prototype.initFilter = function(){
                         });
                     },
                     onUpdate:function(data){
-                        popverDom[0].transition.data.name = 'dui-zoom-in-'+x[data.placement.split('-')[0]];
+                        popverDom[0].transition.config.name = 'dui-zoom-in-'+x[data.placement.split('-')[0]];
                     }
                 })
                 popverDom[0].show = function(){
@@ -1332,6 +1332,7 @@ Class.prototype.renderData = function(res,curr,count){
     bodytemplate = '<table cellspacing="0" cellpadding="0" border="0" class="dui-table__body"><tbody></tbody></table>',
     // 设置body方法
     setBody = function(){
+        console.log(options);
         var tds_lef = [],tds=[],tds_right=[],
         bodyTable = $(bodytemplate),
         bodyLeftTable  = $(bodytemplate),
@@ -1344,7 +1345,7 @@ Class.prototype.renderData = function(res,curr,count){
                 '{{else}}',
                     // 如果是选择框
                     '{{if type=="checkbox"}}',
-                    '<input type="checkbox" value="{{@ fieldName}}"{{if checkAll}} checked="checked"{{/if}} dui-checkbox>',//如果是选择框
+                    '<input type="checkbox" value="{{@ fieldName}}"'+(options.checkAll?'checked="checked"':'')+' dui-checkbox>',//如果是选择框
                     '{{else if type=="numbers"}}',//如果是序号
                     '{{@ duiIndex}}',
                     '{{else}}',
@@ -1499,147 +1500,35 @@ Class.prototype.setEvent = function(){
             that.sort(field, 'desc');
         }
     })
-    // 复选框选择事件
+    // 选择框事件
     that.reElem.on('click','.dui-checkbox',function(e){
         var othis=$(this),
         checkbox = othis.find('input[dui-checkbox]'),
-        data = checkbox.parents('tr')[0].data;
-        var childs = that.reElem.find(TABLEBODY).find('input[dui-checkbox]');
-        var checked = checkbox[0].checked;
-        var isAll = typeof checkbox.attr('indeterminate') !== "undefined" ? true : false;
-        if(isAll){
-            // 首先设置元素选中
-            // 获得当前选中状态
-            if(othis.hasClass('is-checked')){
-                checked = true;
-            }else if(othis.hasClass('is-indeterminate')){
-                checked = true;
-            }else{
-                checked = false;
-            }
-            // 设置其他选择框的选中
-            childs.each(function(i,item){
-                if(item.checkboxClass){
-                    item.checkboxClass.setChecked(checked);
-                }else{
-                    if(checked){
-                        $(item).attr('checked','checked');
-                    }else{
-                        $(item).removeAttr('checked');
-                    }
-                    that.renderForm();
-                }
-            })
-            //2.同步是不是全选
-            that.synCheckedAll();
+        data = checkbox.parents('tr')[0].data,
+        key = checkbox.parents('td').attr('dui-key'),
+        checked = checkbox.prop('checked');
+        if(othis.find('[indeterminate]')[0]){
+
         }else{
-            //单选
             //1.设置当前选中
             // 找到与这个相同的数据
             that.reElem.find(TABLEBODY).find('tr').each(function(i,tr){
+                // 找到相同行
                 if(tr.data.duiIndex==data.duiIndex){
-                    var duibi =$(tr).find('input[dui-checkbox]');
-                    duibi.each(function(i,item){
-                        if(item && item!=checkbox[0]){
-                            if(item.checkboxClass){
-                                item.checkboxClass.setChecked(checked);
-                            }else{
-                                if(checked){
-                                    $(item).attr('checked','checked');
-                                }else{
-                                    $(item).removeAttr('checked');
-                                }
-                                that.renderForm();
-                            }
+                    // 找到相同列的元素
+                    var $td = $(tr).find('td[dui-key="'+key+'"]');
+                    // 找到input元素
+                    var $ocheckboxs = $td.find('input[dui-checkbox]');
+                    // 循环对比找出不是当前的元素
+                    $ocheckboxs.each(function(i,ocheckbox){
+                        if(ocheckbox!=checkbox[0]){
+                            $(ocheckbox).prop('checked',checked);
                         }
                     })
                 }
             })
-            // 如果是树形table，还需要同步上下级选中
-            if(options.treeTable){
-                var //获取所有选中的角标
-                checkIndexs = [];
-                that.duiBodyer.find(TABLEBODY).find('input[dui-checkbox]:checked').parents('tr').each(function(key,value){
-                    checkIndexs.push(value.data.duiIndex);
-                }),
-                AllSyn = [].concat(getUpIndex(data)).concat(getDownIndex(data));
-                function getUpIndex(trData){
-                    var upData = [],trs=that.duiBodyer.find(TABLEBODY).find('tr');
-                    trs.each(function(i,item){
-                        if(item.data && item.data[options.treeTable.keyColumn] == trData[options.treeTable.parentColumn]){
-                            if(checked==false){
-                                var tempdata = $.extend(true,{},item.data[options.treeTable.children]),
-                                isInArray = false;
-                                $.each(tempdata,function(i1,old){
-                                    if(trData[options.treeTable.keyColumn]==old[options.treeTable.keyColumn]){
-                                        delete tempdata[i1];
-                                    }
-                                })
-                                $.each(tempdata,function(i1,old){
-                                    $.each(trs,function(i3,newTr){
-                                        if(old[options.treeTable.keyColumn]==newTr.data[options.treeTable.keyColumn]){
-                                            old = newTr.data;
-                                            if($.inArray(old.duiIndex,checkIndexs)!=-1){
-                                                isInArray = true;
-                                                return;
-                                            }
-                                        }
-                                    })
-                                    if(isInArray){
-                                        return;
-                                    }
-                                })
-                                if(isInArray){
-                                    return;
-                                }
-                            }
-                            if($.inArray(item.data.duiIndex,upData)==-1){
-                                upData.push(item.data.duiIndex);
-                            }
-                            if(item.data[options.treeTable.parentColumn]){
-                                upData = upData.concat(getUpIndex(item.data));
-                            }
-                        }
-                    })
-                    return upData;
-                }
-                function getDownIndex(trData){
-                    var downData = [],trs=that.duiBodyer.find(TABLEBODY).find('tr'),
-                    childrens = (trData[options.treeTable.children]||[]).map(function(value,key){
-                        return value[options.treeTable.keyColumn];
-                    });
-                    trs.each(function(i,item){
-                        if(item.data && $.inArray(item.data[options.treeTable.keyColumn],childrens)!=-1){
-                            downData.push(item.data.duiIndex);
-                            if(item.data.hasChild){
-                                downData = downData.concat(getDownIndex(item.data));
-                            }
-                        }
-                    })
-                    return downData;
-                }
-                that.reElem.find(TABLEBODY).find('tr').each(function(i,tr){
-                    if($.inArray(tr.data.duiIndex,AllSyn)!=-1){
-                        var duibi =$(tr).find('input[dui-checkbox]');
-                        duibi.each(function(i,item){
-                            if(item && item!=checkbox[0]){
-                                if(item.checkboxClass){
-                                    item.checkboxClass.setChecked(checked);
-                                }else{
-                                    if(checked){
-                                        $(item).attr('checked','checked');
-                                    }else{
-                                        $(item).removeAttr('checked');
-                                    }
-                                    that.renderForm();
-                                }
-                            }
-                        })
-                    }
-                })
-            }
-            //2.同步是不是全选
-            that.synCheckedAll();
+            // 渲染
+            that.renderForm();
         }
     })
     // 同步滚动条
@@ -1845,46 +1734,6 @@ Class.prototype.renderFixedShadow = function(){
             othis.attr('class',BODYER.slice(1,BODYER.length)+' is-scrolling-left');
         }
     }
-}
-/**
- * 同步全选
- */
-Class.prototype.synCheckedAll = function(){
-    var that = this,options = that.config,
-    // 获取选择框的个数，只充body获取
-    checkboxAll = that.duiBodyer.find('input[dui-checkbox]'),
-    // 获取当前选中个数
-    checkedCheckbox = that.duiBodyer.find('input[dui-checkbox]:checked'),
-    // 获取全选按钮
-    checkAll = that.reElem.find(TABLEHEADER).find('input[dui-checkbox][dui-filter="checkAll"]'),
-    // 默认当前状态
-    checkAllState = false;
-    // 如果所有个数等于选中个数则是全选
-    if(checkboxAll.length==checkedCheckbox.length){
-        checkAllState = true;
-    }
-    // 如果选中个数为0则为不选中
-    else if(checkedCheckbox.length==0){
-        checkAllState = false;
-    }else{
-        checkAllState = 'indeterminate';
-    }
-    checkAll.each(function(i,item){
-        if(item.checkboxClass){
-            item.checkboxClass.setChecked(checkAllState);
-        }else{
-            $(item).attr('state','indeterminate');
-            that.renderForm();
-        }
-    })
-    // 设置选中数据
-    that.checkedData = [];
-    // 获取数据
-    checkedCheckbox.parents('tr').each(function(i,tr){
-        var data = $.extend(true,{},tr.data);
-        delete data.duiIndex;
-        that.checkedData.push(data);
-    })
 }
 /**
  * 同步滚动条

@@ -74,11 +74,14 @@
                 <div class="dui-form-item">
                     <label class="dui-form-item__label">活动性质</label>
                     <div class="dui-form-item__content">
-                        <div class="dui-checkbox-group">
-                            <input type="checkbox" dui-checkbox name="type[]" value="1" label="美食/餐厅线上活动" checked="checked">
-                            <!-- <input type="checkbox" dui-checkbox name="type[]" value="2" label="地推活动">
-                            <input type="checkbox" dui-checkbox name="type[]" value="3" label="线下主题活动">
-                            <input type="checkbox" dui-checkbox name="type[]" value="4" label="单纯品牌曝光"> -->
+                        <div class="dui-checkbox-check-group">
+                            <input type="checkbox" dui-checkbox   label="全选" indeterminate="true">
+                            <div class="dui-checkbox-group">
+                                <input type="checkbox" dui-checkbox name="type[]" value="1" label="美食/餐厅线上活动" checked="checked">
+                                <input type="checkbox" dui-checkbox name="type[]" value="2" label="地推活动">
+                                <input type="checkbox" dui-checkbox name="type[]" value="3" label="线下主题活动"  checked="checked">
+                                <input type="checkbox" dui-checkbox name="type[]" value="4" label="单纯品牌曝光" checked="checked">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -86,8 +89,8 @@
                     <label class="dui-form-item__label">性别</label>
                     <div class="dui-form-item__content">
                         <div class="dui-radio-group">
-                            <input type="radio" dui-radio name="sex" value="0" label="保密" checked="checked" buttoned="true">
-                            <input type="radio" dui-radio name="sex" value="1" label="男" buttoned="true">
+                            <input type="radio" dui-radio name="sex" value="0" label="保密" checked="checked"  buttoned="true">
+                            <input type="radio" dui-radio name="sex" value="1" label="男"  checked="checked" buttoned="true">
                             <input type="radio" dui-radio name="sex" value="2" label="女" buttoned="true">
                         </div>
                     </div>
@@ -126,6 +129,12 @@ dui.use(['form','jquery'],function(form,$){
     dui.on($('[name="peisong"]')[0],'beforeChange',function(done){
         console.log('完成了');
         done();
+    })
+    $('[name="type[]"]').each(function(i,item){
+        dui.on(item,'beforeChange',function(done){
+            console.log('完成了');
+            done();
+        })
     })
 
     // $('[dui-checkbox]').change(function(e){
