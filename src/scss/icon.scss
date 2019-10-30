@@ -2,12 +2,12 @@
 @import "./mixins/config.scss";
 @font-face {
     font-family: 'iconfont';  /* project id 1367779 */
-    src: url('//at.alicdn.com/t/font_1367779_vd29md9szd.eot');
-    src: url('//at.alicdn.com/t/font_1367779_vd29md9szd.eot?#iefix') format('embedded-opentype'),
-    url('//at.alicdn.com/t/font_1367779_vd29md9szd.woff2') format('woff2'),
-    url('//at.alicdn.com/t/font_1367779_vd29md9szd.woff') format('woff'),
-    url('//at.alicdn.com/t/font_1367779_vd29md9szd.ttf') format('truetype'),
-    url('//at.alicdn.com/t/font_1367779_vd29md9szd.svg#iconfont') format('svg');
+    src: url('//at.alicdn.com/t/font_1367779_kcr8gko2jlq.eot');
+    src: url('//at.alicdn.com/t/font_1367779_kcr8gko2jlq.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_1367779_kcr8gko2jlq.woff2') format('woff2'),
+    url('//at.alicdn.com/t/font_1367779_kcr8gko2jlq.woff') format('woff'),
+    url('//at.alicdn.com/t/font_1367779_kcr8gko2jlq.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_1367779_kcr8gko2jlq.svg#iconfont') format('svg');
 }
 [class^="#{$namespace}-icon-"], [class*=" #{$namespace}-icon-"] {
     /* use !important to prevent issues with browser extensions that change fonts */
@@ -90,3 +90,4 @@
 .#{$icon-prefix}-apps2:before{content: "\e6a6"}//配置
 .#{$icon-prefix}-job:before{content: "\e65f"}//配置Folder
 .#{$icon-prefix}-folder-open:before{content: "\e611"}//配置
+.#{$icon-prefix}-back:before{content: "\e6ba"}//配置

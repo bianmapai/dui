@@ -14,6 +14,28 @@ body,ul{
     position: relative;
     width: 100%;
     overflow: hidden;
+
+    .#{$namespace}-breadcrumb{
+        height: 50px;
+        line-height:50px;
+        background:#fff;
+        padding:0 15px;
+        background-color: #fff;
+        box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+        .#{$namespace}-breadcrumb__item:last-child .#{$namespace}-breadcrumb__separator {
+            display: none;
+        }
+        & .#{$namespace}-button.breadcrumb-return{
+            border: none;
+            background: none;
+            padding-left:0px ;
+            padding-right:0px ;
+            & .#{$namespace}-icon-back{
+                font-size: 18px;
+                vertical-align: text-bottom;
+            }
+        }
+    }
     // 头部
     @include e(header){
         position: fixed;
@@ -55,6 +77,14 @@ body,ul{
                 font-size: 14px;
             }
         }
+        & .#{$namespace}-header-menu{
+            height: 50px;
+            &::after{
+                content: "";
+                clear: both;
+                display: block;
+            }
+        }
     }
     // 左侧菜单
     @include e(aside){
@@ -86,6 +116,17 @@ body,ul{
             }
         }
     }
+    // 工具条
+    @include e(tool){
+        position: fixed;
+        left: 220px;
+        top: 50px;
+        right: 0;
+        z-index: 1031;
+        & + .#{$namespace}-admin__body{
+            top: 50px;
+        }
+    }
     // 内容显示
     @include e(container){
         position: fixed;
@@ -96,20 +137,8 @@ body,ul{
         z-index: 998;
         width: auto;
         overflow: hidden;
-        overflow-y: auto;
         box-sizing: border-box;
         background-color: #f1f4f5;
-        & .#{$namespace}-breadcrumb{
-            height: 50px;
-            line-height:50px;
-            background:#fff;
-            padding:0 15px;
-            background-color: #fff;
-            box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
-            .#{$namespace}-breadcrumb__item:last-child .#{$namespace}-breadcrumb__separator {
-                display: none;
-            }
-        }
     }
     // logo
     @include e(logo){
@@ -137,7 +166,17 @@ body,ul{
     }
     // 后台主要显示
     @include e(body){
+        position: absolute;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        top: 0;
         padding: 15px;
+        width: auto;
+        overflow: hidden;
+        overflow-y: auto;
+        box-sizing: border-box;
+        background-color: #f1f4f5;
     }
     //table页面
     @include e(table-toolbar){
@@ -345,6 +384,9 @@ body,ul{
         & .#{$namespace}-admin__container{
             left: 64px;
         }
+        & .#{$namespace}-admin__tool{
+            left: 64px;
+        }
     }
     & a{
         text-decoration: none;
@@ -354,6 +396,7 @@ body,ul{
     .#{$namespace}-admin__logo>span,
     .#{$namespace}-admin__header,
     .#{$namespace}-admin__container,
+    .#{$namespace}-admin__tool,
     .#{$namespace}-admin__aside,
     .#{$namespace}-admin__aside-inner,
     .#{$namespace}-admin__aside .#{$namespace}-menu
@@ -396,6 +439,9 @@ body,ul{
         .#{$namespace}-admin__container{
             left: 0px;
         }
+        .#{$namespace}-admin__tool{
+            left: 0px;
+        }
         @include e(search){
             width: 100%;
         }
@@ -421,6 +467,9 @@ body,ul{
                 transform: translate3d(220px,0,0);
             }
             .#{$namespace}-admin__container{
+                transform: translate3d(220px,0,0);
+            }
+            .#{$namespace}-admin__tool{
                 transform: translate3d(220px,0,0);
             }
         }
