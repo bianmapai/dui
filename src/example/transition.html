@@ -33,13 +33,13 @@
 <script>
 dui.use(['jquery'],function(jquery){
     var center = new dui.transition(document.querySelector('#center'),{
-        name:'aiui-zoom-in-center',
+        name:'dui-zoom-in-center',
     });
     var top = new dui.transition(document.querySelector('#top'),{
-        name:'aiui-zoom-in-top',
+        name:'dui-zoom-in-top',
     });
     var bottom = new dui.transition(document.querySelector('#bottom'),{
-        name:'aiui-zoom-in-bottom',
+        name:'dui-zoom-in-bottom',
     });
     $('#do').on('click',function(){
         if(center.status=='show'){

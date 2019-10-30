@@ -1,26 +1,21 @@
 import { Dui, extend } from "./loadjs";
 import { once,nextFrame } from "./util";
-import { addClass, removeClass, setStyle } from "./dom";
-import watcher from "./watcher";
+import { addClass, removeClass, setStyle, getStyle } from "./dom";
 // import { watchJs } from "./watch";
 function Class(elem,options){
     this.init(elem,options);
     return this;
 }
 /**
- * 过渡进入时发生
- * @param {Object} vnode nodeData对象
+ * 离开过渡
  */
-export function enter(vnode){
-    var el = vnode.elm;
-    // call leave callback now
+export function enter(){
+    var that = this,
+    data = that.config,
+    el = that.elem;
     if (el._leaveCb) {
         el._leaveCb.cancelled = true
         el._leaveCb()
-    }
-    var data = vnode.data.transition;
-    if (!data) {
-        return
     }
     if (el._enterCb) {
         return
@@ -28,7 +23,8 @@ export function enter(vnode){
     var startClass = data.name+'-enter';
     var activeClass = data.name+'-enter-active';
     var toClass = data.name+'-enter-to';
-
+    // 设置为不显示
+    setStyle(el,'display','none');
     // 4个生命周期钩子函数
     var beforeEnterHook = data.beforeEnter;
     var enterHook = data.enter;
@@ -67,19 +63,16 @@ export function enter(vnode){
     })
 }
 /**
- * 过渡离开时发生
- * @param {Object} vnode nodeData对象
+ * 进入过渡
  */
-export function leave(vnode){
-    var el = vnode.elm;
+export function leave(){
+    var that = this,
+    data = that.config,
+    el = that.elem;
     // call leave callback now
     if (el._enterCb) {
         el._enterCb.cancelled = true
         el._enterCb()
-    }
-    var data = vnode.data.transition;
-    if (!data) {
-        return
     }
     if (el._leaveCb) {
         return
@@ -87,7 +80,8 @@ export function leave(vnode){
     var startClass = data.name+'-leave';
     var activeClass = data.name+'-leave-active';
     var toClass = data.name+'-leave-to';
-
+    // 设置为不显示
+    setStyle(el,'display','');
     // 4个生命周期钩子函数
     var beforeLeaveHook = data.beforeLeave;
     var leaveHook = data.leave;
@@ -140,39 +134,21 @@ Class.prototype = Class.fn =  {
             leave:'',//当与 CSS 结合使用时
             afterLeave:'',//离开之后回调
             leaveCancelled:'',//取消的时候回调
-            show:true,//默认是否显示
         },options);
-        //设置数据
-        setData(elem,'transition',options);
         //获取data
-        var data = that.data = elem.vnode.data.transition;
+        var data = that.config = options;
         //设置状态
-        that.status = data.show === true ? 'show' : 'hide';
-        that.watcher = watcher({
-            data:data,
-            watch:{
-                show:function(newVal,oldVal){
-                    if(newVal===true){
-                        that.status = 'show';
-                        enter(elem.vnode);
-                    }else{
-                        that.status = 'hide';
-                        leave(elem.vnode);
-                    }
-                }
-            }
-        })
-        //如果默认为不显示
-        if(data.show===false){
-            setStyle(elem,'display','none');
-        }
+        that.status = getStyle(elem,'display')==='none' ? 'hide' : 'show';
         return that;
     },
     show:function(){
-        this.watcher.$data.show = true;
+        this.status = 'show';
+        enter.call(this);
     },
     hide:function(){
-        this.watcher.$data.show = false;
+        
+        this.status = 'hide';
+        leave.call(this);
     }
 }
 var transition = function(elem,options){
