@@ -31,7 +31,7 @@ gulp.task("dui", () => {
             name: 'dui',//包名称
             sourcemap: false//是否有sourcemarp
         }))
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
         // .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest("dist/js"))

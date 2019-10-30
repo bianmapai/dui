@@ -1,4 +1,4 @@
-import { each, extend, type } from "./loadjs";
+import { each, type } from "./loadjs";
 import { getStyle } from "./dom";
 /**
  * 下一帧执行的方法
@@ -27,117 +27,46 @@ export function once (fn){
     }
 }
 /**
- * 获取指定元素的模拟node
- * @param {Element} el 要获取Vnode的属性
- * @param {Object} defaultProp 要获取的默认属性
- * @param {Object} Prop 参数属性
+ * 获取指定元素的Attr属性值
+ * @param {Element} el 要获取的元素
+ * @param {Object} propsCfg 要获取的类型配置
  */
-export function setVnode(el){
-    if(!el.vnode){
-        var vnode = {
-            elm:el,
-            data:{
-
-            },
-            event:{
-
-            },
-            attrs:{
-
-            },
-            props:{
-
-            }
-        };
-        el.vnode = vnode;
-    }
-}
-/**
- * 给元素设置dui识别数据
- * @param {Element} el 要设置属性的元素
- * @param {String} name 数据名称
- * @param {Object} option 传递的数据
- */
-export function setData(el,name,option){
-    if(!el.vnode){
-        setVnode(el);
-    }
-    el.vnode.data[name] = extend(true,{},option);
-}
-/**
- * 给网页元素设置方法//统一委托
- * @param {Element} el 要给那个设置回调方法
- * @param {String} name 要给那个组件设置
- * @param {String} type 设置什么方法
- * @param {function} fn 回调函数
- */
-export function bind(el,name,type,fn){
-    if(!el.vnode){
-        setVnode(el);
-    }
-    if(!el.vnode.event[name]){
-        el.vnode.event[name] = {};
-    }
-    el.vnode.event[name][type] = fn;
-}
-/**
- * 给网页元素取消方法//统一委托
- * @param {Element} el 要给那个设置回调方法
- * @param {String} name 要给那个组件设置
- * @param {String} type 取消什么方法
- * @param {function} fn 回调函数
- */
-export function unbind(el,name,type,fn){
-    if(!el.vnode){
-        return;
-    }
-    el.vnode.event[name] && el.vnode.event[name][type] && delete el.vnode.event[name][type];
-}
-/**
- * 给元素设置props
- * @param {Element} el 要设置属性的元素
- * @param {String} name 给哪个组件设置
- * @param {Object} propconfig 默认属性
- */
-export function setProps(el,name,propconfig){
-    if(!el.vnode){
-        setVnode(el);
-    }
+export function getProps(el,propconfig){
     var attrs = el.attributes;
-    el.vnode.attrs = {};
+    var attrsObj = {};
+    var props = {};
     each(attrs,function(key,attr){
         var attrName = attr.name;
         var value = attr.nodeValue;
-        el.vnode.attrs[attrName] = value;
+        attrsObj[attrName] = value;
     })
-    el.vnode.props[name] = {};
     each(propconfig,function(k,info){
         var thisk = toLowerLine(k).replace('','');
         //设置默认值
-        if(el.vnode.attrs[thisk]){
+        if(attrsObj[thisk]){
             //有值
             if(typeof info === "function"){
                 if(info===Boolean){
-                    el.vnode.props[name][k] = el.vnode.attrs[thisk] == 'true' ? true : false;
+                    props[k] = attrsObj[thisk] == 'true' ? true : false;
                 }else if(info===Number){
-                    el.vnode.props[name][k] = Number(el.vnode.attrs[thisk]);
+                    props[k] = Number(attrsObj[thisk]);
                 }else if(info===String){
-                    el.vnode.props[name][k] = String(el.vnode.attrs[thisk]);
+                    props[k] = String(attrsObj[thisk]);
                 }
             }else{
                 if('array'===type(info.type)){
                     var value;
-                    if(['true','false'].indexOf(el.vnode.attrs[thisk])!=-1){
-                        value = el.vnode.attrs[thisk]=='true' ? true : false;
-                    }else if(el.vnode.attrs[thisk]===(Number(el.vnode.attrs[thisk])+'')){
-                        value = Number(el.vnode.attrs[thisk]);
+                    if(['true','false'].indexOf(attrsObj[thisk])!=-1){
+                        value = attrsObj[thisk]=='true' ? true : false;
+                    }else if(attrsObj[thisk]===(Number(attrsObj[thisk])+'')){
+                        value = Number(attrsObj[thisk]);
                     }else{
-                        value = String(el.vnode.attrs[thisk]);
+                        value = String(attrsObj[thisk]);
                     }
-                    el.vnode.props[name][k] = value;
+                    props[k] = value;
                 }else{
-                    if(info.type(el.vnode.attrs[thisk])){
-                        el.vnode.props[name][k] = info.type(el.vnode.attrs[thisk]);
+                    if(info.type(attrsObj[thisk])){
+                        props[k] = info.type(attrsObj[thisk]);
                     }else{
                         if(typeof propconfig[k].default==="undefined"){
                             var converFunction;
@@ -147,11 +76,11 @@ export function setProps(el,name,propconfig){
                                 converFunction = propconfig[k].type;
                             }
                             if(converFunction===Boolean){
-                                el.vnode.props[name][k] = false;
+                                props[k] = false;
                             }else if(converFunction===Number){
-                                el.vnode.props[name][k] = 0;
+                                props[k] = 0;
                             }else{
-                                el.vnode.props[name][k] = '';
+                                props[k] = '';
                             }
                         }
                     }
@@ -160,15 +89,15 @@ export function setProps(el,name,propconfig){
         }else{
             if(type(info)==='function'){
                 if(info===Boolean){
-                    el.vnode.props[name][k] = false;
+                    props[k] = false;
                 }else if(info===Number){
-                    el.vnode.props[name][k] = 0;
+                    props[k] = 0;
                 }else{
-                    el.vnode.props[name][k] = '';
+                    props[k] = '';
                 }
             }else{
                 if(typeof info.default !=="undefined"){
-                    el.vnode.props[name][k] = info.default;
+                    props[k] = info.default;
                 }else{
                     var converFunction;
                     if(type(info.type)==='array'){
@@ -177,16 +106,17 @@ export function setProps(el,name,propconfig){
                         converFunction = info.type;
                     }
                     if(converFunction===Boolean){
-                        el.vnode.props[name][k] = false;
+                        props[k] = false;
                     }else if(converFunction===Number){
-                        el.vnode.props[name][k] = 0;
+                        props[k] = 0;
                     }else{
-                        el.vnode.props[name][k] = '';
+                        props[k] = '';
                     }
                 }
             }
         }
     })
+    return props;
 }
 /**
  * 带-的字符串转驼峰

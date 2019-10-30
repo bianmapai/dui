@@ -1,7 +1,7 @@
 import PopperJS from "./popper";
 import { extend, type } from "./loadjs";
 import { getMaxZIndex } from "./util";
-import { on } from "./dom";
+import { bind } from "./dom";
 var Class = function(reference, popper, options){
     var that = this,
     createCallback = that.createCallback = extend(true,{},options).onCreate,
@@ -21,7 +21,7 @@ var Class = function(reference, popper, options){
         that.popperJS.onUpdate(updateCallback);
     }
     that.popperJS._popper.style.zIndex = (getMaxZIndex()+1);
-    on(window,'resize',function(){
+    bind(window,'resize',function(){
         that.updatePopper();
     })
 };
