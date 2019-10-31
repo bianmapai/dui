@@ -5,6 +5,7 @@ SUBMIT_BTN = 'dui-submit',
 SWITCH = '[dui-switch]',
 CHECKBOX='[dui-checkbox]',
 RADIO ='[dui-radio]',
+SELECT='[dui-select]',
 // 提交验证方法
 submit = function(e){
     var othis = $(this);
@@ -60,6 +61,15 @@ form.render = function(el,type,only){
             }else{
                 $form.find(RADIO).each(function(i,rdo){
                     rdo.radio = new radio(rdo);
+                })
+            }
+        },
+        select:function(){
+            if(only && only.nodeType){
+                only.select = new select(only);
+            }else{
+                $form.find(SELECT).each(function(i,slt){
+                    slt.select = new select(slt);
                 })
             }
         }
@@ -588,7 +598,80 @@ function radio(el,options){
  * @param {Object} options 初始化参数
  */
 function select(el,options){
-
+    var that = this,props = {
+        name:String,//表单提交名
+        multiple:{
+            type:[Boolean,String],
+            default:false
+        },//多选
+        disabled:{
+            type:[Boolean,String],
+            default:false
+        },//是否禁用
+        size:String,//大小
+        clearable:Boolean,//是否有清除按钮
+        placeholder:String,//没有选中的显示值
+        filterable:Boolean,//是否允许搜索
+        original:Boolean,//是否原始
+    },
+    SELECT = '',
+    CLASS = 'dui-select',
+    config = that.config = dui.getProps(el,props),
+    // 原始元素
+    original = that.el = el,
+    // 原始元素jquery选择
+    $original = $(original),
+    // 是否已经有渲染元素
+    hasRender = $original.next('.'+CLASS),
+    // 获取选项数据
+    optList = that.getOptData();
+    
+    
+    
+}
+/**
+ * 根据选项数据获取选项html
+ */
+select.prototype.getOptHtml = function(data){
+    var returnHtml = '',that = this,config= that.config;
+    $.each(data,function(i,item){
+        if(item.type=='group'){
+            returnHtml +='<ul class="dui-select-group__wrap"><li class="dui-select-group__title">'+item.label+'</li><li>'+function(){
+                if(item.childrens){
+                    return '<ul class="dui-select-group">'+that.getOptHtml(item.childrens)+'</ul>'
+                }
+            }()+'</li></ul>';
+        }else if(item.type=='item'){
+            returnHtml += '<li class="dui-select-dropdown__item'+(item.disabled?' is-disabled':'')+(item.selected?' selected':'')+'" dui-value="'+item.value+'"><span>'+item.label+'</span></li>';
+        }
+    })
+    return returnHtml;
+}
+/**
+ * 获取器所有的选项数据
+ */
+select.prototype.getOptData = function(elem){
+    var that = this,elem = elem?elem:that.el;
+    var res = [];
+        var childrens = $(elem).children();
+        childrens.each(function(i,opt){
+            var item = {};
+            if(opt.tagName.toLowerCase()==='optgroup'){
+                item.label = $(opt).attr('label');
+                item.type = 'group';
+                if(opt.children.length>0){
+                    item.childrens =  that.getOptData(opt);
+                }
+            }else if(opt.tagName.toLowerCase()==='option'){
+                item.type = 'item';
+                item.label = $(opt).text();
+                item.value = $(opt).val();
+                item.selected = typeof $(opt).attr('selected') !=="undefined" ? true : false;
+                item.disabled = typeof $(opt).attr('disabled') !=="undefined" ? true : false;
+            }
+            res.push(item);
+        })
+        return res;
 }
 form.init();
 export default form;
