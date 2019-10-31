@@ -614,8 +614,8 @@ function select(el,options){
         filterable:Boolean,//是否允许搜索
         original:Boolean,//是否原始
     },
-    SELECT = '',
     CLASS = 'dui-select',
+    CLEARABLE = 'dui-icon-circle-close',
     config = that.config = dui.getProps(el,props),
     // 原始元素
     original = that.el = el,
@@ -623,11 +623,73 @@ function select(el,options){
     $original = $(original),
     // 是否已经有渲染元素
     hasRender = $original.next('.'+CLASS),
+    // 当前选中的值
+    value   = that.value = $original.val(),
     // 获取选项数据
-    optList = that.getOptData();
-    
-    
-    
+    optData = that.getOptData(),
+    // 获取所有标签
+    tags = that.getAlltag(),
+    // 获取选项显示html
+    optHtml = that.optHtml = [
+        '<div class="dui-select-dropdown dui-popper'+(config.multiple ? ' is-multiple':'')+'" style="display:none">',
+            '<ul class="dui-select-dropdown__list">'+that.getOptHtml(optData)+'</ul>',
+            '<div x-arrow="" class="popper__arrow"></div>',
+        '</div>'
+    ].join(' '),
+    // 点击元素
+    clickHtml = ['<div class="'+CLASS+(config.size ? ' '+CLASS+'--'+config.size:'')+'">',
+        // 是否有多选
+        (config.multiple ? '<div class="dui-select__tags"><span></span></div>':''),
+        '<div class="dui-input'+(config.size ? ' dui-input--'+config.size:'')+' dui-input--suffix'+(config.disabled ? ' is-disabled':'')+'">',
+            '<input class="dui-input__inner dui-input--suffix"'+(!config.filterable ? ' readonly="readonly"':'')+' placeholder="'+config.placeholder+'"'+(config.disabled ? 'disabled="disabled"':'')+'>',
+            // 显示箭头按钮
+            '<span class="dui-input__suffix">',
+                '<span class="dui-input__suffix-inner">',
+                    '<i class="dui-select__caret dui-input__icon dui-icon-arrow-up"></i>',
+                    //清除按钮
+                    (config.clearable ? '<i class="dui-select__caret dui-input__icon '+CLEARABLE+'" style="display:none"></i>':''),
+                '</span>',
+            '</span>',
+        '</div>',
+    '</div>'].join(''),
+    // 没有任何内容的显示元素
+    $emptyDom = that.$emptyDom = $(['<p class="dui-select-dropdown__empty">'+
+        '无匹配数据'+
+    '</p>'].join('')),
+    // 触发点击的元素
+    $clickDom = that.$clickDom = $(clickHtml),
+    // 输入框元素
+    $input = that.$input = $clickDom.find('.dui-input__inner'),
+    // 角标元素
+    $caret = that.$caret = $clickDom.find('.dui-select__caret'),
+    // 选项显示元素
+    $optDom = that.$optDom = $(optHtml),
+    // 选项点击元素
+    $opts = that.$opts = $optDom.find('.dui-select-dropdown__item');
+    // 给选项添加滚动条
+    that.scrollbar = dui.addScrollBar($optDom.find('.dui-select-dropdown__list')[0],{
+        wrapClass:'dui-select-dropdown__wrap'
+    });
+    // 添加显示元素
+    hasRender[0] && hasRender.remove();
+    $(el).css('display','none').after($clickDom);
+}
+/**
+ * 多选的时候获取所有tag
+ */
+select.prototype.getAlltag = function(){
+    var that = this,el = that.el,tags = {};
+    $(el).find('option').each(function(i,opt){
+        var title = $(opt).text(),val = $(opt).val()
+        //添加元素到tagdom
+        var thisTag = $('<span class="dui-tag dui-tag--info dui-tag--small dui-tag--light">'+
+                            '<span class="dui-select__tags-text">'+title+'</span>'+
+                            '<i class="dui-tag__close dui-icon-close"></i>'+
+                        '</span>')[0];
+        thisTag.value = val;
+        tags[val] = thisTag;
+    })
+    return tags;
 }
 /**
  * 根据选项数据获取选项html
@@ -653,25 +715,25 @@ select.prototype.getOptHtml = function(data){
 select.prototype.getOptData = function(elem){
     var that = this,elem = elem?elem:that.el;
     var res = [];
-        var childrens = $(elem).children();
-        childrens.each(function(i,opt){
-            var item = {};
-            if(opt.tagName.toLowerCase()==='optgroup'){
-                item.label = $(opt).attr('label');
-                item.type = 'group';
-                if(opt.children.length>0){
-                    item.childrens =  that.getOptData(opt);
-                }
-            }else if(opt.tagName.toLowerCase()==='option'){
-                item.type = 'item';
-                item.label = $(opt).text();
-                item.value = $(opt).val();
-                item.selected = typeof $(opt).attr('selected') !=="undefined" ? true : false;
-                item.disabled = typeof $(opt).attr('disabled') !=="undefined" ? true : false;
+    var childrens = $(elem).children();
+    childrens.each(function(i,opt){
+        var item = {};
+        if(opt.tagName.toLowerCase()==='optgroup'){
+            item.label = $(opt).attr('label');
+            item.type = 'group';
+            if(opt.children.length>0){
+                item.childrens =  that.getOptData(opt);
             }
-            res.push(item);
-        })
-        return res;
+        }else if(opt.tagName.toLowerCase()==='option'){
+            item.type = 'item';
+            item.label = $(opt).text();
+            item.value = $(opt).val();
+            item.selected = ($(that.el).val()==$(opt).val() || $.inArray($(opt).val(),$(that.el).val())!=-1) ? true : false;
+            item.disabled = typeof $(opt).attr('disabled') !=="undefined" ? true : false;
+        }
+        res.push(item);
+    })
+    return res;
 }
 form.init();
 export default form;
