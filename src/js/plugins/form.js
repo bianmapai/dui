@@ -620,7 +620,7 @@ function select(el,options){
     // 原始元素
     original = that.el = el,
     // 原始元素jquery选择
-    $original = $(original),
+    $original = that.$original = $(original),
     // 是否已经有渲染元素
     hasRender = $original.next('.'+CLASS),
     // 当前选中的值
@@ -628,7 +628,7 @@ function select(el,options){
     // 获取选项数据
     optData = that.getOptData(),
     // 获取所有标签
-    tags = that.getAlltag(),
+    $tags = that.$tags = that.getAlltag(),
     // 获取选项显示html
     optHtml = that.optHtml = [
         '<div class="dui-select-dropdown dui-popper'+(config.multiple ? ' is-multiple':'')+'" style="display:none">',
@@ -673,6 +673,131 @@ function select(el,options){
     // 添加显示元素
     hasRender[0] && hasRender.remove();
     $(el).css('display','none').after($clickDom);
+    // 设置popper
+    that.setPopper();
+    // 同步值
+    that.sysStyle();
+    // 如果是禁用没有任何事件
+    if(config.disabled) return;
+    // 设置事件
+    that.setEvents();
+}
+/**
+ * 显示popper
+ */
+select.prototype.showPopper = function(){
+    var that = this,transition = that.transition,
+    $optDom = that.$optDom,$clickDom=that.$clickDom,
+    $input = that.$input,$caret = that.$caret;
+    // 添加元素到body
+    $('body').append($optDom);
+    // 设置打开样式
+    $input.addClass('is-focuse');
+    // 给选项角标添加样式
+    $caret.addClass('is-reverse');
+    // 开始显示动画
+    transition.show();
+}
+/**
+ * 隐藏popper
+ */
+select.prototype.hidePopper = function(){
+    var that = this,transition = that.transition,
+    $input = that.$input,$caret = that.$caret;
+    // 设置打开样式
+    $input.removeClass('is-focuse');
+    // 给选项角标添加样式
+    $caret.removeClass('is-reverse');
+    // 开始显示动画
+    transition.hide();
+}
+/**
+ * 设置事件
+ */
+select.prototype.setEvents = function(){
+    var that = this,$clickDom = that.$clickDom,
+    $input = that.$input;
+    // 点击元素显示选项事件
+    $clickDom.on('click',function(e){
+        if($input.hasClass('is-focuse')){
+            that.hidePopper();
+        }else{
+            that.showPopper();
+        }
+    })
+}
+/**
+ * 同步样式
+ */
+select.prototype.sysStyle = function(){
+    var that    = this,config = that.config,
+    $clickDom   = that.$clickDom,
+    $original   = that.$original,
+    $optDom     = that.$optDom,
+    $opts       = $optDom.find('.dui-select-dropdown__item'),
+    $tagdom     = $clickDom.find('.dui-select__tags>span'),
+    $input      = that.$input,
+    value       = $original.val();
+    //1.全部置空
+    $tagdom.html('');
+    $opts.removeClass('selected');
+    // 根据值设置样式
+    // 获取当前选中的值
+    if(value.length>0){
+        // 有值的情况下
+        if(config.multiple){
+            // 设置提示
+            $input.attr('placeholder','');
+            // 设置选项选中
+            $.each(value,function(i,val){
+                var selectOpt = $optDom.find('.dui-select-dropdown__item[dui-value="'+val+'"]');
+                // 设置选中
+                selectOpt.addClass('selected');
+                // 设置tag
+                $tagdom.append(that.$tags[val]);
+            })
+        }else{
+            // 设置提示
+            $input.attr('placeholder',config.placeholder);
+            // 设置样式
+            $optDom.find('.dui-select-dropdown__item[dui-value="'+value+'"]').addClass('selected');
+        }
+    }else{
+        // 多选
+        $input.attr('placeholder',config.placeholder);
+    }
+}
+/**
+ * 设置选项
+ */
+select.prototype.setPopper= function(){
+    var that = this,$clickDom = that.$clickDom,
+    $input = that.$input,
+    $optDom = that.$optDom;
+    // 添加元素
+    $('body').append($optDom);
+    var ref = $clickDom[0],pop = $optDom[0];
+    var x = {top:'bottom','bottom':'top'};
+    that.popper = dui.addPopper(ref,pop,{
+        arrowOffset:35,
+        onCreate:function(data){
+            that.transition = dui.transition(pop,{
+                name:'dui-zoom-in-'+x[data._options.placement],
+                beforeEnter:function(){
+                    that.popper.updatePopper();
+                },
+                afterLeave:function(){
+                    that.$optDom.remove();
+                }
+            });
+        },
+        onUpdate:function(data){
+            that.transition.config.name = 'dui-zoom-in-'+x[data.placement];
+        }
+    });
+    $optDom.css('min-width',$input.outerWidth());
+    // 手动修改一下
+    that.popper.updatePopper();
 }
 /**
  * 多选的时候获取所有tag
